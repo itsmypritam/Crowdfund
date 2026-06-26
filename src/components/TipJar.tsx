@@ -33,6 +33,7 @@ const NET = Networks.TESTNET;
 const STELLAR_PUBLIC_KEY_RE = /^G[A-Z2-7]{55}$/;
 
 function isValidAddress(addr: string): boolean {
+  if (typeof addr !== "string" || addr.length === 0) return false;
   return STELLAR_PUBLIC_KEY_RE.test(addr);
 }
 
@@ -88,7 +89,10 @@ export default function TipJar() {
         if (c.error || cancelled) return;
         const a = await getAddress();
         if (a.error || cancelled) return;
-        if (!isValidAddress(a.address)) return;
+        if (!isValidAddress(a.address)) {
+          console.warn("Auto-connect skipped: invalid address from Freighter", JSON.stringify(a.address), "len:", a.address.length);
+          return;
+        }
         sessionStorage.setItem("freighterAddress", a.address);
         setAddress(a.address);
       } catch {
@@ -113,7 +117,8 @@ export default function TipJar() {
         return;
       }
       if (!isValidAddress(a.address)) {
-        alert("Invalid account address returned by Freighter.");
+        console.error("Freighter address rejected:", JSON.stringify(a.address), "length:", a.address.length, "char codes:", [...a.address].map(c => c.charCodeAt(0)));
+        alert(`Freighter returned an unexpected address.\n\nAddress: ${a.address}\nLength: ${a.address.length}\n\nMake sure Freighter is on Stellar Testnet.`);
         return;
       }
       sessionStorage.setItem("freighterAddress", a.address);
