@@ -1,0 +1,213 @@
+---
+import TipJar from "../components/TipJar";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tip Jar – Stellar Testnet</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+  </head>
+  <body>
+    <TipJar client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0e0e0;
+  }
+
+  .tipjar-container {
+    padding: 1rem;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .tipjar-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .tipjar-header {
+    text-align: center;
+  }
+
+  .tipjar-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .tipjar-header p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+
+  .qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .qr-section svg {
+    border-radius: 12px;
+    background: white;
+    padding: 8px;
+  }
+
+  .qr-label {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    font-family: monospace;
+  }
+
+  .wallet-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .wallet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .wallet-info .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.5;
+  }
+
+  .wallet-info .address {
+    font-family: monospace;
+    font-size: 1rem;
+  }
+
+  .wallet-info .balance {
+    font-size: 0.9rem;
+  }
+
+  .tip-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tip-form input {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .tip-form input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  .tip-form input:focus {
+    border-color: #7c4dff;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7c4dff, #651fff);
+    color: #fff;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+  }
+
+  .tx-status {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .tx-status.success {
+    background: rgba(0, 200, 83, 0.12);
+    border: 1px solid rgba(0, 200, 83, 0.25);
+  }
+
+  .tx-status.error {
+    background: rgba(255, 82, 82, 0.12);
+    border: 1px solid rgba(255, 82, 82, 0.25);
+  }
+
+  .tx-status a {
+    display: inline-block;
+    margin-top: 0.4rem;
+    color: #82b1ff;
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .tx-status a:hover {
+    text-decoration: underline;
+  }
+</style>
