@@ -12,6 +12,7 @@ import {
   Operation,
   Memo,
   Account,
+  StrKey,
 } from "@stellar/stellar-sdk";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -30,6 +31,10 @@ const TIP_JAR = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
 const HORIZON = "https://horizon-testnet.stellar.org";
 const NET = Networks.TESTNET;
 
+function isValidAddress(addr: string): boolean {
+  return addr.length === 56 && StrKey.isValidEd25519PublicKey(addr);
+}
+
 interface TxStatus {
   hash: string;
   status: "success" | "error";
@@ -45,9 +50,18 @@ export default function TipJar() {
   const [memo, setMemo] = useState("");
 
   const fetchBalance = useCallback(async (addr: string) => {
+    if (!addr || !isValidAddress(addr)) return;
     try {
       const res = await fetch(`${HORIZON}/accounts/${addr}`);
-      if (!res.ok) throw new Error("Account not found on testnet");
+      if (res.status === 404) {
+        setBalance("0");
+        return;
+      }
+      if (!res.ok) {
+        console.warn("Horizon error", res.status, res.statusText);
+        setBalance("0");
+        return;
+      }
       const data = await res.json();
       const b = data.balances?.find((x: any) => x.asset_type === "native");
       setBalance(b?.balance ?? "0");
@@ -56,23 +70,38 @@ export default function TipJar() {
     }
   }, []);
 
-  const check = useCallback(async () => {
-    try {
-      const c = await isConnected();
-      if (c.error) return;
-      const a = await getAddress();
-      if (a.error) return;
-      setAddress(a.address);
-      fetchBalance(a.address);
-    } catch {
-      /* not connected */
-    }
-  }, [fetchBalance]);
-
-  useEffect(() => { check(); }, [check]);
-
+  // try to rehydrate from a previous session
   useEffect(() => {
-    if (address) fetchBalance(address);
+    const saved = sessionStorage.getItem("freighterAddress");
+    if (saved && isValidAddress(saved)) {
+      setAddress(saved);
+    }
+  }, []);
+
+  // connect on mount if already allowed in freighter
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const c = await isConnected();
+        if (c.error || cancelled) return;
+        const a = await getAddress();
+        if (a.error || cancelled) return;
+        if (!isValidAddress(a.address)) return;
+        sessionStorage.setItem("freighterAddress", a.address);
+        setAddress(a.address);
+      } catch {
+        /* not connected */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // fetch balance whenever address changes
+  useEffect(() => {
+    if (address && isValidAddress(address)) {
+      fetchBalance(address);
+    }
   }, [address, fetchBalance]);
 
   const connect = async () => {
@@ -82,14 +111,19 @@ export default function TipJar() {
         alert("Please install Freighter and grant access.");
         return;
       }
+      if (!isValidAddress(a.address)) {
+        alert("Invalid account address returned by Freighter.");
+        return;
+      }
+      sessionStorage.setItem("freighterAddress", a.address);
       setAddress(a.address);
-      await fetchBalance(a.address);
     } catch {
       alert("Failed to connect. Install Freighter wallet.");
     }
   };
 
   const disconnect = () => {
+    sessionStorage.removeItem("freighterAddress");
     setAddress(null);
     setBalance(null);
     setTx(null);
@@ -106,8 +140,12 @@ export default function TipJar() {
 
     try {
       const acctRes = await fetch(`${HORIZON}/accounts/${address}`);
-      if (!acctRes.ok)
-        throw new Error("Cannot fetch account details. Fund your wallet first.");
+      if (!acctRes.ok) {
+        if (acctRes.status === 404) {
+          throw new Error("Account not found on testnet. Fund it first via the Stellar Lab faucet.");
+        }
+        throw new Error(`Horizon error ${acctRes.status}`);
+      }
       const acctData = await acctRes.json();
 
       const source = new Account(address, acctData.sequence);
