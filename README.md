@@ -1,15 +1,15 @@
 # ☕ Tip Jar – Stellar Testnet dApp
 
-A minimal Stellar Tip Jar page built with **Astro** + **React** for the Stellar White Belt challenge.
+A fully responsive Stellar Tip Jar landing page built with **Astro** + **React** for the Stellar White Belt challenge. Connect your Freighter wallet and send XLM tips instantly on testnet.
 
 ## Features
 
-- Connect / disconnect Freighter wallet
-- View connected wallet's XLM balance
-- Send XLM tips to a fixed testnet address
-- QR code for the tip jar address
-- Transaction success/failure feedback
-- Links to Stellar Expert explorer for confirmed txs
+- **Wallet Integration** – Connect / disconnect Freighter wallet
+- **Balance Display** – Fetch and show XLM balance from Horizon testnet
+- **Send XLM** – Make payments with optional memo to a fixed tip jar address
+- **QR Code** – Scan to copy the tip jar address
+- **Transaction Feedback** – Success / error state with explorer link
+- **Landing Page** – Hero, features, testimonials, and CTA sections with high-quality Unsplash imagery
 
 ## Setup
 
@@ -36,8 +36,19 @@ Open `http://localhost:4321`.
 
 ## Built With
 
-- [Astro](https://astro.build)
-- [React](https://react.dev)
-- [@stellar/stellar-sdk](https://github.com/stellar/js-stellar-sdk)
-- [@stellar/freighter-api](https://github.com/stellar/freighter)
-- [qrcode.react](https://github.com/zpao/qrcode.react)
+- [Astro](https://astro.build) – Static site generator
+- [React](https://react.dev) – Interactive component
+- [@stellar/stellar-sdk](https://github.com/stellar/js-stellar-sdk) – Stellar network SDK
+- [@stellar/freighter-api](https://github.com/stellar/freighter) – Freighter wallet integration
+- [qrcode.react](https://github.com/zpao/qrcode.react) – QR code generation
+- [Unsplash](https://unsplash.com) – Stock photography
+
+## Project Structure
+
+```
+src/
+├── components/
+│   └── TipJar.tsx      # Wallet connect, balance, send XLM, QR code
+└── pages/
+    └── index.astro      # Landing page with all sections
+```
