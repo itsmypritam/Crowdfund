@@ -15,6 +15,17 @@ import {
 } from "@stellar/stellar-sdk";
 import { QRCodeSVG } from "qrcode.react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 const TIP_JAR = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
 const HORIZON = "https://horizon-testnet.stellar.org";
 const NET = Networks.TESTNET;
@@ -67,7 +78,10 @@ export default function TipJar() {
   const connect = async () => {
     try {
       const a = await getAddress();
-      if (a.error) { alert("Please install Freighter and grant access."); return; }
+      if (a.error) {
+        alert("Please install Freighter and grant access.");
+        return;
+      }
       setAddress(a.address);
       await fetchBalance(a.address);
     } catch {
@@ -92,7 +106,8 @@ export default function TipJar() {
 
     try {
       const acctRes = await fetch(`${HORIZON}/accounts/${address}`);
-      if (!acctRes.ok) throw new Error("Cannot fetch account details. Fund your wallet first.");
+      if (!acctRes.ok)
+        throw new Error("Cannot fetch account details. Fund your wallet first.");
       const acctData = await acctRes.json();
 
       const source = new Account(address, acctData.sequence);
@@ -101,19 +116,21 @@ export default function TipJar() {
         fee: BASE_FEE,
         networkPassphrase: NET,
       })
-        .addOperation(Operation.payment({
-          destination: TIP_JAR,
-          asset: Asset.native(),
-          amount,
-        }))
+        .addOperation(
+          Operation.payment({
+            destination: TIP_JAR,
+            asset: Asset.native(),
+            amount,
+          })
+        )
         .setTimeout(30);
 
       if (memo.trim()) {
         txb.addMemo(Memo.text(memo.trim()));
       }
 
-      const tx = txb.build();
-      const xdr = tx.toXDR();
+      const built = txb.build();
+      const xdr = built.toXDR();
 
       const signed = await signTransaction(xdr, { networkPassphrase: NET });
 
@@ -137,91 +154,127 @@ export default function TipJar() {
         });
         await fetchBalance(address);
       } else {
-        const errMsg = submitData.extras?.result_codes?.transaction
-          || submitData.title
-          || "Transaction failed";
+        const errMsg =
+          submitData.extras?.result_codes?.transaction ||
+          submitData.title ||
+          "Transaction failed";
         setTx({ hash: "", status: "error", message: `Failed: ${errMsg}` });
       }
     } catch (err: any) {
-      setTx({ hash: "", status: "error", message: err?.message || "Something went wrong" });
+      setTx({
+        hash: "",
+        status: "error",
+        message: err?.message || "Something went wrong",
+      });
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="tipjar-container" id="tip-jar">
-      <div className="tipjar-card">
-        <div className="tipjar-card-inner">
-          <div className="tipjar-left">
-            <h2>☕ Send a Tip</h2>
-            <p>Support my work with a Stellar XLM donation on testnet.</p>
-            <div className="qr-section">
-              <QRCodeSVG value={TIP_JAR} size={140} />
-              <span className="qr-label">{short(TIP_JAR)}</span>
-            </div>
-          </div>
-
-          <div className="tipjar-right">
-            {!address ? (
-              <button className="btn btn-accent" onClick={connect}>
-                Connect Freighter Wallet
-              </button>
-            ) : (
-              <>
-                <div className="wallet-info">
-                  <div className="wallet-row">
-                    <span className="wi-label">Connected</span>
-                    <span className="wi-address">{short(address)}</span>
-                  </div>
-                  <div className="wallet-row">
-                    <span className="wi-label">Balance</span>
-                    <span className="wi-value">
-                      {balance !== null ? `${parseFloat(balance).toFixed(4)} XLM` : "Loading..."}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="tip-form">
-                  <input
-                    type="number" placeholder="Amount (XLM)"
-                    value={amount} onChange={(e) => setAmount(e.target.value)}
-                    min="0" step="0.0001" disabled={busy}
-                  />
-                  <input
-                    type="text" placeholder="Memo (optional)"
-                    value={memo} onChange={(e) => setMemo(e.target.value)}
-                    maxLength={28} disabled={busy}
-                  />
-                  <button
-                    className="btn btn-accent"
-                    onClick={sendTip}
-                    disabled={busy || !amount || parseFloat(amount) <= 0}
-                  >
-                    {busy ? "Sending..." : "Send Tip"}
-                  </button>
-                </div>
-
-                <button className="btn btn-ghost" onClick={disconnect}>
-                  Disconnect
-                </button>
-              </>
-            )}
-
-            {tx && (
-              <div className={`tx-status ${tx.status}`}>
-                <p>{tx.status === "success" ? "✅" : "❌"} {tx.message}</p>
-                {tx.hash && (
-                  <a href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`}
-                     target="_blank" rel="noopener noreferrer">
-                    View on Stellar Expert →
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+    <section id="tip-jar" className="scroll-mt-20 mx-auto max-w-2xl px-4 py-16 md:py-24">
+      <div className="text-center mb-8">
+        <Badge variant="outline" className="mb-3">
+          Stellar Testnet
+        </Badge>
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Send a Tip
+        </h2>
+        <p className="mt-2 text-muted-foreground max-w-md mx-auto">
+          Support my work with a Stellar XLM donation.
+        </p>
       </div>
-    </div>
+
+      <Card className="mx-auto max-w-lg">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>☕ Tip Jar</CardTitle>
+              <CardDescription>
+                {address
+                  ? `Connected as ${short(address)}`
+                  : "Connect your Freighter wallet to send a tip"}
+              </CardDescription>
+            </div>
+            <QRCodeSVG value={TIP_JAR} size={72} />
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {!address ? (
+            <Button className="w-full" onClick={connect}>
+              Connect Freighter Wallet
+            </Button>
+          ) : (
+            <>
+              <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm">
+                <span className="text-muted-foreground">Balance</span>
+                <span className="font-medium">
+                  {balance !== null
+                    ? `${parseFloat(balance).toFixed(4)} XLM`
+                    : "Loading..."}
+                </span>
+              </div>
+
+              <Input
+                type="number"
+                placeholder="Amount (XLM)"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                min="0"
+                step="0.0001"
+                disabled={busy}
+              />
+              <Input
+                type="text"
+                placeholder="Memo (optional)"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                maxLength={28}
+                disabled={busy}
+              />
+
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  onClick={sendTip}
+                  disabled={busy || !amount || parseFloat(amount) <= 0}
+                >
+                  {busy ? "Sending..." : "Send Tip"}
+                </Button>
+                <Button variant="ghost" onClick={disconnect}>
+                  Disconnect
+                </Button>
+              </div>
+            </>
+          )}
+
+          {tx && (
+            <div
+              className={`rounded-lg border px-3 py-2 text-sm ${
+                tx.status === "success"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                  : "border-red-500/30 bg-red-500/10 text-red-400"
+              }`}
+            >
+              <p className="flex items-center gap-1.5">
+                <span>{tx.status === "success" ? "✅" : "❌"}</span>
+                {tx.message}
+              </p>
+              {tx.hash && (
+                <a
+                  href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs underline underline-offset-2 hover:no-underline"
+                >
+                  View on Stellar Expert →
+                </a>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </section>
   );
 }
