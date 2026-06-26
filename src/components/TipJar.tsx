@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import {
   isConnected,
   getAddress,
+  requestAccess,
   signTransaction,
+  getNetworkDetails,
 } from "@stellar/freighter-api";
 import {
   TransactionBuilder,
@@ -80,23 +82,24 @@ export default function TipJar() {
     }
   }, []);
 
-  // connect on mount if already allowed in freighter
+  // auto-connect on mount if freighter already has us allowed
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const c = await isConnected();
-        if (c.error || cancelled) return;
+        const allowed = await isConnected();
+        if (allowed.error || cancelled) return;
+        // getAddress reads cached address without prompting
         const a = await getAddress();
         if (a.error || cancelled) return;
         if (!isValidAddress(a.address)) {
-          console.warn("Auto-connect skipped: invalid address from Freighter", JSON.stringify(a.address), "len:", a.address.length);
+          console.warn("Auto-connect skipped: Freighter returned empty address (user needs to click Connect)", JSON.stringify(a.address));
           return;
         }
         sessionStorage.setItem("freighterAddress", a.address);
         setAddress(a.address);
       } catch {
-        /* not connected */
+        /* freighter not available */
       }
     })();
     return () => { cancelled = true; };
@@ -111,20 +114,27 @@ export default function TipJar() {
 
   const connect = async () => {
     try {
-      const a = await getAddress();
+      const a = await requestAccess();
       if (a.error) {
-        alert("Please install Freighter and grant access.");
+        alert("Freighter access was denied. Please open Freighter and allow this site.");
         return;
       }
       if (!isValidAddress(a.address)) {
-        console.error("Freighter address rejected:", JSON.stringify(a.address), "length:", a.address.length, "char codes:", [...a.address].map(c => c.charCodeAt(0)));
-        alert(`Freighter returned an unexpected address.\n\nAddress: ${a.address}\nLength: ${a.address.length}\n\nMake sure Freighter is on Stellar Testnet.`);
+        console.error("Freighter address rejected:", JSON.stringify(a.address), "length:", a.address.length);
+        alert("Freighter returned an empty address. Make sure you have a wallet set up in Freighter and it's on Stellar Testnet.");
         return;
       }
+      // warn if on wrong network
+      try {
+        const net = await getNetworkDetails();
+        if (net.error || !net.network?.toLowerCase().includes("test")) {
+          console.warn("Freighter network:", net.network);
+        }
+      } catch { /* non-critical */ }
       sessionStorage.setItem("freighterAddress", a.address);
       setAddress(a.address);
     } catch {
-      alert("Failed to connect. Install Freighter wallet.");
+      alert("Failed to connect to Freighter. Is the extension installed?");
     }
   };
 
