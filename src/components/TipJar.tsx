@@ -12,7 +12,6 @@ import {
   Operation,
   Memo,
   Account,
-  StrKey,
 } from "@stellar/stellar-sdk";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -31,8 +30,10 @@ const TIP_JAR = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
 const HORIZON = "https://horizon-testnet.stellar.org";
 const NET = Networks.TESTNET;
 
+const STELLAR_PUBLIC_KEY_RE = /^G[A-Z2-7]{55}$/;
+
 function isValidAddress(addr: string): boolean {
-  return addr.length === 56 && StrKey.isValidEd25519PublicKey(addr);
+  return STELLAR_PUBLIC_KEY_RE.test(addr);
 }
 
 interface TxStatus {
@@ -253,6 +254,14 @@ export default function TipJar() {
                     : "Loading..."}
                 </span>
               </div>
+              {balance === "0" && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Your account hasn't been funded on testnet yet.{' '}
+                  <a href="https://lab.stellar.org/account/fund" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+                    Get test XLM →
+                  </a>
+                </p>
+              )}
 
               <Input
                 type="number"
