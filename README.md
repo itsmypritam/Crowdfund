@@ -74,5 +74,4 @@ src/
 └── styles/
     └── global.css           # Tailwind + shadcn CSS variables
 ```
-##Steller network
-<img width="1910" height="916" alt="image" src="https://github.com/user-attachments/assets/b9532055-68aa-4b76-b3ab-ee92a20ed3d6" />
+
