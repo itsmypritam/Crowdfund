@@ -11,6 +11,20 @@ A responsive, dark-themed Stellar Tip Jar landing page built with **Astro**, **R
 - **Transaction Feedback** – Success / error state with Stellar Expert explorer link
 - **Landing Page** – Hero, features, testimonials, and CTA sections with Unsplash imagery
 
+## Screenshots
+
+### Wallet Connected
+
+![Wallet connected state](public/screenshot-connected.png)
+
+### Balance Displayed
+
+![Balance displayed](public/screenshot-balance.png)
+
+### Successful Testnet Transaction
+
+![Successful testnet transaction](public/screenshot-transaction.png)
+
 ## Setup
 
 ```bash
@@ -27,26 +41,6 @@ Open `http://localhost:4321`.
 3. Fund your wallet via the [Stellar Lab faucet](https://lab.stellar.org/account/fund)
 4. Open the app and click **Connect Freighter Wallet**
 5. Enter an amount and optionally a memo, then click **Send Tip**
-
-## Screenshots
-
-*Add your screenshots to the `public/` folder and reference them here.*
-
-### Wallet Connected
-
-![Wallet connected state](public/screenshot-connected.png)
-
-### Balance Displayed
-
-![Balance displayed](public/screenshot-balance.png)
-
-### Successful Transaction
-
-![Successful testnet transaction](public/screenshot-transaction.png)
-
-### Transaction Result
-
-![Transaction result shown to user](public/screenshot-result.png)
 
 ## Tech Stack
 
