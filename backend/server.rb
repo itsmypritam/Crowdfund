@@ -11,6 +11,9 @@ class CrowdfundApp < Sinatra::Base
   set :port, ENV.fetch("PORT", 3001).to_i
   set :bind, "0.0.0.0"
 
+  set :public_folder, File.join(__dir__, "dist")
+  set :static, true
+
   @@contract_id = ENV["CONTRACT_ID"]
   @@last_paging_token = ""
   @@ws_clients = []
@@ -27,18 +30,23 @@ class CrowdfundApp < Sinatra::Base
   end
 
   not_found do
-    content_type :json
-    json({ error: "Not found" })
+    if request.path_info.start_with?("/api")
+      content_type :json
+      json({ error: "Not found" })
+    else
+      content_type "text/html"
+      body File.read(File.join(settings.public_folder, "index.html"))
+    end
   end
 
-  before do
+  before "/api/*" do
     content_type :json
     headers "Access-Control-Allow-Origin" => "*",
             "Access-Control-Allow-Methods" => "GET, POST, OPTIONS",
             "Access-Control-Allow-Headers" => "Content-Type"
   end
 
-  options "*" do
+  options "/api/*" do
     200
   end
 

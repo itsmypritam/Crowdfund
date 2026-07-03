@@ -59,6 +59,7 @@ GEM
     faye-websocket (0.12.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.8.0)
+    ffi (1.17.4)
     ffi (1.17.4-x64-mingw-ucrt)
     hyperclient (1.0.1)
       addressable
@@ -137,6 +138,7 @@ GEM
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   dotenv (~> 3.1)
