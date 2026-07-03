@@ -1,0 +1,26 @@
+Dockerfile
+  s_738ac63ad300bb::t_09cd88c47129e3 14
+render.yaml
+  s_738ac63ad300bb::t_808f9a38b3403f 8
+backend/server.rb
+  s_738ac63ad300bb::t_0a62719ad98ab9 143-189
+  s_738ac63ad300bb::t_f8feb1557d2cfe 191-195
+  s_738ac63ad300bb::t_4036d03cb4f07a 8
+  s_738ac63ad300bb::t_1f15c9340861d6 190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "62bab0a55fbb298ef9577f08bd6b1069c16c0c3b",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
