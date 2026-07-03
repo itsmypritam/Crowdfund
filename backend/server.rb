@@ -7,10 +7,6 @@ require "uri"
 require "dotenv/load"
 
 class CrowdfundApp < Sinatra::Base
-  set :server, :puma
-  set :port, ENV.fetch("PORT", 3001).to_i
-  set :bind, "0.0.0.0"
-
   @@contract_id = ENV["CONTRACT_ID"]
   @@last_paging_token = ""
   @@ws_clients = []
