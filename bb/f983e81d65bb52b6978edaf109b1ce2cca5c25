@@ -1,0 +1,21 @@
+.dockerignore
+  s_738ac63ad300bb::t_3954a7230c86c2 1-7
+Dockerfile
+  s_738ac63ad300bb::t_2f2a3cdf7a317b 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "bbf983e81d65bb52b6978edaf109b1ce2cca5c25",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
