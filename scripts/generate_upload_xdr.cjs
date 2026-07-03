@@ -17,9 +17,9 @@ async function main() {
   const sim = await (new sdk.rpc.Server(RPC_URL)).simulateTransaction(tx);
   if (!sim || sim.error) { console.error("Sim failed:", JSON.stringify(sim)); process.exit(1); }
 
-  const prepared = sdk.rpc.assembleTransaction(tx, NET, sim);
+  const prepared = sdk.rpc.assembleTransaction(tx, sim);
   console.log("=== UPLOAD WASM XDR (sign in Freighter) ===\n");
-  console.log(prepared.toXDR());
+  console.log(prepared.build().toXDR());
 }
 
 main().catch(console.error);
