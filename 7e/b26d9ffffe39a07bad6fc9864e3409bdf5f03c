@@ -1,0 +1,22 @@
+src/components/TipJar.tsx
+  s_738ac63ad300bb::t_1f64a9477e6378 589
+  s_738ac63ad300bb::t_be97d534806e4e 620
+  s_738ac63ad300bb::t_f50955c73fde5f 453,520
+  s_738ac63ad300bb::t_faa6262149423d 366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7eb26d9ffffe39a07bad6fc9864e3409bdf5f03c",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
