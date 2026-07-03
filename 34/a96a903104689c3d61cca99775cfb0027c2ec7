@@ -1,0 +1,22 @@
+stormkit.yaml
+  s_738ac63ad300bb::t_185c239513ac5b 2
+src/components/TipJar.tsx
+  s_738ac63ad300bb::t_9fb2bb5e51af8c 3-7,36-37,74-75,124-147,242-278,282-287,289-290,296-322,357-358,361,363,369,380,385,390,393,415-418,422-424,431-433,452,460,463,470,473,480-481,485-498,501,503-504,506,512,514,518,537,539,562,565,567
+  s_738ac63ad300bb::t_43d8f4927404cb 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "34a96a903104689c3d61cca99775cfb0027c2ec7",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
