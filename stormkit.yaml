@@ -1,5 +1,5 @@
 app:
-  installCommand: npm install --include=optional
+  installCommand: npm install --ignore-scripts
   buildCommand: npm run build
   outputDir: dist
   nodeVersion: 22
