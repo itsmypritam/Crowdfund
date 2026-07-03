@@ -2,7 +2,6 @@ node_modules/
 dist/
 .env
 .contract_id
-backend/.env
 *.wasm
 target/
 .DS_Store
