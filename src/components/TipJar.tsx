@@ -7,6 +7,7 @@ import {
   signTransaction,
 } from "@stellar/freighter-api";
 import {
+  Transaction,
   TransactionBuilder,
   Networks,
   BASE_FEE,
@@ -368,7 +369,7 @@ export default function TipJar() {
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting transaction..." });
-      const sendResponse = await server.sendTransaction(signedTxXdr);
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
 
       if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
         let getResponse = await server.getTransaction(sendResponse.hash);
@@ -454,7 +455,7 @@ export default function TipJar() {
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting initialize transaction..." });
-      const sendResponse = await server.sendTransaction(signedTxXdr);
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
 
       if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
         let getResponse = await server.getTransaction(sendResponse.hash);
@@ -520,7 +521,7 @@ export default function TipJar() {
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting withdraw transaction..." });
-      const sendResponse = await server.sendTransaction(signedTxXdr);
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
 
       if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
         let getResponse = await server.getTransaction(sendResponse.hash);
@@ -587,7 +588,7 @@ export default function TipJar() {
       const uploadPrep = rpc.assembleTransaction(uploadTx, uploadSim);
       const uploadXdr = uploadPrep.build().toXDR();
       const uploadSigned = await signWithWallet(uploadXdr, { networkPassphrase: NET, address });
-      const uploadResp = await server.sendTransaction(uploadSigned as string);
+      const uploadResp = await server.sendTransaction(new Transaction(uploadSigned, NET));
 
       if (uploadResp.status !== "PENDING" && uploadResp.status !== "DUPLICATE") {
         throw new Error(uploadResp.error || "upload submit failed");
@@ -618,7 +619,7 @@ export default function TipJar() {
       const createPrep = rpc.assembleTransaction(createTx, createSim);
       const createXdr = createPrep.build().toXDR();
       const createSigned = await signWithWallet(createXdr, { networkPassphrase: NET, address });
-      const createResp = await server.sendTransaction(createSigned as string);
+      const createResp = await server.sendTransaction(new Transaction(createSigned, NET));
 
       if (createResp.status !== "PENDING" && createResp.status !== "DUPLICATE") {
         throw new Error(createResp.error || "create submit failed");
