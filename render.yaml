@@ -1,10 +1,11 @@
 services:
   - type: web
     name: stellar-tip-jar
-    env: docker
+    runtime: ruby
     repo: https://github.com/itsmypritam/-stellar-tip-jar
     branch: master
-    dockerfilePath: ./Dockerfile
+    buildCommand: cd backend && bundle install
+    startCommand: cd backend && bundle exec puma config.ru -b tcp://0.0.0.0:$PORT
     envVars:
       - key: PORT
         value: "3001"
