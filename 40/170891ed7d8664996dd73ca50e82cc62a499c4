@@ -1,0 +1,35 @@
+backend/server.js
+  s_738ac63ad300bb::t_255eccee3ba7c2 84-90
+.github/workflows/ci.yml
+  s_738ac63ad300bb::t_a56d04972f8ecb 29-31
+contract/Cargo.toml
+  s_738ac63ad300bb::t_bb4e8ea9620877 12-14
+backend/package.json
+  s_738ac63ad300bb::t_78708e6e085e5b 17-20
+  s_738ac63ad300bb::t_2998261c51f18c 8-10
+README.md
+  s_738ac63ad300bb::t_4750d8b8159504 5-13,21-22,54-75,86,94-116,119,123-134,136,138
+backend/server.test.mjs
+  s_738ac63ad300bb::t_31b146b50637da 1-2,5
+  s_738ac63ad300bb::t_cacf47244f94bd 3
+  s_738ac63ad300bb::t_14ab531f31b079 4
+  s_738ac63ad300bb::t_119c26571293ba 6-8
+backend/package-lock.json
+  s_738ac63ad300bb::t_d8ca1a74da6d01 1-2408
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "40170891ed7d8664996dd73ca50e82cc62a499c4",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
