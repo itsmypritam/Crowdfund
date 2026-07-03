@@ -1,0 +1,22 @@
+backend/server.rb
+  s_738ac63ad300bb::t_34d7898038cb65 101-102
+  s_738ac63ad300bb::t_fc86c703d2ba8d 113-114,125
+backend/config.ru
+  s_738ac63ad300bb::t_7856deb727d23d 5-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a5881c054ec910a78672d1080f41733ddf8f092d",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
