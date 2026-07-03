@@ -1,0 +1,21 @@
+scripts/initialize_campaign.rb
+  s_738ac63ad300bb::t_6bf1d53a31bf83 2-18,21-41
+scripts/deploy.rb
+  s_738ac63ad300bb::t_7f1c9acf0b821a 2-8,12,14-21,23-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "08a0f12370c6a7481e8031bc9a27f19bb5b2e91e",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
