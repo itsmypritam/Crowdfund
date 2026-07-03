@@ -1,0 +1,21 @@
+Rakefile
+  s_738ac63ad300bb::t_5624cb3ad5b53d 1-26
+backend/server.rb
+  s_738ac63ad300bb::t_9598974077ef2a 20-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0f2b498ec3f6df11f1c3eaa7f42d731a8bdc01bc",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
