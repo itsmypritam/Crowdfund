@@ -31,7 +31,7 @@ const STELLAR_PUBLIC_KEY_RE = /^G[A-Z2-7]{55}$/;
 const HORIZON = "https://horizon-testnet.stellar.org";
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NET = Networks.TESTNET;
-const BACKEND = "http://localhost:3001";
+const BACKEND = "";
 
 type WalletType = "freighter" | "albedo" | "lobstr" | "xbull";
 

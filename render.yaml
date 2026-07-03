@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: stellar-tip-jar
+    env: docker
+    repo: https://github.com/itsmypritam/-stellar-tip-jar
+    branch: master
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: "3001"
+      - key: CONTRACT_ID
+        sync: false
+      - key: STELLAR_NETWORK
+        value: testnet
