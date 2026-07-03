@@ -15,7 +15,7 @@ import {
   scValToNative,
   rpc,
 } from "@stellar/stellar-sdk";
-import { io, Socket } from "socket.io-client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -88,28 +88,31 @@ export default function TipJar() {
   const [editingContract, setEditingContract] = useState(false);
   const [contractInput, setContractInput] = useState(contractId);
 
-  const socketRef = useRef<Socket | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const s = io(BACKEND, { transports: ["websocket", "polling"] });
-    socketRef.current = s;
+    const ws = new WebSocket(BACKEND.replace(/^http/, "ws"));
+    socketRef.current = ws;
 
-    s.on("connect", () => {
+    ws.onopen = () => {
       if (contractId) {
-        s.emit("subscribe:campaign", { contractId });
+        ws.send(JSON.stringify({ type: "subscribe:campaign", contractId }));
       }
-    });
+    };
 
-    s.on("donation:new", (data: DonationEvent) => {
-      setRecentDonations((prev) => [data, ...prev].slice(0, 50));
-    });
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "donation:new") {
+          setRecentDonations((prev) => [data, ...prev].slice(0, 50));
+        } else if (data.type === "campaign:updated") {
+          fetchCampaign();
+          fetchDonors();
+        }
+      } catch {}
+    };
 
-    s.on("campaign:updated", () => {
-      fetchCampaign();
-      fetchDonors();
-    });
-
-    return () => { s.disconnect(); };
+    return () => { ws.close(); };
   }, [contractId]);
 
   useEffect(() => {
