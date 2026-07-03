@@ -1,0 +1,19 @@
+render.yaml
+  s_738ac63ad300bb::t_8b7d9d4da5fbf9 4,7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f7d118aeb41e9d86e735eaff313a0241406a3679",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
