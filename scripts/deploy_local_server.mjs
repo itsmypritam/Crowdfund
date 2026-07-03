@@ -19,8 +19,8 @@ async function getTxXDR() {
     .setTimeout(300)
     .build();
   const sim = await server.simulateTransaction(tx);
-  const prepared = sdk.rpc.assembleTransaction(tx, NET, sim);
-  return prepared.toXDR();
+  const prepared = sdk.rpc.assembleTransaction(tx, sim);
+  return prepared.build().toXDR();
 }
 
 http.createServer(async (req, res) => {
@@ -54,8 +54,8 @@ http.createServer(async (req, res) => {
               .setTimeout(300)
               .build();
             const createSim = await server.simulateTransaction(createTx);
-            const createPrepared = sdk.rpc.assembleTransaction(createTx, NET, createSim);
-            res.end(JSON.stringify({ status: "upload_done", createXdr: createPrepared.toXDR(), hash: resp.hash }));
+            const createPrepared = sdk.rpc.assembleTransaction(createTx, createSim);
+            res.end(JSON.stringify({ status: "upload_done", createXdr: createPrepared.build().toXDR(), hash: resp.hash }));
           } else {
             res.end(JSON.stringify({ error: "Upload tx failed", status: getResp.status }));
           }

@@ -364,7 +364,7 @@ export default function TipJar() {
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
       const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
-      const xdr = preparedTxn.toXDR();
+      const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting transaction..." });
@@ -449,9 +449,8 @@ export default function TipJar() {
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
-      const fee = String(Number(BASE_FEE) + 10000);
       const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
-      const xdr = preparedTxn.toXDR();
+      const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting initialize transaction..." });
@@ -516,9 +515,8 @@ export default function TipJar() {
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
-      const fee = String(Number(BASE_FEE) + 10000);
       const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
-      const xdr = preparedTxn.toXDR();
+      const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting withdraw transaction..." });
@@ -587,7 +585,7 @@ export default function TipJar() {
       const uploadSim = await server.simulateTransaction(uploadTx);
       if (!uploadSim || uploadSim.error) throw new Error(uploadSim?.error || "sim failed");
       const uploadPrep = rpc.assembleTransaction(uploadTx, uploadSim);
-      const uploadXdr = uploadPrep.toXDR();
+      const uploadXdr = uploadPrep.build().toXDR();
       const uploadSigned = await signWithWallet(uploadXdr, { networkPassphrase: NET, address });
       const uploadResp = await server.sendTransaction(uploadSigned as string);
 
@@ -618,7 +616,7 @@ export default function TipJar() {
       const createSim = await server.simulateTransaction(createTx);
       if (!createSim || createSim.error) throw new Error(createSim?.error || "sim failed");
       const createPrep = rpc.assembleTransaction(createTx, createSim);
-      const createXdr = createPrep.toXDR();
+      const createXdr = createPrep.build().toXDR();
       const createSigned = await signWithWallet(createXdr, { networkPassphrase: NET, address });
       const createResp = await server.sendTransaction(createSigned as string);
 

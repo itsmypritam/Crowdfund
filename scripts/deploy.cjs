@@ -42,7 +42,7 @@ async function deploy() {
     process.exit(1);
   }
 
-  const uploadPrepared = sdk.rpc.assembleTransaction(uploadTx, NET, uploadSim);
+  const uploadPrepared = sdk.rpc.assembleTransaction(uploadTx, uploadSim).build();
   uploadPrepared.sign(keypair);
   const uploadResp = await server.sendTransaction(uploadPrepared.toXDR());
   console.log("Upload status:", uploadResp.status, uploadResp.hash);
@@ -88,7 +88,7 @@ async function deploy() {
     process.exit(1);
   }
 
-  const createPrepared = sdk.rpc.assembleTransaction(createTx, NET, createSim);
+  const createPrepared = sdk.rpc.assembleTransaction(createTx, createSim).build();
   createPrepared.sign(keypair);
   const createResp = await server.sendTransaction(createPrepared.toXDR());
   console.log("Create status:", createResp.status, createResp.hash);

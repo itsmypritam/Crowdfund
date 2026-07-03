@@ -38,8 +38,8 @@ async function main() {
   }
 
   // Assemble with proper footprint
-  const prepared = sdk.rpc.assembleTransaction(tx, NET, sim);
-  const xdr = prepared.toXDR();
+  const prepared = sdk.rpc.assembleTransaction(tx, sim);
+  const xdr = prepared.build().toXDR();
 
   console.log("=== DEPLOY TRANSACTION XDR ===");
   console.log("Copy this entire string below:\n");
