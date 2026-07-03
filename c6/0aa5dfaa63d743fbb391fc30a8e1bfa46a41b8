@@ -1,0 +1,29 @@
+backend/server.js
+  s_738ac63ad300bb::t_99ec447c0a6c06 1-86
+render.yaml
+  s_738ac63ad300bb::t_9bfb73e307668b 4,7-8
+.github/workflows/ci.yml
+  s_738ac63ad300bb::t_9daadc9ea02c65 19-20,22-24,27
+backend/package.json
+  s_738ac63ad300bb::t_d8963fe5ad249c 1-16
+backend/.env.example
+  s_738ac63ad300bb::t_49149b4364c4aa 1-4
+README.md
+  s_738ac63ad300bb::t_585ebd65e9bc04 1,3,7,9,11,27,32-33,46-52,54,57,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c60aa5dfaa63d743fbb391fc30a8e1bfa46a41b8",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
