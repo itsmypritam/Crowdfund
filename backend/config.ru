@@ -1,7 +1,5 @@
 require_relative "server"
 
-Faye::WebSocket.load_adapter("puma")
-
 class WebSocketMiddleware
   def initialize(app)
     @app = app

@@ -1,6 +1,6 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short, vec, Address, Env, String, Vec, Map,
+    contract, contractimpl, contracttype, symbol_short, token, Address, Env, String, Vec,
 };
 
 #[contracttype]
@@ -28,6 +28,8 @@ pub enum DataKey {
     DonorCount,
     Donation(u32),
 }
+
+const NATIVE_TOKEN: &str = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
 
 #[contract]
 pub struct CrowdfundContract;
@@ -110,7 +112,7 @@ impl CrowdfundContract {
             .set(&DataKey::DonorCount, &idx);
 
         env.events().publish(
-            symbol_short!("donation"),
+            (symbol_short!("donation"),),
             (donor, donate_amount, env.ledger().timestamp()),
         );
 
@@ -163,10 +165,12 @@ impl CrowdfundContract {
             "campaign not yet ended or goal not reached"
         );
 
-        let balance = env.current_contract_address().balance(&env);
+        let native = Address::from_string(&String::from_str(&env, NATIVE_TOKEN));
+        let token = token::TokenClient::new(&env, &native);
+        let balance = token.balance(&env.current_contract_address());
         assert!(balance > 0, "no funds to withdraw");
 
         to.require_auth();
-        env.balance().send(&to, balance);
+        token.transfer(&env.current_contract_address(), &to, &balance);
     }
 }

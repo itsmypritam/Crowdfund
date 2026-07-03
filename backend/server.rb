@@ -79,6 +79,10 @@ class CrowdfundApp < Sinatra::Base
     json({ ok: true })
   end
 
+  get "/" do
+    json({ service: "Stellar Tip Jar", status: "running", contractId: @@contract_id })
+  end
+
   get "/health" do
     json({ status: "ok", contractId: @@contract_id })
   end
