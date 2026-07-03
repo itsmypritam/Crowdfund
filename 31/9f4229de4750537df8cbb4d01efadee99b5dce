@@ -1,0 +1,35 @@
+scripts/deploy_local_server.mjs
+  s_738ac63ad300bb::t_26731e9769a155 57-58
+  s_738ac63ad300bb::t_3b7edc4b6e8511 22-23
+scripts/generate_deploy_xdr.cjs
+  s_738ac63ad300bb::t_5d110480dd7c68 41-42
+backend/fly.toml
+  s_738ac63ad300bb::t_647101ff15e4da 1-32
+scripts/generate_upload_xdr.cjs
+  s_738ac63ad300bb::t_ab1fa2045f7e71 20,22
+scripts/deploy.cjs
+  s_738ac63ad300bb::t_4b0508773b3255 91
+  s_738ac63ad300bb::t_d0c569994e50ec 45
+src/components/TipJar.tsx
+  s_738ac63ad300bb::t_7b1d93ae9062f7 588
+  s_738ac63ad300bb::t_998ade43baba43 619
+  s_738ac63ad300bb::t_08e755218adb04 519
+  s_738ac63ad300bb::t_4184b8d57a5e9f 367
+  s_738ac63ad300bb::t_83c37e7398a86e 453
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "319f4229de4750537df8cbb4d01efadee99b5dce",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
