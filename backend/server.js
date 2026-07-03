@@ -81,6 +81,10 @@ setInterval(async () => {
   }
 }, POLL_INTERVAL);
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
+
+module.exports = { app, server, broadcast, contractId };

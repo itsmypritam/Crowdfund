@@ -9,7 +9,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "npm run test:backend",
+    "test:backend": "cd backend && npm test",
+    "test:all": "npm run test:backend"
   },
   "optionalDependencies": {
     "@emnapi/core": "1.11.1",
