@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { WASM_B64 } from "./wasm_base64";
 import {
   isConnected,
   getAddress,
@@ -11,6 +12,8 @@ import {
   BASE_FEE,
   Account,
   Contract,
+  Operation,
+  Address,
   nativeToScVal,
   scValToNative,
   rpc,
@@ -558,6 +561,105 @@ export default function TipJar() {
     }
   };
 
+  const [deploying, setDeploying] = useState(false);
+  const deployTx = useRef(false);
+
+  const deployContract = async () => {
+    if (!address || deployTx.current) return;
+
+    setBusy(true);
+    setDeploying(true);
+    deployTx.current = true;
+    setTx({ hash: "", status: "pending", message: "Preparing deploy..." });
+
+    try {
+      const wasmBytes = Uint8Array.from(atob(WASM_B64), (c) => c.charCodeAt(0));
+      const hashBuffer = await crypto.subtle.digest("SHA-256", wasmBytes);
+      const wasmHash = new Uint8Array(hashBuffer);
+
+      const server = new rpc.Server(RPC_URL);
+      const src = await server.getAccount(address);
+
+      // Step 1: Upload WASM
+      setTx({ hash: "", status: "pending", message: "Step 1/2: Uploading WASM..." });
+      const uploadTx = new TransactionBuilder(src, { fee: BASE_FEE, networkPassphrase: NET })
+        .addOperation(Operation.uploadContractWasm({ wasm: wasmBytes }))
+        .setTimeout(300)
+        .build();
+
+      const uploadSim = await server.simulateTransaction(uploadTx);
+      if (!uploadSim || uploadSim.error) throw new Error(uploadSim?.error || "sim failed");
+      const uploadPrep = rpc.assembleTransaction(uploadTx, NET, uploadSim as any);
+      const uploadXdr = uploadPrep.toXDR();
+      const uploadSigned = await signWithWallet(uploadXdr, { networkPassphrase: NET, address });
+      const uploadResp = await server.sendTransaction(uploadSigned as string);
+
+      if (uploadResp.status !== "PENDING" && uploadResp.status !== "DUPLICATE") {
+        throw new Error(uploadResp.error || "upload submit failed");
+      }
+
+      let uploadGet = await server.getTransaction(uploadResp.hash);
+      let retries = 0;
+      while (uploadGet.status === "NOT_FOUND" && retries < 60) {
+        await new Promise((r) => setTimeout(r, 1000));
+        uploadGet = await server.getTransaction(uploadResp.hash);
+        retries++;
+      }
+      if (uploadGet.status !== "SUCCESS") throw new Error("Upload failed: " + uploadGet.status);
+
+      // Step 2: Create contract
+      setTx({ hash: "", status: "pending", message: "Step 2/2: Creating contract..." });
+      const src2 = await server.getAccount(address);
+      const createTx = new TransactionBuilder(src2, { fee: BASE_FEE, networkPassphrase: NET })
+        .addOperation(Operation.createCustomContract({
+          wasmHash,
+          address: new Address(address),
+        }))
+        .setTimeout(300)
+        .build();
+
+      const createSim = await server.simulateTransaction(createTx);
+      if (!createSim || createSim.error) throw new Error(createSim?.error || "sim failed");
+      const createPrep = rpc.assembleTransaction(createTx, NET, createSim as any);
+      const createXdr = createPrep.toXDR();
+      const createSigned = await signWithWallet(createXdr, { networkPassphrase: NET, address });
+      const createResp = await server.sendTransaction(createSigned as string);
+
+      if (createResp.status !== "PENDING" && createResp.status !== "DUPLICATE") {
+        throw new Error(createResp.error || "create submit failed");
+      }
+
+      let createGet = await server.getTransaction(createResp.hash);
+      retries = 0;
+      while (createGet.status === "NOT_FOUND" && retries < 60) {
+        await new Promise((r) => setTimeout(r, 1000));
+        createGet = await server.getTransaction(createResp.hash);
+        retries++;
+      }
+      if (createGet.status !== "SUCCESS") throw new Error("Create failed: " + createGet.status);
+
+      const newContractId = (createGet as any).contractId || "";
+      if (newContractId) {
+        setContractId(newContractId);
+        setContractInput(newContractId);
+        localStorage.setItem(CONTRACT_ID_KEY, newContractId);
+        try { await fetch(`${BACKEND}/api/contract-id`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contractId: newContractId }) }); } catch {}
+      }
+      setTx({ hash: createResp.hash, status: "success", message: newContractId ? `Contract: ${short(newContractId)}` : "Deployed!" });
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied")) {
+        setTx({ hash: "", status: "error", message: "Deploy cancelled" });
+      } else {
+        setTx({ hash: "", status: "error", message: msg });
+      }
+    } finally {
+      setBusy(false);
+      setDeploying(false);
+      deployTx.current = false;
+    }
+  };
+
   const isOwner = address && campaign && address === campaign.owner;
   const progress = campaign
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
@@ -595,6 +697,11 @@ export default function TipJar() {
                   {contractId && !campaign && !busy && (
                     <Button size="sm" onClick={() => setShowInitForm(true)}>
                       Init
+                    </Button>
+                  )}
+                  {!contractId && address && !busy && (
+                    <Button size="sm" onClick={deployContract}>
+                      Deploy
                     </Button>
                   )}
                 </div>
