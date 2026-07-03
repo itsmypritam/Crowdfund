@@ -17,6 +17,18 @@ class CrowdfundApp < Sinatra::Base
 
   configure do
     set :threaded, true
+    set :show_exceptions, false
+  end
+
+  error do
+    content_type :json
+    status 500
+    json({ error: "Internal server error" })
+  end
+
+  not_found do
+    content_type :json
+    json({ error: "Not found" })
   end
 
   before do
