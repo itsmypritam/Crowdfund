@@ -1,0 +1,24 @@
+src/components/TipJar.tsx
+  s_738ac63ad300bb::t_9f7be3054d229a 34
+Dockerfile
+  s_738ac63ad300bb::t_77a4783c260617 2,4,6,9,11,13
+backend/server.rb
+  s_738ac63ad300bb::t_8eb381f9f3738b 34,41
+  s_738ac63ad300bb::t_0f1ee58dd4c6f2 30-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4d5518a29cda482bd34354ea27cf2e3d19ebb162",
+  "prompts": {},
+  "sessions": {
+    "s_738ac63ad300bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d62f2327ffeFiEHmnseMVCo32",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
