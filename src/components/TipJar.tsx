@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
+  isConnected,
+  getAddress,
+  requestAccess,
+  signTransaction,
+} from "@stellar/freighter-api";
+import {
   TransactionBuilder,
   Networks,
   BASE_FEE,
@@ -9,12 +15,6 @@ import {
   scValToNative,
   rpc,
 } from "@stellar/stellar-sdk";
-import {
-  StellarWalletsKit,
-  WalletNetwork,
-  allowAllModules,
-  FREIGHTER_ID,
-} from "@creit.tech/stellar-wallets-kit";
 import { io, Socket } from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,8 @@ const HORIZON = "https://horizon-testnet.stellar.org";
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NET = Networks.TESTNET;
 const BACKEND = "http://localhost:3001";
+
+type WalletType = "freighter" | "albedo" | "lobstr" | "xbull";
 
 interface Campaign {
   owner: string;
@@ -67,14 +69,10 @@ function isValidAddress(addr: string): boolean {
 
 const CONTRACT_ID_KEY = "crowdfund_contract_id";
 
-const kit = new StellarWalletsKit({
-  network: WalletNetwork.TESTNET,
-  selectedWalletId: FREIGHTER_ID,
-  modules: allowAllModules(),
-});
-
 export default function TipJar() {
   const [address, setAddress] = useState<string | null>(null);
+  const [walletType, setWalletType] = useState<WalletType>("freighter");
+  const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [busy, setBusy] = useState(false);
   const [tx, setTx] = useState<TxStatus | null>(null);
   const [donationAmount, setDonationAmount] = useState("");
@@ -122,6 +120,30 @@ export default function TipJar() {
       syncContractId();
     }
   }, [contractId]);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("walletAddress");
+    if (saved && isValidAddress(saved)) {
+      setAddress(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const allowed = await isConnected();
+        if (allowed.error || cancelled) return;
+        const a = await getAddress();
+        if (a.error || cancelled) return;
+        if (!isValidAddress(a.address)) return;
+        sessionStorage.setItem("walletAddress", a.address);
+        setAddress(a.address);
+        setWalletType("freighter");
+      } catch {}
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const fetchCampaign = useCallback(async () => {
     if (!contractId) return;
@@ -217,33 +239,84 @@ export default function TipJar() {
     } catch {}
   };
 
-  const connect = async () => {
+  const connectFreighter = async () => {
+    const a = await requestAccess();
+    if (a.error) throw new Error("Wallet access denied. Please allow access in Freighter.");
+    if (!isValidAddress(a.address)) throw new Error("Freighter returned an invalid address.");
+    sessionStorage.setItem("walletAddress", a.address);
+    setAddress(a.address);
+  };
+
+  const connectAlbedo = async () => {
+    const albedo = (window as any).albedo;
+    if (!albedo?.publicKey) throw new Error("Albedo not detected. Install the Albedo wallet.");
+    const res = await albedo.publicKey({ allowAllAccounts: true });
+    if (!res?.publicKey) throw new Error("Albedo access was denied.");
+    sessionStorage.setItem("walletAddress", res.publicKey);
+    setAddress(res.publicKey);
+  };
+
+  const connectLobstr = async () => {
+    const lobstr = (window as any).lobstr;
+    if (!lobstr?.connect) throw new Error("LOBSTR not detected. Install the LOBSTR wallet.");
+    const res = await lobstr.connect();
+    if (!res?.publicKey) throw new Error("LOBSTR access was denied.");
+    sessionStorage.setItem("walletAddress", res.publicKey);
+    setAddress(res.publicKey);
+  };
+
+  const connectXbull = async () => {
+    const xbull = (window as any).xbull;
+    if (!xbull?.connect) throw new Error("xBull not detected. Install the xBull wallet.");
+    const res = await xbull.connect();
+    if (!res?.publicKey) throw new Error("xBull access was denied.");
+    sessionStorage.setItem("walletAddress", res.publicKey);
+    setAddress(res.publicKey);
+  };
+
+  const connectWallet = async (type: WalletType) => {
+    setShowWalletPicker(false);
     setBusy(true);
     setTx(null);
     try {
-      await kit.openModal({
-        onWalletSelected: async (option) => {
-          kit.setWallet(option.id);
-          const { address: addr } = await kit.getAddress();
-          if (!addr || !isValidAddress(addr)) {
-            throw new Error("Invalid address returned from wallet.");
-          }
-          sessionStorage.setItem("walletAddress", addr);
-          setAddress(addr);
-        },
-      });
-    } catch (err: any) {
-      if (err?.message?.includes("modal closed") || err?.code === "MODAL_CLOSED") {
-        setTx({ hash: "", status: "error", message: "Wallet selection was cancelled." });
-      } else {
-        setTx({
-          hash: "",
-          status: "error",
-          message: err?.message || "Failed to connect. Is a wallet extension installed?",
-        });
+      setWalletType(type);
+      switch (type) {
+        case "freighter": await connectFreighter(); break;
+        case "albedo": await connectAlbedo(); break;
+        case "lobstr": await connectLobstr(); break;
+        case "xbull": await connectXbull(); break;
       }
+    } catch (err: any) {
+      setTx({ hash: "", status: "error", message: err?.message || "Connection failed" });
     } finally {
       setBusy(false);
+    }
+  };
+
+  const signWithWallet = async (xdr: string, opts: { networkPassphrase: string; address: string }) => {
+    switch (walletType) {
+      case "freighter": {
+        const signed = await signTransaction(xdr, { networkPassphrase: opts.networkPassphrase });
+        if (signed.error || !signed.signedTxXdr) throw new Error("Signing cancelled");
+        return signed.signedTxXdr;
+      }
+      case "albedo": {
+        const a = (window as any).albedo;
+        const res = await a.tx({ xdr, network: opts.networkPassphrase.includes("public") ? "public" : "testnet" });
+        return res.signedTxXdr;
+      }
+      case "lobstr": {
+        const l = (window as any).lobstr;
+        const res = await l.signTransaction(xdr);
+        return res.signedTxXdr;
+      }
+      case "xbull": {
+        const x = (window as any).xbull;
+        const res = await x.signTransaction(xdr);
+        return res.signedTxXdr;
+      }
+      default:
+        throw new Error("Unknown wallet type");
     }
   };
 
@@ -264,7 +337,6 @@ export default function TipJar() {
 
     try {
       const amountStroop = BigInt(Math.floor(parseFloat(donationAmount) * 1e7));
-
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
       const sourceAccount = await server.getAccount(address);
@@ -282,46 +354,19 @@ export default function TipJar() {
         .setTimeout(30);
 
       const simResp = await server.simulateContract(txn.build());
-
-      if (!simResp || simResp.error) {
-        throw new Error(simResp?.error || "Simulation failed");
-      }
-
-      let simTxnData: any;
-      if (rpc.Api.isSimulationSuccess(simResp)) {
-        simTxnData = simResp;
-      } else {
-        throw new Error("Contract simulation failed");
-      }
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
       const fee = String(Number(BASE_FEE) + 10000);
-      const preparedTxn = rpc.assembleTransaction(
-        txn.build(),
-        NET,
-        simTxnData,
-        fee
-      );
-
+      const preparedTxn = rpc.assembleTransaction(txn.build(), NET, simResp, fee);
       const xdr = preparedTxn.toXDR();
-      const { signedTxXdr } = await kit.signTransaction(xdr, {
-        networkPassphrase: NET,
-        address,
-      });
-
-      if (!signedTxXdr) {
-        throw new Error("Transaction signing was cancelled");
-      }
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
       setTx({ hash: "", status: "pending", message: "Submitting transaction..." });
-
       const sendResponse = await server.sendTransaction(signedTxXdr);
 
       if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
-        setTx({
-          hash: sendResponse.hash,
-          status: "pending",
-          message: "Waiting for confirmation...",
-        });
+        setTx({ hash: sendResponse.hash, status: "pending", message: "Waiting for confirmation..." });
 
         let getResponse = await server.getTransaction(sendResponse.hash);
         let retries = 0;
@@ -332,37 +377,20 @@ export default function TipJar() {
         }
 
         if (getResponse.status === "SUCCESS") {
-          setTx({
-            hash: sendResponse.hash,
-            status: "success",
-            message: `Donated ${donationAmount} XLM!`,
-          });
+          setTx({ hash: sendResponse.hash, status: "success", message: `Donated ${donationAmount} XLM!` });
           try {
             await fetch(`${BACKEND}/api/donation`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                donor: address,
-                amount: donationAmount,
-                hash: sendResponse.hash,
-              }),
+              body: JSON.stringify({ donor: address, amount: donationAmount, hash: sendResponse.hash }),
             });
           } catch {}
           fetchCampaign();
         } else {
-          setTx({
-            hash: sendResponse.hash,
-            status: "error",
-            message: `Transaction failed: ${getResponse.status}`,
-          });
+          setTx({ hash: sendResponse.hash, status: "error", message: `Transaction failed: ${getResponse.status}` });
         }
       } else {
-        const errMsg = sendResponse.error || "Transaction submission failed";
-        setTx({
-          hash: sendResponse.hash || "",
-          status: "error",
-          message: `Failed: ${errMsg}`,
-        });
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
       }
     } catch (err: any) {
       const msg = err?.message || "";
@@ -384,36 +412,25 @@ export default function TipJar() {
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
     : 0;
 
+  const walletNames: Record<WalletType, string> = {
+    freighter: "Freighter", albedo: "Albedo", lobstr: "LOBSTR", xbull: "xBull",
+  };
+
   return (
     <section id="crowdfund" className="scroll-mt-20 mx-auto max-w-4xl px-4 py-16 md:py-24">
       <div className="text-center mb-8">
-        <Badge variant="outline" className="mb-3">
-          Stellar Soroban
-        </Badge>
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Crowdfunding Campaign
-        </h2>
-        <p className="mt-2 text-muted-foreground max-w-lg mx-auto">
-          Support this project with a Stellar donation. Every contribution counts.
-        </p>
+        <Badge variant="outline" className="mb-3">Stellar Soroban</Badge>
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Crowdfunding Campaign</h2>
+        <p className="mt-2 text-muted-foreground max-w-lg mx-auto">Support this project with a Stellar donation.</p>
       </div>
 
       <Card className="mx-auto max-w-2xl mb-6">
         <CardContent className="pt-4">
           {editingContract ? (
             <div className="flex gap-2 items-center">
-              <Input
-                value={contractInput}
-                onChange={(e) => setContractInput(e.target.value)}
-                placeholder="Enter contract address (C...)"
-                className="font-mono text-xs"
-              />
-              <Button size="sm" onClick={saveContractId} disabled={!contractInput.trim()}>
-                Save
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => setEditingContract(false)}>
-                Cancel
-              </Button>
+              <Input value={contractInput} onChange={(e) => setContractInput(e.target.value)} placeholder="Contract address (C...)" className="font-mono text-xs" />
+              <Button size="sm" onClick={saveContractId} disabled={!contractInput.trim()}>Save</Button>
+              <Button size="sm" variant="ghost" onClick={() => setEditingContract(false)}>Cancel</Button>
             </div>
           ) : (
             <div className="flex items-center justify-between gap-2">
@@ -432,9 +449,7 @@ export default function TipJar() {
         <Card>
           <CardHeader>
             <CardTitle>{campaign?.title || "Campaign"}</CardTitle>
-            <CardDescription>
-              {campaign?.description || "Loading campaign details..."}
-            </CardDescription>
+            <CardDescription>{campaign?.description || "Loading..."}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {campaign ? (
@@ -442,104 +457,65 @@ export default function TipJar() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Raised</span>
-                    <span className="font-medium">
-                      {parseFloat(campaign.totalRaised).toFixed(2)} / {parseFloat(campaign.goal).toFixed(2)} XLM
-                    </span>
+                    <span className="font-medium">{parseFloat(campaign.totalRaised).toFixed(2)} / {parseFloat(campaign.goal).toFixed(2)} XLM</span>
                   </div>
                   <div className="h-3 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500"
-                      style={{ width: `${progress}%` }}
-                    />
+                    <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500" style={{ width: `${progress}%` }} />
                   </div>
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{progress.toFixed(1)}% funded</span>
                     <span>{donorCount} donor{donorCount !== 1 ? "s" : ""}</span>
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Deadline: {new Date(Number(campaign.deadline) * 1000).toLocaleDateString()}
-                </div>
+                <div className="text-xs text-muted-foreground">Deadline: {new Date(Number(campaign.deadline) * 1000).toLocaleDateString()}</div>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                {contractId ? "Loading..." : "Set a contract address above to load campaign data."}
-              </p>
+              <p className="text-sm text-muted-foreground">{contractId ? "Loading..." : "Set a contract address above."}</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              {address ? short(address) : "Connect Wallet"}
-            </CardTitle>
-            <CardDescription>
-              {address ? "Connected via Stellar Wallets Kit" : "Connect to donate"}
-            </CardDescription>
+            <CardTitle>{address ? short(address) : "Connect Wallet"}</CardTitle>
+            <CardDescription>{address ? `via ${walletNames[walletType]}` : "Connect to donate"}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {!address ? (
-              <Button className="w-full" onClick={connect} disabled={busy}>
-                Connect Wallet
-              </Button>
+              <div className="space-y-2">
+                {showWalletPicker ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {(Object.keys(walletNames) as WalletType[]).map((w) => (
+                      <Button key={w} variant="outline" className="h-14 text-sm" onClick={() => connectWallet(w)} disabled={busy}>
+                        {w === "freighter" ? "🛸" : w === "albedo" ? "🌞" : w === "lobstr" ? "🦞" : "🐂"} {walletNames[w]}
+                      </Button>
+                    ))}
+                    <Button variant="ghost" className="col-span-2 h-8 text-xs" onClick={() => setShowWalletPicker(false)}>Cancel</Button>
+                  </div>
+                ) : (
+                  <Button className="w-full" onClick={() => setShowWalletPicker(true)} disabled={busy}>Connect Wallet</Button>
+                )}
+              </div>
             ) : (
               <>
-                <Input
-                  type="number"
-                  placeholder="Amount (XLM)"
-                  value={donationAmount}
-                  onChange={(e) => setDonationAmount(e.target.value)}
-                  min="0"
-                  step="0.01"
-                  disabled={busy}
-                />
+                <Input type="number" placeholder="Amount (XLM)" value={donationAmount} onChange={(e) => setDonationAmount(e.target.value)} min="0" step="0.01" disabled={busy} />
                 <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    onClick={donate}
-                    disabled={busy || !donationAmount || parseFloat(donationAmount) <= 0 || !contractId}
-                  >
-                    {busy
-                      ? tx?.message?.includes("Building")
-                        ? "Preparing..."
-                        : tx?.message?.includes("Submitting")
-                        ? "Submitting..."
-                        : tx?.status === "pending"
-                        ? "Confirming..."
-                        : "Processing..."
-                      : "Donate"}
+                  <Button className="flex-1" onClick={donate} disabled={busy || !donationAmount || parseFloat(donationAmount) <= 0 || !contractId}>
+                    {busy ? "Processing..." : "Donate"}
                   </Button>
-                  <Button variant="ghost" onClick={disconnect}>
-                    Disconnect
-                  </Button>
+                  <Button variant="ghost" onClick={disconnect}>Disconnect</Button>
                 </div>
               </>
             )}
 
             {tx && (
-              <div
-                className={`rounded-lg border px-3 py-2 text-sm ${
-                  tx.status === "success"
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                    : tx.status === "pending"
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                    : "border-red-500/30 bg-red-500/10 text-red-400"
-                }`}
-              >
+              <div className={`rounded-lg border px-3 py-2 text-sm ${tx.status === "success" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" : tx.status === "pending" ? "border-amber-500/30 bg-amber-500/10 text-amber-400" : "border-red-500/30 bg-red-500/10 text-red-400"}`}>
                 <p className="flex items-center gap-1.5">
-                  <span>
-                    {tx.status === "success" ? "✅" : tx.status === "pending" ? "⏳" : "❌"}
-                  </span>
+                  <span>{tx.status === "success" ? "✅" : tx.status === "pending" ? "⏳" : "❌"}</span>
                   {tx.message}
                 </p>
                 {tx.hash && (
-                  <a
-                    href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-block text-xs underline underline-offset-2 hover:no-underline"
-                  >
+                  <a href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs underline underline-offset-2 hover:no-underline">
                     View on Stellar Expert →
                   </a>
                 )}
@@ -558,14 +534,9 @@ export default function TipJar() {
               <p className="text-sm text-muted-foreground">No donations yet. Be the first!</p>
             ) : (
               donors.slice().reverse().map((d, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-lg bg-muted/30 px-3 py-2 text-sm"
-                >
+                <div key={i} className="flex items-center justify-between rounded-lg bg-muted/30 px-3 py-2 text-sm">
                   <span className="font-mono text-xs">{short(d.donor)}</span>
-                  <span className="font-medium text-emerald-400">
-                    +{parseFloat(d.amount).toFixed(2)} XLM
-                  </span>
+                  <span className="font-medium text-emerald-400">+{parseFloat(d.amount).toFixed(2)} XLM</span>
                 </div>
               ))
             )}
@@ -588,24 +559,12 @@ export default function TipJar() {
               <p className="text-sm text-muted-foreground">Waiting for donations...</p>
             ) : (
               recentDonations.map((d, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-lg bg-emerald-500/5 border border-emerald-500/20 px-3 py-2 text-sm"
-                >
+                <div key={i} className="flex items-center justify-between rounded-lg bg-emerald-500/5 border border-emerald-500/20 px-3 py-2 text-sm">
                   <div>
                     <span className="font-mono text-xs">{short(d.donor)}</span>
-                    <a
-                      href={`https://stellar.expert/explorer/testnet/tx/${d.hash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-2 text-xs text-muted-foreground underline"
-                    >
-                      tx
-                    </a>
+                    <a href={`https://stellar.expert/explorer/testnet/tx/${d.hash}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-xs text-muted-foreground underline">tx</a>
                   </div>
-                  <span className="font-medium text-emerald-400">
-                    +{parseFloat(d.amount).toFixed(2)} XLM
-                  </span>
+                  <span className="font-medium text-emerald-400">+{parseFloat(d.amount).toFixed(2)} XLM</span>
                 </div>
               ))
             )}
