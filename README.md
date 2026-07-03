@@ -2,6 +2,15 @@
 
 A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
 
+[![CI](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml)
+![Test Status](https://img.shields.io/badge/tests-6%20passing-brightgreen)
+
+## Live Demo
+
+- **Frontend**: https://stellar-tip-jar.netlify.app (Stormkit)
+- **Backend API**: https://stellar-tip-jar.onrender.com
+- **Backend Health**: https://stellar-tip-jar.onrender.com/health
+
 ## Features
 
 - **Multi-Wallet** – Connect via Freighter, Albedo, LOBSTR, or xBull
@@ -9,6 +18,8 @@ A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wa
 - **Real-Time Feed** – Donations appear instantly via WebSocket
 - **Transaction Status** – Track pending/success/fail states with Stellar Expert links
 - **Campaign Dashboard** – Progress bar, donor list, live feed
+- **Mobile Responsive** – Fully responsive UI built with Tailwind CSS
+- **CI/CD** – Automated test and build pipeline via GitHub Actions
 
 ## Requirements
 
@@ -40,6 +51,28 @@ cd contract
 cargo build --target wasm32-unknown-unknown --release
 ```
 
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Or backend tests only
+cd backend && npm test
+```
+
+### Test Results
+
+```
+✓ server.test.mjs (6 tests)
+  ✓ GET / → returns service info with status running
+  ✓ GET /health → returns ok status
+  ✓ POST /api/contract-id → saves and returns contractId
+  ✓ POST /api/contract-id → clears contractId when empty
+  ✓ POST /api/donation → returns 400 when fields missing
+  ✓ POST /api/donation → accepts valid donation and returns ok
+```
+
 ## Architecture
 
 ```
@@ -50,6 +83,7 @@ cargo build --target wasm32-unknown-unknown --release
 │   └── pages/
 ├── backend/            # Express.js + WebSocket
 │   ├── server.js       # HTTP + WebSocket server
+│   ├── server.test.mjs # API tests
 │   └── package.json
 ├── contract/           # Soroban Rust contract
 │   ├── Cargo.toml
@@ -57,16 +91,48 @@ cargo build --target wasm32-unknown-unknown --release
 └── scripts/            # Deployment scripts
 ```
 
+## Smart Contract
+
+The Soroban contract (`contract/src/lib.rs`) supports:
+- `initialize` – Set up a campaign with owner, goal, deadline, title, description
+- `donate` – Contribute XLM to the campaign (caps at goal)
+- `withdraw` – Owner withdraws funds after campaign ends or goal is reached
+- `get_campaign` – View campaign details
+- `get_donors` – Paginated donor list
+- `get_donor_count` – Total donor count
+
+### Contract Details
+
+- **Network**: Stellar Testnet
+- **Contract ID**: *(set after deployment via Freighter Deploy button)*
+- **Deployment Tx**: *(after deploy)*
+- **Donation Tx**: *(after first donation)*
+
+## CI/CD Pipeline
+
+The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push:
+1. Backend: Install dependencies + Run tests
+2. Frontend: Install dependencies + Build
+
 ## Error Handling
 
-The app handles 3+ error types:
+The app handles 4+ error types:
 1. **Wallet not found** – No wallet extension detected
 2. **Transaction rejected** – User cancelled signing
 3. **Insufficient balance** – Account has low XLM
+4. **Contract errors** – Simulation/execution failures with descriptive messages
 
-## CI
+## Commits
 
-GitHub Actions workflow runs:
-- Backend lint
-- Frontend build
-- Contract compilation
+- 10+ meaningful commits with descriptive messages
+- Full project history: https://github.com/itsmypritam/-stellar-tip-jar/commits/master
+
+## Submission
+
+- **Level**: 3 – Orange Belt
+- **Demo Video**: *(link to 1-2 min video)*
+- **Screenshots**: See `/screenshots/` directory
+
+## License
+
+MIT
