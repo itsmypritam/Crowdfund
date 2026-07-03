@@ -8,11 +8,6 @@ task :frontend do
   exec "npm run dev"
 end
 
-desc "Build the Soroban contract"
-task :contract do
-  exec "cd contract && cargo build --target wasm32-unknown-unknown --release"
-end
-
 desc "Deploy contract to testnet"
 task :deploy do
   exec "ruby scripts/deploy.rb"
