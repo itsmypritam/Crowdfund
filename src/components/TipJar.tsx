@@ -408,6 +408,154 @@ export default function TipJar() {
     }
   };
 
+  const [showInitForm, setShowInitForm] = useState(false);
+  const [initTitle, setInitTitle] = useState("");
+  const [initDesc, setInitDesc] = useState("");
+  const [initGoal, setInitGoal] = useState("");
+  const [initDeadline, setInitDeadline] = useState("");
+
+  const initCampaign = async () => {
+    if (!address || !contractId || !initTitle || !initGoal || !initDeadline) return;
+
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: "Initializing campaign..." });
+
+    try {
+      const goalStroop = BigInt(Math.floor(parseFloat(initGoal) * 1e7));
+      const deadlineTs = BigInt(Math.floor(new Date(initDeadline).getTime() / 1000));
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const scParams = [
+        nativeToScVal(address, { type: "address" }),
+        nativeToScVal(goalStroop, { type: "i128" }),
+        nativeToScVal(deadlineTs, { type: "u64" }),
+        nativeToScVal(initTitle, { type: "string" }),
+        nativeToScVal(initDesc, { type: "string" }),
+      ];
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("initialize", ...scParams))
+        .setTimeout(30);
+
+      const simResp = await server.simulateContract(txn.build());
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const fee = String(Number(BASE_FEE) + 10000);
+      const preparedTxn = rpc.assembleTransaction(txn.build(), NET, simResp, fee);
+      const xdr = preparedTxn.toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      setTx({ hash: "", status: "pending", message: "Submitting initialize transaction..." });
+      const sendResponse = await server.sendTransaction(signedTxXdr);
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: "Campaign initialized!" });
+          setShowInitForm(false);
+          fetchCampaign();
+        } else {
+          setTx({ hash: sendResponse.hash, status: "error", message: `Initialize failed: ${getResponse.status}` });
+        }
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied") || msg.includes("rejected")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled by user." });
+      } else if (msg.includes("already initialized")) {
+        setTx({ hash: "", status: "error", message: "Campaign already initialized." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const withdrawFunds = async () => {
+    if (!address || !contractId) return;
+
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: "Withdrawing funds..." });
+
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const scParams = [
+        nativeToScVal(address, { type: "address" }),
+      ];
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("withdraw", ...scParams))
+        .setTimeout(30);
+
+      const simResp = await server.simulateContract(txn.build());
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const fee = String(Number(BASE_FEE) + 10000);
+      const preparedTxn = rpc.assembleTransaction(txn.build(), NET, simResp, fee);
+      const xdr = preparedTxn.toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      setTx({ hash: "", status: "pending", message: "Submitting withdraw transaction..." });
+      const sendResponse = await server.sendTransaction(signedTxXdr);
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: "Funds withdrawn!" });
+          fetchCampaign();
+        } else {
+          setTx({ hash: sendResponse.hash, status: "error", message: `Withdraw failed: ${getResponse.status}` });
+        }
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied") || msg.includes("rejected")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled by user." });
+      } else if (msg.includes("not yet ended") || msg.includes("goal not reached")) {
+        setTx({ hash: "", status: "error", message: "Campaign not yet ended or goal not reached." });
+      } else if (msg.includes("no funds")) {
+        setTx({ hash: "", status: "error", message: "No funds to withdraw." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const isOwner = address && campaign && address === campaign.owner;
   const progress = campaign
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
     : 0;
@@ -434,16 +582,44 @@ export default function TipJar() {
             </div>
           ) : (
             <div className="flex items-center justify-between gap-2">
-              <div className="text-xs text-muted-foreground truncate font-mono">
-                {contractId ? `Contract: ${short(contractId)}` : "No contract deployed yet"}
-              </div>
-              <Button size="sm" variant="outline" onClick={() => setEditingContract(true)}>
-                {contractId ? "Change" : "Set Contract"}
-              </Button>
+                <div className="text-xs text-muted-foreground truncate font-mono">
+                  {contractId ? `Contract: ${short(contractId)}` : "No contract deployed yet"}
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setEditingContract(true)}>
+                    {contractId ? "Change" : "Set Contract"}
+                  </Button>
+                  {contractId && !campaign && !busy && (
+                    <Button size="sm" onClick={() => setShowInitForm(true)}>
+                      Init
+                    </Button>
+                  )}
+                </div>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {showInitForm && (
+        <Card className="mx-auto max-w-2xl mb-6 border-indigo-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg">Initialize Campaign</CardTitle>
+            <CardDescription>Set up your crowdfunding campaign on-chain</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input placeholder="Title" value={initTitle} onChange={(e) => setInitTitle(e.target.value)} disabled={busy} />
+            <Input placeholder="Description" value={initDesc} onChange={(e) => setInitDesc(e.target.value)} disabled={busy} />
+            <Input type="number" placeholder="Goal (XLM)" value={initGoal} onChange={(e) => setInitGoal(e.target.value)} min="0" step="0.01" disabled={busy} />
+            <Input type="datetime-local" value={initDeadline} onChange={(e) => setInitDeadline(e.target.value)} disabled={busy} />
+            <div className="flex gap-2">
+              <Button onClick={initCampaign} disabled={busy || !initTitle || !initGoal || !initDeadline}>
+                {busy ? "Processing..." : "Initialize"}
+              </Button>
+              <Button variant="ghost" onClick={() => setShowInitForm(false)} disabled={busy}>Cancel</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -468,6 +644,11 @@ export default function TipJar() {
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">Deadline: {new Date(Number(campaign.deadline) * 1000).toLocaleDateString()}</div>
+                {isOwner && (
+                  <Button size="sm" variant="outline" className="w-full" onClick={withdrawFunds} disabled={busy}>
+                    {busy ? "Processing..." : "Withdraw Funds"}
+                  </Button>
+                )}
               </>
             ) : (
               <p className="text-sm text-muted-foreground">{contractId ? "Loading..." : "Set a contract address above."}</p>
