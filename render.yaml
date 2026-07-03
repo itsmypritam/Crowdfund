@@ -5,7 +5,7 @@ services:
     repo: https://github.com/itsmypritam/-stellar-tip-jar
     branch: master
     buildCommand: cd backend && bundle install
-    startCommand: cd backend && bundle exec puma -p $PORT config.ru
+    startCommand: cd backend && bundle exec ruby server.rb
     envVars:
       - key: CONTRACT_ID
         sync: false

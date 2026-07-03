@@ -11,4 +11,4 @@ COPY backend/ .
 
 EXPOSE 3001
 
-CMD ["bundle", "exec", "puma", "config.ru", "-b", "tcp://0.0.0.0:3001"]
+CMD ["bundle", "exec", "ruby", "server.rb"]
