@@ -97,33 +97,9 @@ class CrowdfundApp < Sinatra::Base
   def self.remove_client(ws)
     @@ws_clients.delete(ws)
   end
-end
 
-Faye::WebSocket.on_ready = lambda do |env|
-  ws = Faye::WebSocket.new(env)
-
-  ws.on :open do |_|
-    CrowdfundApp.add_client(ws)
-    puts "WS client connected (#{CrowdfundApp.class_variable_get(:@@ws_clients).size} total)"
-  end
-
-  ws.on :message do |event|
-    begin
-      data = JSON.parse(event.data)
-      case data["type"]
-      when "subscribe:campaign"
-        cid = data["contractId"]
-        CrowdfundApp.class_variable_set(:@@contract_id, cid) if cid && !cid.empty?
-        ws.send({ type: "campaign:subscribed", contractId: CrowdfundApp.class_variable_get(:@@contract_id) }.to_json)
-      end
-    rescue JSON::ParserError
-      # ignore
-    end
-  end
-
-  ws.on :close do |_|
-    CrowdfundApp.remove_client(ws)
-    puts "WS client disconnected"
+  def self.ws_clients
+    @@ws_clients
   end
 end
 
@@ -134,7 +110,8 @@ Thread.new do
       cid = CrowdfundApp.class_variable_get(:@@contract_id)
       if cid && !cid.empty?
         horizon = ENV.fetch("HORIZON_URL", "https://horizon-testnet.stellar.org")
-        uri = URI("#{horizon}/transactions?limit=20&order=asc&cursor=#{@@last_paging_token}")
+        token = CrowdfundApp.class_variable_get(:@@last_paging_token)
+        uri = URI("#{horizon}/transactions?limit=20&order=asc&cursor=#{token}")
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         request = Net::HTTP::Get.new(uri)
@@ -145,7 +122,7 @@ Thread.new do
           records = data["_embedded"]&.dig("records") || []
 
           records.each do |tx|
-            @@last_paging_token = tx["paging_token"]
+            CrowdfundApp.class_variable_set(:@@last_paging_token, tx["paging_token"])
             next unless tx["successful"]
 
             CrowdfundApp.broadcast({
