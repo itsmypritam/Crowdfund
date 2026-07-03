@@ -43,15 +43,16 @@ class CrowdfundApp < Sinatra::Base
     json({ contractId: @@contract_id })
   end
 
+  get "/api/contract-id/clear" do
+    @@contract_id = ""
+    json({ contractId: @@contract_id })
+  end
+
   post "/api/contract-id" do
-    body = JSON.parse(request.body.read)
-    if body["contractId"] && !body["contractId"].empty?
-      @@contract_id = body["contractId"]
-      json({ contractId: @@contract_id })
-    else
-      status 400
-      json({ error: "contractId required" })
-    end
+    raw = request.body.rewind && request.body.read
+    body = JSON.parse(raw)
+    @@contract_id = body["contractId"].to_s
+    json({ contractId: @@contract_id })
   end
 
   post "/api/donation" do
