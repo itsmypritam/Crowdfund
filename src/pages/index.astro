@@ -8,17 +8,17 @@ import TipJar from "../components/TipJar";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tip Jar – Stellar Testnet dApp</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+    <title>Crowdfund – Stellar Soroban Campaign</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
   </head>
   <body class="bg-background text-foreground">
     <!-- NAV -->
     <header class="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
       <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <a href="#" class="text-lg font-bold tracking-tight">☕ TipJar</a>
+        <a href="#" class="text-lg font-bold tracking-tight">🎯 Crowdfund</a>
         <nav class="flex items-center gap-6 text-sm text-muted-foreground">
           <a href="#features" class="hover:text-foreground transition-colors">Features</a>
-          <a href="#tip-jar" class="hover:text-foreground transition-colors">Send Tip</a>
+          <a href="#crowdfund" class="hover:text-foreground transition-colors">Campaign</a>
           <a href="#testimonials" class="hover:text-foreground transition-colors">Testimonials</a>
         </nav>
       </div>
@@ -29,27 +29,28 @@ import TipJar from "../components/TipJar";
       <section class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pt-14">
         <div
           class="absolute inset-0 bg-cover bg-center"
-          style="background-image: url('https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=1920&auto=format&fit=crop'); filter: brightness(0.25) saturate(0.8);"
+          style="background-image: url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?q=80&w=1920&auto=format&fit=crop'); filter: brightness(0.25) saturate(0.8);"
         />
         <div class="relative z-10 mx-auto max-w-2xl text-center">
           <span class="inline-block rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary tracking-wide mb-6">
-            ⚡ Stellar Testnet dApp
+            ⚡ Stellar Soroban dApp
           </span>
           <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1]">
-            Support Creators<br />
+            Fund the Future<br />
             with{" "}
-            <span class="bg-gradient-to-r from-primary via-sky-400 to-emerald-400 bg-clip-text text-transparent">
-              Crypto Tips
+            <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Stellar
             </span>
           </h1>
           <p class="mt-4 text-base text-muted-foreground sm:text-lg max-w-lg mx-auto leading-relaxed">
-            Send XLM instantly to anyone. Connect your Freighter wallet, pick an amount, and tip — all on the Stellar testnet.
+            A decentralized crowdfunding platform powered by Soroban smart contracts.
+            Connect your wallet, pick a campaign, and donate in real-time.
           </p>
           <a
-            href="#tip-jar"
+            href="#crowdfund"
             class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/80"
           >
-            Start Tipping →
+            View Campaign →
           </a>
         </div>
       </section>
@@ -57,12 +58,12 @@ import TipJar from "../components/TipJar";
       <!-- FEATURES -->
       <section id="features" class="border-t border-border/40 px-4 py-20">
         <div class="mx-auto max-w-5xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Why Tip with Stellar?</h2>
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Why Crowdfund on Stellar?</h2>
           <div class="mt-12 grid gap-6 sm:grid-cols-3">
             {[
-              { icon: "⚡", title: "Instant", desc: "Transactions settle in 3–5 seconds. No waiting, no delays." },
-              { icon: "💰", title: "Nearly Free", desc: "Each transaction costs 0.00001 XLM — fractions of a cent." },
-              { icon: "🔐", title: "Non-Custodial", desc: "Your keys, your coins. Freighter keeps you in full control." },
+              { icon: "🔗", title: "Multi-Wallet", desc: "Supports Freighter, Albedo, LOBSTR, and xBull — you choose." },
+              { icon: "📜", title: "Smart Contract", desc: "Campaign logic runs on-chain via Soroban. Transparent and trustless." },
+              { icon: "⚡", title: "Real-Time", desc: "Donations appear instantly via WebSocket. Watch the progress live." },
             ].map((f) => (
               <div
                 key={f.title}
@@ -77,7 +78,7 @@ import TipJar from "../components/TipJar";
         </div>
       </section>
 
-      <!-- TIP JAR (React island) -->
+      <!-- CROWDFUND (React island) -->
       <TipJar client:only="react" />
 
       <!-- TESTIMONIALS -->
@@ -86,9 +87,9 @@ import TipJar from "../components/TipJar";
           <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">What People Say</h2>
           <div class="mt-12 grid gap-6 sm:grid-cols-3">
             {[
-              { img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop", text: "Sent my first XLM tip in seconds. The Freighter integration is seamless!", name: "Alex Rivera", role: "Web3 Developer" },
-              { img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop", text: "Love how simple it is. Connect, type an amount, and boom — tip sent.", name: "Sarah Chen", role: "Content Creator" },
-              { img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop", text: "Finally a no-fuss way to accept crypto tips. The QR code makes it even better.", name: "Marcus Johnson", role: "Open Source Maintainer" },
+              { img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop", text: "Connected with Freighter and donated in seconds. The Soroban integration is smooth!", name: "Alex Rivera", role: "Web3 Developer" },
+              { img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop", text: "Love the real-time feed. I could see my donation appear instantly on the leaderboard.", name: "Sarah Chen", role: "Content Creator" },
+              { img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop", text: "Multi-wallet support is a game-changer. I use LOBSTR and it worked flawlessly.", name: "Marcus Johnson", role: "Open Source Maintainer" },
             ].map((t) => (
               <div
                 key={t.name}
@@ -114,18 +115,18 @@ import TipJar from "../components/TipJar";
       <section class="relative overflow-hidden px-4 py-24">
         <div
           class="absolute inset-0 bg-cover bg-center"
-          style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1920&auto=format&fit=crop'); filter: brightness(0.2) saturate(0.7);"
+          style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1920&auto=format&fit=crop'); filter: brightness(0.2) saturate(0.7);"
         />
         <div class="relative z-10 mx-auto max-w-xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Ready to Get Tips?</h2>
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Ready to Make an Impact?</h2>
           <p class="mt-3 text-muted-foreground leading-relaxed">
-            Connect your Freighter wallet and start receiving XLM from supporters around the world.
+            Connect your wallet and support the campaign. Every contribution brings us closer to the goal.
           </p>
           <a
-            href="#tip-jar"
-            class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-emerald-500 px-6 text-sm font-medium text-emerald-950 shadow-sm transition-colors hover:bg-emerald-400"
+            href="#crowdfund"
+            class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-indigo-500 px-6 text-sm font-medium text-indigo-950 shadow-sm transition-colors hover:bg-indigo-400"
           >
-            Try It Now →
+            Donate Now →
           </a>
         </div>
       </section>
@@ -133,7 +134,7 @@ import TipJar from "../components/TipJar";
 
     <!-- FOOTER -->
     <footer class="border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
-      <p>Built with ☕ for the Stellar White Belt Challenge</p>
+      <p>Built with 🎯 for the Stellar Blue Belt Challenge</p>
     </footer>
   </body>
 </html>
