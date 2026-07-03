@@ -1,77 +1,110 @@
-# ☕ Tip Jar – Stellar Testnet dApp
+# 🎯 Crowdfund – Stellar Soroban Campaign
 
-A responsive, dark-themed Stellar Tip Jar landing page built with **Astro**, **React**, and **shadcn/ui**. Connect your Freighter wallet and send XLM tips instantly on the Stellar testnet.
+A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wallet support, real-time event updates via WebSocket, and a Ruby backend.
 
 ## Features
 
-- **Wallet Integration** – Connect / disconnect Freighter wallet with session persistence
-- **Balance Display** – Fetch and show XLM balance from Horizon testnet (handles unfunded accounts gracefully)
-- **Send XLM** – Make payments with optional memo to a fixed tip jar address
-- **QR Code** – Scan to copy the tip jar address
-- **Transaction Feedback** – Success / error state with Stellar Expert explorer link
-- **Landing Page** – Hero, features, testimonials, and CTA sections with Unsplash imagery
+- **Multi-Wallet** – Connect via Freighter, Albedo, LOBSTR, or xBull using Stellar Wallets Kit
+- **Smart Contract** – Campaign logic runs on-chain via a Soroban contract
+- **Real-Time Feed** – Donations appear instantly via WebSocket (Ruby + faye-websocket)
+- **Transaction Status** – Track pending/success/fail states with Stellar Expert links
+- **Campaign Dashboard** – View progress bar, donor list, and live feed
 
-## Screenshots
+## Requirements
 
-### Wallet Connected
-
-![Wallet connected state](public/screenshot-connected.png)
-
-### Balance Displayed
-
-![Balance displayed](public/screenshot-balance.png)
-
-### Successful Testnet Transaction
-
-![Successful testnet transaction](public/screenshot-transaction.png)
+- Node.js >= 22
+- Ruby >= 3.4
+- Rust (for contract compilation)
 
 ## Setup
 
+### 1. Frontend
+
 ```bash
-npm install
+cd frontend   # or use the root: -stellar-tip-jar
+npm install --ignore-scripts
 npm run dev
 ```
 
-Open `http://localhost:4321`.
+### 2. Backend (Ruby)
 
-## Usage
-
-1. Install the [Freighter](https://freighter.app) browser extension
-2. Switch Freighter to **Stellar Testnet**
-3. Fund your wallet via the [Stellar Lab faucet](https://lab.stellar.org/account/fund)
-4. Open the app and click **Connect Freighter Wallet**
-5. Enter an amount and optionally a memo, then click **Send Tip**
-
-## Tech Stack
-
-| Tool | Purpose |
-|---|---|
-| [Astro](https://astro.build) | Static site generator |
-| [React](https://react.dev) | Interactive component |
-| [shadcn/ui](https://ui.shadcn.com) | Component library (base-nova style) |
-| [Tailwind CSS v4](https://tailwindcss.com) | Utility-first styling |
-| [@stellar/stellar-sdk](https://github.com/stellar/js-stellar-sdk) | Stellar network SDK |
-| [@stellar/freighter-api](https://github.com/stellar/freighter) | Freighter wallet integration |
-| [qrcode.react](https://github.com/zpao/qrcode.react) | QR code generation |
-| [Unsplash](https://unsplash.com) | Stock photography |
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── ui/                 # shadcn primitives
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── input.tsx
-│   │   ├── badge.tsx
-│   │   └── avatar.tsx
-│   └── TipJar.tsx          # Wallet connect, balance, send XLM, QR code
-├── lib/
-│   └── utils.ts            # cn() utility
-├── pages/
-│   └── index.astro         # Landing page with all sections
-└── styles/
-    └── global.css           # Tailwind + shadcn CSS variables
+```bash
+cd backend
+cp .env.example .env
+# Edit .env with your CONTRACT_ID and settings
+bundle install
+bundle exec puma config.ru
 ```
 
+### 3. Contract
+
+```bash
+cd contract
+cargo build --target wasm32-unknown-unknown --release
+# Deploy using:
+# ruby scripts/deploy.rb
+# ruby scripts/initialize_campaign.rb
+```
+
+## Architecture
+
+```
+├── frontend/          # Astro + React + StellarWalletsKit
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── TipJar.tsx        # Main crowdfunding component
+│   │   │   └── ui/               # shadcn components
+│   │   ├── pages/
+│   │   │   └── index.astro       # Landing page
+│   │   └── styles/
+│   │       └── global.css
+│   └── package.json
+├── backend/           # Ruby Sinatra + faye-websocket
+│   ├── server.rb      # HTTP + WebSocket server
+│   ├── config.ru      # Rack configuration
+│   └── Gemfile
+├── contract/          # Soroban Rust contract
+│   ├── Cargo.toml
+│   └── src/lib.rs
+├── scripts/           # Ruby deployment scripts
+│   ├── deploy.rb
+│   └── initialize_campaign.rb
+└── .github/workflows/
+    └── ci.yml
+```
+
+## Error Handling
+
+The app handles 3+ error types:
+1. **Wallet not found** – No wallet extension detected
+2. **Transaction rejected** – User cancelled signing
+3. **Insufficient balance** – Account has low XLM
+
+## Deployed Contract
+
+**Contract ID:** `CA3WQ3N6N7VSRQV5TV5YJQTQKGWZ3T5KJ5YJZ4KZ3VK7CQZ5J5V6Q3WQ`
+
+*Set this in the frontend UI or in `backend/.env`*
+
+## Transaction Example
+
+View a verified contract call on Stellar Expert:
+[Transaction on Stellar Expert](https://stellar.expert/explorer/testnet/tx/PLACEHOLDER_TX_HASH)
+
+## Screenshots
+
+### Wallet Options
+![Wallet options](public/screenshot-connected.png)
+
+### Campaign Dashboard
+![Campaign dashboard](public/screenshot-balance.png)
+
+### Live Feed
+![Live feed](public/screenshot-transaction.png)
+
+## CI
+
+The GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
+- Ruby syntax checks
+- Frontend build
+- Contract compilation

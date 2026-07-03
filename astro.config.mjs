@@ -10,6 +10,15 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        "/api": "http://localhost:3001",
+        "/socket.io": {
+          target: "ws://localhost:3001",
+          ws: true,
+        },
+      },
+    },
+  },
 });
