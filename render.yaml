@@ -1,11 +1,11 @@
 services:
   - type: web
     name: stellar-tip-jar
-    runtime: ruby
+    runtime: node
     repo: https://github.com/itsmypritam/-stellar-tip-jar
     branch: master
-    buildCommand: cd backend && bundle install
-    startCommand: cd backend && bundle exec ruby server.rb
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
     envVars:
       - key: CONTRACT_ID
         sync: false

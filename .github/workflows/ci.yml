@@ -16,19 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          ruby-version: "3.4"
-          bundler-cache: true
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
-        run: bundle install
-
-      - name: Syntax check
-        run: |
-          ruby -c server.rb
-          ruby -c config.ru
+        run: npm ci --ignore-scripts
 
   frontend:
     runs-on: ubuntu-latest
