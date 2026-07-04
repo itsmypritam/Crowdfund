@@ -1,4 +1,8 @@
-# Stellar Tip Jar
+## 🎯 Crowdfund 
+<img width="1891" height="902" alt="lanidng page" src="https://github.com/user-attachments/assets/f32b1d1f-94f4-4c5e-abe1-ed7029c91ec8" />
+
+<img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
+
 
 A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
 
@@ -7,9 +11,12 @@ A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wa
 
 ## Live Demo
 
-- **Frontend**: https://stellar-tip-jar.netlify.app (Stormkit)
+- **Frontend**:[ https://warriorpinto-6k1ikg.stormkit.dev/ (Stormkit)](https://warriorpinto-6k1ikg.stormkit.dev/)
 - **Backend API**: https://stellar-tip-jar.onrender.com
 - **Backend Health**: https://stellar-tip-jar.onrender.com/health
+
+https://github.com/user-attachments/assets/6b0a0a4e-7ca8-4014-bb6e-b65d3a850200
+
 
 ## Features
 
@@ -62,8 +69,11 @@ cd backend && npm test
 ```
 
 ### Test Results
+<img width="1918" height="780" alt="ci pritamdev" src="https://github.com/user-attachments/assets/f1129fa0-43e2-4362-8aba-698e93042618" />
+<img width="1647" height="672" alt="ci passed" src="https://github.com/user-attachments/assets/724fcc62-a1de-4b54-9107-f1f8b67ac23b" />
 
 ```
+
 ✓ server.test.mjs (6 tests)
   ✓ GET / → returns service info with status running
   ✓ GET /health → returns ok status
@@ -92,7 +102,12 @@ cd backend && npm test
 ```
 
 ## Smart Contract
+<img width="1912" height="933" alt="doanted tip" src="https://github.com/user-attachments/assets/3d91cdd7-803e-4c07-a6ad-39be531b543e" />
 
+
+
+
+<img width="1918" height="852" alt="555" src="https://github.com/user-attachments/assets/b2927b22-cdd8-4943-8f58-e8ce892547af" />
 The Soroban contract (`contract/src/lib.rs`) supports:
 - `initialize` – Set up a campaign with owner, goal, deadline, title, description
 - `donate` – Contribute XLM to the campaign (caps at goal)
