@@ -122,9 +122,9 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 ### Contract Details
 
 - **Network**: Stellar Testnet
-- **Contract ID**: *(set after deployment via Freighter Deploy button)*
-- **Deployment Tx**: *(after deploy)*
-- **Donation Tx**: *(after first donation)*
+- **Contract ID**: `CCYDMK3BVXFDNJVORCXHY5ZGTDACQG5HHKFDQ4PCECCU4SEYNZGEJT5E`
+- **Deployment Tx**: [`2a96982e00893989d57e8430c8bed7e119b21ec2f3d740d5663b78851df0d6a6`](https://stellar.expert/explorer/testnet/tx/2a96982e00893989d57e8430c8bed7e119b21ec2f3d740d5663b78851df0d6a6)
+- **WASM Upload Tx**: [`6b7ddc8841a1583861aa80e1b68452f911bcf242dfb9f57bd61db9c7ac5e7fe1`](https://stellar.expert/explorer/testnet/tx/6b7ddc8841a1583861aa80e1b68452f911bcf242dfb9f57bd61db9c7ac5e7fe1)
 
 ## CI/CD Pipeline
 
@@ -147,7 +147,7 @@ The app handles 4+ error types:
 
 ## Submission
 
-- **Level**: 3 – Orange Belt
+- **Level**: 2 – Yellow Belt
 - **Demo Video**: *(link to 1-2 min video)*
 - **Screenshots**: See `/screenshots/` directory
 

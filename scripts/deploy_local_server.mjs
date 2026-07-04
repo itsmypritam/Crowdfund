@@ -5,7 +5,7 @@ import * as sdk from "@stellar/stellar-sdk";
 
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NET = sdk.Networks.TESTNET;
-const PUBKEY = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
+const PUBKEY = "GCG5DOV4HMZT73OWJMZCUTHTWP3PQYC2S3GNOARUGPTPVH2IAR6REWQN";
 const PORT = 4444;
 
 const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowdfund.wasm");
@@ -84,7 +84,8 @@ http.createServer(async (req, res) => {
             retries++;
           }
           if (getResp.status === "SUCCESS") {
-            const contractId = getResp.contractId || "UNKNOWN";
+            const contractIdBytes = getResp.returnValue?._value?._value;
+            const contractId = contractIdBytes ? sdk.StrKey.encodeContract(Buffer.from(contractIdBytes)) : "UNKNOWN";
             res.end(JSON.stringify({ status: "success", contractId, hash: resp.hash }));
           } else {
             res.end(JSON.stringify({ error: "Create tx failed", status: getResp.status }));
