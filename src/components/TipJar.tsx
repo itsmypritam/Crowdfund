@@ -369,11 +369,12 @@ export default function TipJar() {
         .addOperation(contract.call("donate", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
-      const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
       const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
@@ -455,11 +456,12 @@ export default function TipJar() {
         .addOperation(contract.call("initialize", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
-      const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
       const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
@@ -521,11 +523,12 @@ export default function TipJar() {
         .addOperation(contract.call("withdraw", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
-      const preparedTxn = rpc.assembleTransaction(txn.build(), simResp);
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
       const xdr = preparedTxn.build().toXDR();
       const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
 
