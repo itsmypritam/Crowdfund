@@ -4,5 +4,6 @@ dist/
 .contract_id
 *.wasm
 target/
+.astro/
 .DS_Store
 *.log

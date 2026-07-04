@@ -122,9 +122,9 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 ### Contract Details
 
 - **Network**: Stellar Testnet
-- **Contract ID**: `CCYDMK3BVXFDNJVORCXHY5ZGTDACQG5HHKFDQ4PCECCU4SEYNZGEJT5E`
-- **Deployment Tx**: [`2a96982e00893989d57e8430c8bed7e119b21ec2f3d740d5663b78851df0d6a6`](https://stellar.expert/explorer/testnet/tx/2a96982e00893989d57e8430c8bed7e119b21ec2f3d740d5663b78851df0d6a6)
-- **WASM Upload Tx**: [`6b7ddc8841a1583861aa80e1b68452f911bcf242dfb9f57bd61db9c7ac5e7fe1`](https://stellar.expert/explorer/testnet/tx/6b7ddc8841a1583861aa80e1b68452f911bcf242dfb9f57bd61db9c7ac5e7fe1)
+- **Contract ID**: `CAZZTPKG54TM5CGPPZQSQWAEYRGKGWM2PDR232TUMZITK3JYKSGCUT5S`
+- **Deployment Tx**: [`63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784`](https://stellar.expert/explorer/testnet/tx/63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784)
+- **WASM Upload Tx**: [`c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3`](https://stellar.expert/explorer/testnet/tx/c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3)
 
 ## CI/CD Pipeline
 
@@ -134,11 +134,18 @@ The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push:
 
 ## Error Handling
 
-The app handles 4+ error types:
+The app handles 5+ error types:
 1. **Wallet not found** – No wallet extension detected
 2. **Transaction rejected** – User cancelled signing
 3. **Insufficient balance** – Account has low XLM
 4. **Contract errors** – Simulation/execution failures with descriptive messages
+5. **HostError (WasmVm, InvalidAction)** – WASM/SDK version mismatch (Protocol 27 requires soroban-sdk >=27)
+
+### Known SDK Quirks (v16+)
+
+- `simulateContract` was removed in `@stellar/stellar-sdk` v16 — use `simulateTransaction()` with `TransactionBuilder` instead
+- Write-path simulations (donate, init, withdraw) must include `authMode: "record"` so `require_auth()` doesn't fail during unsigned simulation
+- Read-only simulations need a dummy source account — use any valid testnet address
 
 ## Commits
 

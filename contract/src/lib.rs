@@ -166,7 +166,7 @@ impl CrowdfundContract {
         );
 
         let native = Address::from_string(&String::from_str(&env, NATIVE_TOKEN));
-        let token = token::TokenClient::new(&env, &native);
+        let token = token::Client::new(&env, &native);
         let balance = token.balance(&env.current_contract_address());
         assert!(balance > 0, "no funds to withdraw");
 
