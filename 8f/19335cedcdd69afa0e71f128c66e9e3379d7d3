@@ -1,0 +1,28 @@
+backend/.env.example
+  s_4dbb7cbcf9f4f4::t_58d2c536d4ba9e 2
+.env.example
+  s_4dbb7cbcf9f4f4::t_f23390b1af381f 3,11-12
+scripts/deploy.cjs
+  s_4dbb7cbcf9f4f4::t_524393cdf4b3a6 47
+  s_4dbb7cbcf9f4f4::t_fa25ab0dc722aa 110-112
+  s_4dbb7cbcf9f4f4::t_33847c0d035273 93
+scripts/deploy_local_server.mjs
+  s_4dbb7cbcf9f4f4::t_911cd4ff2e09c7 8
+  s_4dbb7cbcf9f4f4::t_bc7549d8a07374 87-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8f19335cedcdd69afa0e71f128c66e9e3379d7d3",
+  "prompts": {},
+  "sessions": {
+    "s_4dbb7cbcf9f4f4": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d57ffe73ffeBUQCFUsCHwPghe",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
