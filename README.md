@@ -18,7 +18,14 @@ A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wa
 - **Backend API**: https://stellar-tip-jar.onrender.com
 - **Backend Health**: https://stellar-tip-jar.onrender.com/health
 
-https://github.com/user-attachments/assets/6b0a0a4e-7ca8-4014-bb6e-b65d3a850200
+
+
+
+
+
+https://github.com/user-attachments/assets/d55b5894-b587-4db2-a9c5-9e2b82c3fd55
+
+
 
 
 ## Features
