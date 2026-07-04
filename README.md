@@ -63,6 +63,12 @@ npm install
 npm start
 ```
 
+
+##Mobile Responsiveness
+
+<img width="720" height="1457" alt="WhatsApp Image 2026-07-04 at 6 56 35 AM" src="https://github.com/user-attachments/assets/bd298c29-bade-4a1c-a15d-69850591d89e" />
+<img width="720" height="1353" alt="WhatsApp Image 2026-07-04 at 6 56 26 AM" src="https://github.com/user-attachments/assets/44f26c93-492b-49af-9fa5-237bc667e0a0" />
+
 ### 3. Contract
 
 ```bash
