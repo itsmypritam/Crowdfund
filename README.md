@@ -4,6 +4,9 @@
 <img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
 
 
+##Multiple wallets supoort
+<img width="1372" height="911" alt="multiple wallet" src="https://github.com/user-attachments/assets/0e172dcb-9e8f-4eb3-8982-68d157c5d1cf" />
+
 A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
 
 [![CI](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml)
