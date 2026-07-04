@@ -157,14 +157,17 @@ export default function TipJar() {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const result = await server.simulateContract({
+      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+      const simTx = new TransactionBuilder(simSource, {
         fee: "100",
-        contract: contract.address,
-        method: "get_campaign",
-        args: [],
-      });
-      if (rpc.Api.isSimulationSuccess(result)) {
-        const parsed = scValToNative(result.result!) as any;
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("get_campaign"))
+        .setTimeout(30)
+        .build();
+      const result = await server.simulateTransaction(simTx);
+      if (rpc.Api.isSimulationSuccess(result) && result.result) {
+        const parsed = scValToNative(result.result.retval) as any;
         setCampaign({
           owner: parsed.owner?.toString() || "",
           goal: (Number(parsed.goal) / 1e7).toString(),
@@ -184,27 +187,33 @@ export default function TipJar() {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const countResult = await server.simulateContract({
+      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+
+      const countTx = new TransactionBuilder(simSource, {
         fee: "100",
-        contract: contract.address,
-        method: "get_donor_count",
-        args: [],
-      });
-      if (rpc.Api.isSimulationSuccess(countResult)) {
-        const count = Number(scValToNative(countResult.result!));
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("get_donor_count"))
+        .setTimeout(30)
+        .build();
+      const countResult = await server.simulateTransaction(countTx);
+      if (rpc.Api.isSimulationSuccess(countResult) && countResult.result) {
+        const count = Number(scValToNative(countResult.result.retval));
         setDonorCount(count);
         if (count > 0) {
-          const donorsResult = await server.simulateContract({
+          const donorsTx = new TransactionBuilder(simSource, {
             fee: "100",
-            contract: contract.address,
-            method: "get_donors",
-            args: [
+            networkPassphrase: NET,
+          })
+            .addOperation(contract.call("get_donors",
               nativeToScVal(0, { type: "u32" }),
               nativeToScVal(Math.min(count, 100), { type: "u32" }),
-            ],
-          });
-          if (rpc.Api.isSimulationSuccess(donorsResult)) {
-            const donorList = scValToNative(donorsResult.result!) as any[];
+            ))
+            .setTimeout(30)
+            .build();
+          const donorsResult = await server.simulateTransaction(donorsTx);
+          if (rpc.Api.isSimulationSuccess(donorsResult) && donorsResult.result) {
+            const donorList = scValToNative(donorsResult.result.retval) as any[];
             setDonors(
               donorList.map((d: any) => ({
                 donor: d.donor?.toString() || "",
@@ -360,7 +369,7 @@ export default function TipJar() {
         .addOperation(contract.call("donate", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateContract(txn.build());
+      const simResp = await server.simulateTransaction(txn.build());
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
@@ -446,7 +455,7 @@ export default function TipJar() {
         .addOperation(contract.call("initialize", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateContract(txn.build());
+      const simResp = await server.simulateTransaction(txn.build());
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
@@ -512,7 +521,7 @@ export default function TipJar() {
         .addOperation(contract.call("withdraw", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateContract(txn.build());
+      const simResp = await server.simulateTransaction(txn.build());
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
