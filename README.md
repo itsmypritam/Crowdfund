@@ -163,7 +163,7 @@ The app handles 5+ error types:
 
 ## Submission
 
-- **Level**: 2 – Yellow Belt
+- **Level**: 3 - Orange belt
 - **Demo Video**: *(link to 1-2 min video)*
 - **Screenshots**: See `/screenshots/` directory
 
