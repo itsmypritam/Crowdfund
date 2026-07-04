@@ -1,0 +1,30 @@
+src/components/TipJar.tsx
+  s_d8ebeab123243d::t_a7f487baae6615 372-373,377
+  s_d8ebeab123243d::t_565caa158f749e 459-460,464
+  s_d8ebeab123243d::t_66fce5ddc17d67 526-527,531
+scripts/test_donate.cjs
+  s_d8ebeab123243d::t_310cb95b7e2994 1-17,30-46,52-56,60-63,65-69,71-75,77-98
+  s_d8ebeab123243d::t_0c40309eccc295 47-51
+  s_d8ebeab123243d::t_705def777c9d6c 57-59
+  s_d8ebeab123243d::t_624814800968e7 76
+  s_d8ebeab123243d::t_198fd6603032f0 18-29
+  s_d8ebeab123243d::t_694222b771e955 64,70
+scripts/wasm_b64_b64.txt
+  s_d8ebeab123243d::t_ebaa1c3dc8c637 1-232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b77fb1ebf9e94ca59d5abed269e65edc3e5f8382",
+  "prompts": {},
+  "sessions": {
+    "s_d8ebeab123243d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0d5742cddffeLjBHSGGnkCS0t7",
+        "model": "unknown"
+      },
+      "human_author": "pritamscodee <codewithpritam29@gmail.com>"
+    }
+  }
+}
