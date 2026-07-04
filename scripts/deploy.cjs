@@ -44,7 +44,7 @@ async function deploy() {
 
   const uploadPrepared = sdk.rpc.assembleTransaction(uploadTx, uploadSim).build();
   uploadPrepared.sign(keypair);
-  const uploadResp = await server.sendTransaction(uploadPrepared.toXDR());
+  const uploadResp = await server.sendTransaction(uploadPrepared);
   console.log("Upload status:", uploadResp.status, uploadResp.hash);
 
   if (uploadResp.status !== "PENDING" && uploadResp.status !== "DUPLICATE") {
@@ -90,7 +90,7 @@ async function deploy() {
 
   const createPrepared = sdk.rpc.assembleTransaction(createTx, createSim).build();
   createPrepared.sign(keypair);
-  const createResp = await server.sendTransaction(createPrepared.toXDR());
+  const createResp = await server.sendTransaction(createPrepared);
   console.log("Create status:", createResp.status, createResp.hash);
 
   if (createResp.status !== "PENDING" && createResp.status !== "DUPLICATE") {
@@ -107,7 +107,9 @@ async function deploy() {
   }
 
   if (createGet.status === "SUCCESS") {
-    const contractId = createGet.contractId;
+    // Contract ID is in the returnValue as an scvAddress
+    const contractIdBytes = createGet.returnValue?._value?._value;
+    const contractId = contractIdBytes ? sdk.StrKey.encodeContract(Buffer.from(contractIdBytes)) : "UNKNOWN";
     console.log("\n✅ CONTRACT DEPLOYED!");
     console.log("Contract ID:", contractId);
     console.log("Tx hash:", createResp.hash);
