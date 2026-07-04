@@ -369,7 +369,7 @@ export default function TipJar() {
         .addOperation(contract.call("donate", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build());
+      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
@@ -455,7 +455,7 @@ export default function TipJar() {
         .addOperation(contract.call("initialize", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build());
+      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
@@ -521,7 +521,7 @@ export default function TipJar() {
         .addOperation(contract.call("withdraw", ...scParams))
         .setTimeout(30);
 
-      const simResp = await server.simulateTransaction(txn.build());
+      const simResp = await server.simulateTransaction(txn.build(), undefined, "record");
       if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
       if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
 
