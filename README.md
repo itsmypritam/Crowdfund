@@ -120,6 +120,8 @@ cd backend && npm test
 
 
 <img width="1918" height="852" alt="555" src="https://github.com/user-attachments/assets/b2927b22-cdd8-4943-8f58-e8ce892547af" />
+
+
 The Soroban contract (`contract/src/lib.rs`) supports:
 - `initialize` – Set up a campaign with owner, goal, deadline, title, description
 - `donate` – Contribute XLM to the campaign (caps at goal)
@@ -134,6 +136,10 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 - **Contract ID**: `CAZZTPKG54TM5CGPPZQSQWAEYRGKGWM2PDR232TUMZITK3JYKSGCUT5S`
 - **Deployment Tx**: [`63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784`](https://stellar.expert/explorer/testnet/tx/63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784)
 - **WASM Upload Tx**: [`c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3`](https://stellar.expert/explorer/testnet/tx/c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3)
+
+
+
+<img width="1911" height="876" alt="transacion" src="https://github.com/user-attachments/assets/c2ab652a-1e5d-4da5-8df1-c4f27a33877c" />
 
 ## CI/CD Pipeline
 
