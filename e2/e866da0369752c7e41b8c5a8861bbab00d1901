@@ -1,0 +1,70 @@
+scripts/generate_upload_xdr.cjs
+  s_754dba9f41d2ce::t_6f2884139566ff 9
+src/components/TipJar.tsx
+  s_754dba9f41d2ce::t_9f1c90a6c69bd5 1007
+  s_754dba9f41d2ce::t_ec22d5495ae860 85
+  s_754dba9f41d2ce::t_bc697a9ff9cef3 70-80
+  s_754dba9f41d2ce::t_efd244f00d502a 473
+  s_754dba9f41d2ce::t_cc908ab78899c6 555
+  s_754dba9f41d2ce::t_db3291df9cc296 963
+  s_754dba9f41d2ce::t_7168c260f5f01b 966
+  s_754dba9f41d2ce::t_63afac99edc41f 1155-1229
+  s_754dba9f41d2ce::t_6bddf3d19512ca 106-112
+  s_754dba9f41d2ce::t_f3e40ed988b75f 251-301
+  s_754dba9f41d2ce::t_8b1aeb510d1cbb 145
+  s_754dba9f41d2ce::t_405c2ede46cc93 622
+  s_754dba9f41d2ce::t_9f5f2c64310951 744-952
+scripts/deploy_local_server.mjs
+  s_754dba9f41d2ce::t_951dc801abf524 11
+  s_754dba9f41d2ce::t_2f234b52950188 108
+scripts/deploy.cjs
+  s_754dba9f41d2ce::t_16445c1f9e2f12 16
+contract/src/lib.rs
+  s_754dba9f41d2ce::t_91c7d643ed8ac7 55
+  s_754dba9f41d2ce::t_88f9ea47daa170 12,26-38,44-46,78,85,141-298,306-336,385-402
+  s_754dba9f41d2ce::t_1bb63516127d4e 52
+src/pages/index.astro
+  s_754dba9f41d2ce::t_0292406ab2772c 137
+  s_754dba9f41d2ce::t_0beccd77e914ed 18
+  s_754dba9f41d2ce::t_46230dbfa71109 21
+  s_754dba9f41d2ce::t_05227777c688fc 50
+  s_754dba9f41d2ce::t_d929ad2d476d27 11
+  s_754dba9f41d2ce::t_4d0d25ac581151 61
+  s_754dba9f41d2ce::t_b0a8a68fdd714a 126
+  s_754dba9f41d2ce::t_647d1fcd8fe07d 46
+render.yaml
+  s_754dba9f41d2ce::t_1435e64329317e 5
+  s_754dba9f41d2ce::t_cafb43e3b02ab5 3
+backend/server.test.mjs
+  s_754dba9f41d2ce::t_496f825ada4543 11
+README.md
+  s_754dba9f41d2ce::t_440e6e52f4615b 1
+backend/server.js
+  s_754dba9f41d2ce::t_418dbb3ff515b1 19
+scripts/deploy_rocket.cjs
+  s_754dba9f41d2ce::t_03ab92ccc2a251 20
+backend/package.json
+  s_754dba9f41d2ce::t_1247a0905f12ac 2
+scripts/generate_deploy_xdr.cjs
+  s_754dba9f41d2ce::t_daadec5c35fd85 11
+contract/Cargo.toml
+  s_754dba9f41d2ce::t_8e511d9ca47e73 2
+backend/fly.toml
+  s_754dba9f41d2ce::t_99e31ccc56e795 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "e2e866da0369752c7e41b8c5a8861bbab00d1901",
+  "prompts": {},
+  "sessions": {
+    "s_754dba9f41d2ce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_099fa6f1bffeT8Abci5AgYhki0",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
