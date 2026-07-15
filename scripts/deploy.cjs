@@ -13,7 +13,7 @@ async function deploy() {
   }
 
   const wasm = fs.readFileSync(
-    "contract/target/wasm32-unknown-unknown/release/crowdfund.wasm"
+    "contract/target/wasm32-unknown-unknown/release/crowd_escrow.wasm"
   );
   const wasmHash = crypto.createHash("sha256").update(wasm).digest();
 

@@ -8,7 +8,7 @@ describe("GET /", () => {
   it("returns service info with status running", async () => {
     const res = await request(app).get("/");
     expect(res.status).toBe(200);
-    expect(res.body.service).toBe("Stellar Tip Jar");
+    expect(res.body.service).toBe("CrowdEscrow");
     expect(res.body.status).toBe("running");
     expect(res.body).toHaveProperty("contractId");
   });

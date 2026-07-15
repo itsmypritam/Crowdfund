@@ -67,11 +67,22 @@ interface DonationEvent {
   timestamp: number;
 }
 
+interface MilestoneInfo {
+  id: number;
+  description: string;
+  amount: string;
+  deadline: number;
+  approvals: number;
+  requiredApprovals: number;
+  released: boolean;
+  completed: boolean;
+}
+
 function isValidAddress(addr: string): boolean {
   return typeof addr === "string" && STELLAR_PUBLIC_KEY_RE.test(addr);
 }
 
-const CONTRACT_ID_KEY = "crowdfund_contract_id";
+const CONTRACT_ID_KEY = "crowdescrow_contract_id";
 
 export default function TipJar() {
   const [address, setAddress] = useState<string | null>(null);
@@ -91,6 +102,13 @@ export default function TipJar() {
   });
   const [editingContract, setEditingContract] = useState(false);
   const [contractInput, setContractInput] = useState(contractId);
+
+  const [milestones, setMilestones] = useState<MilestoneInfo[]>([]);
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+  const [msDescription, setMsDescription] = useState("");
+  const [msAmount, setMsAmount] = useState("");
+  const [msDeadline, setMsDeadline] = useState("");
+  const [msApprovals, setMsApprovals] = useState("1");
 
   const socketRef = useRef<WebSocket | null>(null);
 
@@ -124,6 +142,7 @@ export default function TipJar() {
       localStorage.setItem(CONTRACT_ID_KEY, contractId);
       fetchCampaign();
       fetchDonors();
+      fetchMilestones();
       syncContractId();
     }
   }, [contractId]);
@@ -226,6 +245,57 @@ export default function TipJar() {
       }
     } catch (e) {
       console.warn("fetchDonors error:", e);
+    }
+  }, [contractId]);
+
+  const fetchMilestones = useCallback(async () => {
+    if (!contractId) return;
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+
+      const countTx = new TransactionBuilder(simSource, {
+        fee: "100",
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("get_milestone_count"))
+        .setTimeout(30)
+        .build();
+      const countResult = await server.simulateTransaction(countTx);
+      if (rpc.Api.isSimulationSuccess(countResult) && countResult.result) {
+        const count = Number(scValToNative(countResult.result.retval));
+        if (count > 0) {
+          const msTx = new TransactionBuilder(simSource, {
+            fee: "100",
+            networkPassphrase: NET,
+          })
+            .addOperation(contract.call("get_milestones",
+              nativeToScVal(0, { type: "u32" }),
+              nativeToScVal(Math.min(count, 100), { type: "u32" }),
+            ))
+            .setTimeout(30)
+            .build();
+          const msResult = await server.simulateTransaction(msTx);
+          if (rpc.Api.isSimulationSuccess(msResult) && msResult.result) {
+            const msList = scValToNative(msResult.result.retval) as any[];
+            setMilestones(
+              msList.map((m: any) => ({
+                id: Number(m.id),
+                description: m.description?.toString() || "",
+                amount: (Number(m.amount) / 1e7).toString(),
+                deadline: Number(m.deadline),
+                approvals: Number(m.approvals),
+                requiredApprovals: Number(m.required_approvals),
+                released: Boolean(m.released),
+                completed: Boolean(m.completed),
+              }))
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("fetchMilestones error:", e);
     }
   }, [contractId]);
 
@@ -400,6 +470,7 @@ export default function TipJar() {
             });
           } catch {}
           fetchCampaign();
+          fetchMilestones();
         } else {
           setTx({ hash: sendResponse.hash, status: "error", message: `Transaction failed: ${getResponse.status}` });
         }
@@ -481,6 +552,7 @@ export default function TipJar() {
           setTx({ hash: sendResponse.hash, status: "success", message: "Campaign initialized!" });
           setShowInitForm(false);
           fetchCampaign();
+          fetchMilestones();
         } else {
           setTx({ hash: sendResponse.hash, status: "error", message: `Initialize failed: ${getResponse.status}` });
         }
@@ -547,6 +619,7 @@ export default function TipJar() {
         if (getResponse.status === "SUCCESS") {
           setTx({ hash: sendResponse.hash, status: "success", message: "Funds withdrawn!" });
           fetchCampaign();
+          fetchMilestones();
         } else {
           setTx({ hash: sendResponse.hash, status: "error", message: `Withdraw failed: ${getResponse.status}` });
         }
@@ -668,6 +741,215 @@ export default function TipJar() {
     }
   };
 
+  const addMilestone = async () => {
+    if (!address || !contractId || !msDescription || !msAmount || !msDeadline) return;
+
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: "Adding milestone..." });
+
+    try {
+      const amountStroop = BigInt(Math.floor(parseFloat(msAmount) * 1e7));
+      const deadlineTs = BigInt(Math.floor(new Date(msDeadline).getTime() / 1000));
+      const reqApprovals = BigInt(parseInt(msApprovals) || 1);
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const scParams = [
+        nativeToScVal(msDescription, { type: "string" }),
+        nativeToScVal(amountStroop, { type: "i128" }),
+        nativeToScVal(deadlineTs, { type: "u64" }),
+        nativeToScVal(reqApprovals, { type: "u32" }),
+      ];
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("add_milestone", ...scParams))
+        .setTimeout(30);
+
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
+      const xdr = preparedTxn.build().toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      setTx({ hash: "", status: "pending", message: "Submitting milestone transaction..." });
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: "Milestone added!" });
+          setShowMilestoneForm(false);
+          setMsDescription("");
+          setMsAmount("");
+          setMsDeadline("");
+          setMsApprovals("1");
+          fetchMilestones();
+          fetchCampaign();
+        } else {
+          setTx({ hash: sendResponse.hash, status: "error", message: `Add milestone failed: ${getResponse.status}` });
+        }
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled by user." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const approveMilestone = async (milestoneId: number) => {
+    if (!address || !contractId) return;
+
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: `Approving milestone #${milestoneId}...` });
+
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const scParams = [
+        nativeToScVal(milestoneId, { type: "u32" }),
+      ];
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("approve_milestone", ...scParams))
+        .setTimeout(30);
+
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
+      const xdr = preparedTxn.build().toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: `Milestone #${milestoneId} approved!` });
+          fetchMilestones();
+        } else {
+          setTx({ hash: sendResponse.hash, status: "error", message: `Approve failed: ${getResponse.status}` });
+        }
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled." });
+      } else if (msg.includes("already approved")) {
+        setTx({ hash: "", status: "error", message: "You already approved this milestone." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const releaseMilestone = async (milestoneId: number) => {
+    if (!address || !contractId) return;
+
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: `Releasing milestone #${milestoneId}...` });
+
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const scParams = [
+        nativeToScVal(milestoneId, { type: "u32" }),
+      ];
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call("release_milestone", ...scParams))
+        .setTimeout(30);
+
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
+      const xdr = preparedTxn.build().toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: `Milestone #${milestoneId} funds released!` });
+          fetchMilestones();
+          fetchCampaign();
+        } else {
+          setTx({ hash: sendResponse.hash, status: "error", message: `Release failed: ${getResponse.status}` });
+        }
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled." });
+      } else if (msg.includes("not yet approved")) {
+        setTx({ hash: "", status: "error", message: "Milestone not yet fully approved." });
+      } else if (msg.includes("already released")) {
+        setTx({ hash: "", status: "error", message: "Milestone already released." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const isOwner = address && campaign && address === campaign.owner;
   const progress = campaign
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
@@ -678,10 +960,10 @@ export default function TipJar() {
   };
 
   return (
-    <section id="crowdfund" className="scroll-mt-20 mx-auto max-w-4xl px-4 py-16 md:py-24">
+    <section id="crowdescrow" className="scroll-mt-20 mx-auto max-w-4xl px-4 py-16 md:py-24">
       <div className="text-center mb-8">
         <Badge variant="outline" className="mb-3">Stellar Soroban</Badge>
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Crowdfunding Campaign</h2>
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">CrowdEscrow Campaign</h2>
         <p className="mt-2 text-muted-foreground max-w-lg mx-auto">Support this project with a Stellar donation.</p>
       </div>
 
@@ -722,7 +1004,7 @@ export default function TipJar() {
         <Card className="mx-auto max-w-2xl mb-6 border-indigo-500/30">
           <CardHeader>
             <CardTitle className="text-lg">Initialize Campaign</CardTitle>
-            <CardDescription>Set up your crowdfunding campaign on-chain</CardDescription>
+            <CardDescription>Set up your CrowdEscrow campaign on-chain</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input placeholder="Title" value={initTitle} onChange={(e) => setInitTitle(e.target.value)} disabled={busy} />
@@ -869,6 +1151,81 @@ export default function TipJar() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-xl font-bold tracking-tight">Milestones</h3>
+            <p className="text-sm text-muted-foreground">Escrow-protected milestone payments</p>
+          </div>
+          {isOwner && (
+            <Button size="sm" variant="outline" onClick={() => setShowMilestoneForm(!showMilestoneForm)} disabled={busy}>
+              {showMilestoneForm ? "Cancel" : "+ Add Milestone"}
+            </Button>
+          )}
+        </div>
+
+        {showMilestoneForm && (
+          <Card className="mb-4 border-indigo-500/30">
+            <CardContent className="pt-4 space-y-3">
+              <Input placeholder="Milestone description" value={msDescription} onChange={(e) => setMsDescription(e.target.value)} disabled={busy} />
+              <div className="grid grid-cols-2 gap-3">
+                <Input type="number" placeholder="Amount (XLM)" value={msAmount} onChange={(e) => setMsAmount(e.target.value)} min="0" step="0.01" disabled={busy} />
+                <Input type="number" placeholder="Required approvals" value={msApprovals} onChange={(e) => setMsApprovals(e.target.value)} min="1" disabled={busy} />
+              </div>
+              <Input type="datetime-local" value={msDeadline} onChange={(e) => setMsDeadline(e.target.value)} disabled={busy} />
+              <Button onClick={addMilestone} disabled={busy || !msDescription || !msAmount || !msDeadline}>
+                {busy ? "Processing..." : "Add Milestone"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {milestones.length === 0 ? (
+          <Card>
+            <CardContent className="pt-4">
+              <p className="text-sm text-muted-foreground text-center">No milestones yet. {isOwner ? "Add milestones to release funds incrementally." : "Funds are held in escrow until milestones are met."}</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {milestones.map((m) => (
+              <Card key={m.id} className={m.released ? "border-emerald-500/30 opacity-70" : m.completed ? "border-amber-500/30" : ""}>
+                <CardContent className="pt-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant={m.released ? "default" : m.completed ? "secondary" : "outline"}>
+                          {m.released ? "Released" : m.completed ? "Approved" : "Pending"}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">#{m.id}</span>
+                      </div>
+                      <p className="text-sm font-medium">{m.description}</p>
+                      <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                        <span>{m.amount} XLM</span>
+                        <span>{m.approvals}/{m.requiredApprovals} approvals</span>
+                        <span>Deadline: {new Date(m.deadline * 1000).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {!m.released && !m.completed && address && !isOwner && (
+                        <Button size="sm" variant="outline" onClick={() => approveMilestone(m.id)} disabled={busy}>
+                          Approve
+                        </Button>
+                      )}
+                      {m.completed && !m.released && isOwner && (
+                        <Button size="sm" onClick={() => releaseMilestone(m.id)} disabled={busy}>
+                          Release
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

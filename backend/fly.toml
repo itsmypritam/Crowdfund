@@ -1,4 +1,4 @@
-app = "stellar-tip-jar-backend"
+app = "crowdescrow-backend"
 
 kill_signal = "SIGINT"
 kill_timeout = 5

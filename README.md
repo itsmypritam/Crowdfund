@@ -1,4 +1,4 @@
-## 🎯 Crowdfund 
+## 🎯 CrowdEscrow
 <img width="1891" height="902" alt="lanidng page" src="https://github.com/user-attachments/assets/f32b1d1f-94f4-4c5e-abe1-ed7029c91ec8" />
 
 <img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
@@ -9,9 +9,9 @@
 <img width="1567" height="865" alt="success9999" src="https://github.com/user-attachments/assets/d4f71a2e-ba08-4a2d-ade1-fb9c19fc6e17" />
 
 
-A decentralized crowdfunding platform built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
+A milestone-based crowdfunding platform with escrow protection, built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
 
-[![CI](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/-stellar-tip-jar/actions/workflows/ci.yml)
+[![CI](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml)
 ![Test Status](https://img.shields.io/badge/tests-6%20passing-brightgreen)
 
 ## Live Demo
@@ -106,7 +106,7 @@ cd backend && npm test
 ```
 ├── src/                # Astro + React frontend
 │   ├── components/
-│   │   ├── TipJar.tsx  # Main crowdfunding component
+│   │   ├── TipJar.tsx  # Main CrowdEscrow component
 │   │   └── ui/         # shadcn components
 │   └── pages/
 ├── backend/            # Express.js + WebSocket
@@ -131,8 +131,12 @@ cd backend && npm test
 The Soroban contract (`contract/src/lib.rs`) supports:
 - `initialize` – Set up a campaign with owner, goal, deadline, title, description
 - `donate` – Contribute XLM to the campaign (caps at goal)
+- `add_milestone` – Owner adds a milestone with description, amount, and deadline
+- `approve_milestone` – Backer approves a completed milestone
+- `release_milestone` – Release escrowed funds for an approved milestone
 - `withdraw` – Owner withdraws funds after campaign ends or goal is reached
 - `get_campaign` – View campaign details
+- `get_milestones` – Paginated milestone list
 - `get_donors` – Paginated donor list
 - `get_donor_count` – Total donor count
 
@@ -171,11 +175,12 @@ The app handles 5+ error types:
 ## Commits
 
 - 10+ meaningful commits with descriptive messages
-- Full project history: https://github.com/itsmypritam/-stellar-tip-jar/commits/master
+- Full project history: https://github.com/itsmypritam/Crowdfund/commits/master
 
 ## Submission
 
-- **Level**: 3 - Orange belt
+- **Level**: 4 - Green Belt
+- **Project**: CrowdEscrow – Milestone-Based Crowdfunding with Stellar Escrow
 - **Demo Video**: *(link to 1-2 min video)*
 - **Screenshots**: See `/screenshots/` directory
 

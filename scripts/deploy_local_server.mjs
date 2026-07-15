@@ -8,7 +8,7 @@ const NET = sdk.Networks.TESTNET;
 const PUBKEY = "GCG5DOV4HMZT73OWJMZCUTHTWP3PQYC2S3GNOARUGPTPVH2IAR6REWQN";
 const PORT = 4444;
 
-const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowdfund.wasm");
+const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowd_escrow.wasm");
 const wasmHash = crypto.createHash("sha256").update(wasm).digest();
 const server = new sdk.rpc.Server(RPC_URL);
 
@@ -105,7 +105,7 @@ http.createServer(async (req, res) => {
   res.end(`
 <!DOCTYPE html>
 <html><body style="font-family:sans-serif;padding:2rem">
-<h2>Deploy Crowdfund Contract</h2>
+<h2>Deploy CrowdEscrow Contract</h2>
 <p>Wallet: ${PUBKEY}</p>
 <button id="step1">Step 1: Sign & Upload WASM</button>
 <p id="status1"></p>
