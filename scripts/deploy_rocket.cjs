@@ -17,7 +17,7 @@ function fetch(url) {
 }
 
 async function deploy() {
-  const wasmPath = "contract/target/wasm32v1-none/release/crowdfund.wasm";
+  const wasmPath = "contract/target/wasm32v1-none/release/crowd_escrow.wasm";
   const wasm = fs.readFileSync(wasmPath);
   const wasmHash = crypto.createHash("sha256").update(wasm).digest();
 

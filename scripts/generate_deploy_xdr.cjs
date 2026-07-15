@@ -8,7 +8,7 @@ const PUBKEY = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
 
 async function main() {
   const wasm = fs.readFileSync(
-    "contract/target/wasm32-unknown-unknown/release/crowdfund.wasm"
+    "contract/target/wasm32-unknown-unknown/release/crowd_escrow.wasm"
   );
   const wasmHash = crypto.createHash("sha256").update(wasm).digest();
 

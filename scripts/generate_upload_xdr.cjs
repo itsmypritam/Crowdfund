@@ -6,7 +6,7 @@ const NET = sdk.Networks.TESTNET;
 const PUBKEY = "GATJMD6BGNK4FQYNFWB354N7RP4XHA2R74GNSYM472ALNLJFX7NXBS3X";
 
 async function main() {
-  const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowdfund.wasm");
+  const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowd_escrow.wasm");
   const account = await (new sdk.rpc.Server(RPC_URL)).getAccount(PUBKEY);
 
   const tx = new sdk.TransactionBuilder(account, { fee: sdk.BASE_FEE, networkPassphrase: NET })
