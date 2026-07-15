@@ -1,0 +1,21 @@
+backend/server.js
+  s_754dba9f41d2ce::t_35a7a57e4e2aa6 19
+backend/server.test.mjs
+  s_754dba9f41d2ce::t_a6067143c07a5a 49,52,56,59,61,63,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "f5d5532514cbd8d9e3346f0f05568ffacf92981f",
+  "prompts": {},
+  "sessions": {
+    "s_754dba9f41d2ce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_099fa6f1bffeT8Abci5AgYhki0",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
