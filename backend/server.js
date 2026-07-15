@@ -16,7 +16,7 @@ const donations = new Map();
 let contractId = process.env.CONTRACT_ID || "";
 const wsClients = new Set();
 
-app.get("/", (_req, res) => res.json({ service: "Stellar Tip Jar", status: "running" }));
+app.get("/", (_req, res) => res.json({ service: "Stellar Tip Jar", status: "running", contractId }));
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 app.get("/api/contract-id", (_req, res) => res.json({ contractId }));

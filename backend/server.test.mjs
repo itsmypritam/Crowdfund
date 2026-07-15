@@ -46,26 +46,27 @@ describe("POST /api/contract-id", () => {
   });
 });
 
-describe("POST /api/donation", () => {
+describe("POST /api/donations", () => {
   it("returns 400 when fields missing", async () => {
     const res = await request(app)
-      .post("/api/donation")
+      .post("/api/donations")
       .send({})
       .set("Content-Type", "application/json");
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("donor, amount, and hash required");
+    expect(res.body.error).toBe("campaignId, donor, amount, hash required");
   });
 
-  it("accepts valid donation and returns ok", async () => {
+  it("returns 404 when campaign not found", async () => {
     const res = await request(app)
-      .post("/api/donation")
+      .post("/api/donations")
       .send({
+        campaignId: "nonexistent",
         donor: "GA...",
         amount: "10",
         hash: "abc123",
       })
       .set("Content-Type", "application/json");
-    expect(res.status).toBe(200);
-    expect(res.body.ok).toBe(true);
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("campaign not found");
   });
 });
