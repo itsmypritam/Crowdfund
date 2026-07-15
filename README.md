@@ -184,6 +184,95 @@ The app handles 5+ error types:
 - **Demo Video**: *(link to 1-2 min video)*
 - **Screenshots**: See `/screenshots/` directory
 
+---
+
+## CrowdEscrow — Milestone-Based Crowdfunding with Stellar Escrow
+
+### Problem Statement
+
+Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payouts by weeks, and releases all funds upfront leaving backers with no recourse if the creator doesn't deliver. Freelancers and small businesses in emerging markets can't access these platforms at all due to banking restrictions. There's no transparent, low-fee, programmable escrow system that releases funds only when milestones are met.
+
+### Why Stellar?
+
+- **Fast & cheap** — 3-5 second settlement, fraction-of-a-cent fees (unlike Ethereum L1)
+- **Built-in multisig** — Native Stellar operations enable multi-party escrow without extra contracts
+- **Soroban smart contracts** — Inter-contract communication for milestone verification and time-locked releases
+- **Anchor ecosystem** — SEP-24/SEP-6 on/off ramps for fiat conversion, making it accessible to non-crypto users
+- **Stellar Asset issuance** — Projects can issue reward tokens to backers as campaign perks
+
+### Target Users
+
+- **Creators & freelancers** seeking fair, low-fee fundraising with accountability
+- **Backers & donors** who want transparency and recourse if milestones aren't met
+- **Small businesses** in unbanked/underbanked regions needing cross-border fundraising
+
+### Technical Architecture
+
+- **Frontend**: React + Astro, multi-wallet (Freighter, Albedo, LOBSTR, xBull)
+- **Contracts**:
+  - **Campaign Manager** — Creates campaigns, tracks milestones, manages backers
+  - **Escrow Vault** — Holds funds, releases per milestone approval with time-lock fallback
+- **Data flow**: Backer → Donate → Escrow Vault → Milestone completed → Multi-sig approval → Funds released to creator
+- **Off-chain**: Express.js backend for WebSocket real-time feed, Horizon event polling, milestone verification oracle
+
+### Smart Contract Functions
+
+| Function | Description |
+|---|---|
+| `initialize` | Set up campaign with owner, goal, deadline, title, description |
+| `donate` | Contribute XLM (caps at goal, funds held in escrow) |
+| `add_milestone` | Owner adds milestone with description, amount, deadline, required approvals |
+| `approve_milestone` | Backer approves a completed milestone (multi-party verification) |
+| `release_milestone` | Release escrowed funds for a fully approved milestone |
+| `withdraw` | Owner withdraws remaining funds after campaign ends |
+| `get_campaign` | View campaign details |
+| `get_milestone` | View single milestone |
+| `get_milestones` | Paginated milestone list |
+| `get_donors` | Paginated donor list |
+| `get_donor_count` | Total donor count |
+
+### Level 4 Requirements Checklist
+
+#### Production MVP
+- [x] Fully functional production-ready MVP
+- [x] Stable frontend and smart contract architecture
+- [x] Mobile responsive UI (Tailwind CSS)
+- [x] Proper loading states and error handling (5+ error types handled)
+
+#### User Onboarding
+- [ ] Minimum 10 real users onboarded — *(proof of wallet interactions below)*
+- [ ] Basic user feedback collection — *(summary below)*
+
+#### Product Quality
+- [x] Production deployment (Stormkit frontend, Render backend)
+- [x] Monitoring and analytics setup
+- [x] Optimized user experience
+- [x] Proper project structure and documentation
+
+#### Technical Standards
+- [x] Smart contracts deployed on Stellar testnet
+- [x] Minimum 15+ meaningful commits (60+ commits)
+- [x] Public GitHub repository
+
+#### Demo & Review
+- [ ] Live demo video — *(link below)*
+- [ ] Proof of 10+ user wallet interactions — *(below)*
+- [ ] Basic user feedback summary — *(below)*
+
+### User Onboarding & Wallet Interactions
+
+*(Add proof of 10+ user wallet interactions here — screenshots, transaction hashes, or wallet addresses)*
+
+### User Feedback Summary
+
+*(Add basic user feedback collected from beta testers here)*
+
+### Analytics & Monitoring
+
+- Backend health monitoring: `https://stellar-tip-jar.onrender.com/health`
+- CI/CD pipeline: GitHub Actions (`.github/workflows/ci.yml`)
+- Transaction tracking: Stellar Expert links for every transaction
+
 ## License
 
 MIT
