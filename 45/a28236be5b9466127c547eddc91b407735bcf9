@@ -1,0 +1,19 @@
+backend/server.js
+  s_754dba9f41d2ce::t_928ec820cbde2e 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "45a28236be5b9466127c547eddc91b407735bcf9",
+  "prompts": {},
+  "sessions": {
+    "s_754dba9f41d2ce": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_099fa6f1bffeT8Abci5AgYhki0",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
