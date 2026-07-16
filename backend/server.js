@@ -13,6 +13,7 @@ app.use(express.json());
 
 const campaigns = new Map();
 const donations = new Map();
+const feedback = [];
 let contractId = process.env.CONTRACT_ID || "";
 const wsClients = new Set();
 
