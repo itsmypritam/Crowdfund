@@ -3,6 +3,8 @@
 
 <img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
 
+<img width="1191" height="813" alt="image" src="https://github.com/user-attachments/assets/80c75d24-9763-4b21-acec-3e9251cf9b5f" />
+
 
 ## Multiple wallets support
 <img width="1372" height="911" alt="multiple wallet" src="https://github.com/user-attachments/assets/0e172dcb-9e8f-4eb3-8982-68d157c5d1cf" />
