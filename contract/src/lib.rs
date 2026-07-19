@@ -3,6 +3,8 @@ use soroban_sdk::{
     contract, contractimpl, contracttype, symbol_short, token, Address, Env, String, Vec,
 };
 
+
+
 #[contracttype]
 #[derive(Clone, Debug)]
 pub struct Campaign {
@@ -14,6 +16,8 @@ pub struct Campaign {
     pub title: String,
     pub description: String,
 }
+
+
 
 #[contracttype]
 #[derive(Clone, Debug)]
