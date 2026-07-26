@@ -154,7 +154,12 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 <img width="1911" height="876" alt="transacion" src="https://github.com/user-attachments/assets/c2ab652a-1e5d-4da5-8df1-c4f27a33877c" />
 
 ## CI/CD Pipeline
+## Vitest Test Report
 
+### Summary
+
+- **Test Files**: ✅ **1 pass** · 1 total
+- **Test Results**: ✅ **6 passes** · 6 total
 The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push:
 1. Backend: Install dependencies + Run tests
 2. Frontend: Install dependencies + Build
