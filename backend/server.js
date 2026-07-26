@@ -9,8 +9,8 @@ const HORIZON_URL = process.env.HORIZON_URL || "https://horizon-testnet.stellar.
 
 const app = express();
 app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS"], allowedHeaders: ["Content-Type"] }));
-app.use(express.json());
 
+app.use(express.json());
 const campaigns = new Map();
 const donations = new Map();
 const feedback = [];
