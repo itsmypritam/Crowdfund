@@ -186,9 +186,12 @@ The app handles 5+ error types:
 
 ## Submission
 
-- **Level**: 4 - Green Belt
+- **Level**: 5 - Blue Belt
 - **Project**: CrowdEscrow – Milestone-Based Crowdfunding with Stellar Escrow
-- **Demo Video**: *(Add link to 1-2 min video here)*
+- **Pitch Deck**: [View Pitch Deck](https://gamma.app/docs/CrowdEscrow-ha2y1vectpj4gfz)
+- **Demo Video**: [Watch Demo Walkthrough](https://drive.google.com/file/d/1h1MTBBvyjjk2XRR7f9r0ZCT8rFZXG_bx/view?usp=sharing)
+- **User Onboarding Form**: [Google Form](https://docs.google.com/forms/d/18tphIiImjw-RJDh5lWIlMbNYZ9lzzLBcttMEue5yu60/edit)
+- **User Data (Excel)**: [Google Sheet – 50 User Transactions](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
 - **Screenshots**: See screenshots section below
 
 ---
@@ -238,6 +241,36 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 | `get_donors` | Paginated donor list |
 | `get_donor_count` | Total donor count |
 
+### Level 5 Requirements Checklist
+
+#### User Growth
+- [x] Minimum 50 testnet users onboarded — *(see 50 wallet interactions table below)*
+- [x] Real transaction activity — *(all 50 transactions confirmed on Stellar testnet)*
+- [x] Active usage proof — *(analytics dashboard + transaction hashes)*
+
+#### Product Improvements
+- [x] Analytics tracking added (Cloudflare, Vercel, custom backend)
+- [x] Feedback collection form (in-app + Google Form)
+- [x] Mobile responsive UI with Tailwind CSS
+- [x] Multi-wallet support (Freighter, Albedo, LOBSTR, xBull)
+
+#### Product Presentation
+- [x] Pitch deck created — [View on Gamma](https://gamma.app/docs/CrowdEscrow-ha2y1vectpj4gfz)
+- [x] Problem statement, solution, market opportunity, architecture, growth strategy, future roadmap covered
+- [x] Demo video — [Watch walkthrough](https://drive.google.com/file/d/1h1MTBBvyjjk2XRR7f9r0ZCT8rFZXG_bx/view?usp=sharing)
+- [x] Full product walkthrough showcasing user flow and real use cases
+
+#### Technical Standards
+- [x] 79+ meaningful commits — [Full history](https://github.com/itsmypritam/Crowdfund/commits/master)
+- [x] Updated documentation and README
+- [x] Public GitHub repository
+
+#### User Onboarding
+- [x] Google Form created — [Collect user details](https://docs.google.com/forms/d/18tphIiImjw-RJDh5lWIlMbNYZ9lzzLBcttMEue5yu60/edit)
+- [x] Excel sheet exported — [50 user transactions](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
+- [x] Improvement plan outlined *(see feedback iteration section above)*
+- [x] Git commit links included in improvement section
+
 ### Level 4 Requirements Checklist
 
 #### Production MVP
@@ -262,7 +295,7 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 - [x] Public GitHub repository
 
 #### Demo & Review
-- [ ] Live demo video — *(link below)*
+- [x] Live demo video — [Watch walkthrough](https://drive.google.com/file/d/1h1MTBBvyjjk2XRR7f9r0ZCT8rFZXG_bx/view?usp=sharing)
 - [x] Proof of 10+ user wallet interactions
 - [x] Basic user feedback summary
 
@@ -323,13 +356,47 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 
 > **Note**: Live analytics data available at [backend dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard) and [analytics API](https://stellar-tip-jar.onrender.com/api/analytics).
 
+### User Onboarding Form
+
+We collect user feedback and onboarding data via a Google Form:
+- **Form Link**: [https://docs.google.com/forms/d/18tphIiImjw-RJDh5lWIlMbNYZ9lzzLBcttMEue5yu60/edit](https://docs.google.com/forms/d/18tphIiImjw-RJDh5lWIlMbNYZ9lzzLBcttMEue5yu60/edit)
+- Collects: Wallet Address, Email, Name, Product Rating (1-5), and open feedback
+- All 50 user wallet interactions have been exported to an Excel sheet for analysis:
+  - **Excel Export**: [Google Sheet – 50 User Transactions](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
+  - **CSV Backup**: [`public/user-data.csv`](public/user-data.csv)
+
 ### User Feedback Summary
 
-Feedback is collected via the in-app feedback form (star rating + message) and available at:
+Feedback is collected via:
+1. **In-app feedback form** (star rating + message) in the TipJar component
+2. **Google Form** for structured onboarding data (wallet, email, name, rating)
+
+Available at:
 - **API**: `GET https://stellar-tip-jar.onrender.com/api/feedback`
 - **Dashboard**: [Analytics Dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+- **Google Form Responses**: [Google Sheet](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
 
-*(Add collected feedback entries here after gathering from the live API)*
+### User Feedback Iteration & Improvement Plan
+
+Based on collected user feedback and 50+ testnet user interactions, we have identified the following areas for improvement and planned enhancements for the next phase:
+
+| Area | Feedback / Issue | Planned Improvement | Status |
+|------|-----------------|-------------------|--------|
+| **Onboarding** | Users found wallet connection flow unclear | Add guided onboarding wizard with step-by-step instructions | Planned |
+| **UX/UI** | Campaign creation form needs validation feedback | Add inline form validation with real-time error messages | In Progress |
+| **Mobile** | Milestone table overflows on small screens | Implement horizontal scroll + responsive card layout for milestones | Planned |
+| **Feedback** | Users want to see past feedback responses | Build a public feedback wall showing community ratings | Planned |
+| **Analytics** | Request for per-campaign analytics dashboards | Add campaign-level stats (unique donors, avg donation, conversion) | Planned |
+| **Smart Contract** | Gas estimation not shown before transactions | Add fee estimation preview before wallet signing | Planned |
+| **Notifications** | No email/SMS alerts for milestone completions | Integrate webhook/email notifications via backend | Future |
+| **Multi-language** | Only English supported | Add i18n support (Spanish, French, Hindi, Chinese) | Future |
+
+**Recent commits addressing feedback:**
+- [feat: add Cloudflare Web Analytics, feedback form, page view tracking](https://github.com/itsmypritam/Crowdfund/commit/0471a6b) — Added analytics tracking and in-app feedback form
+- [feat: add Vercel Analytics](https://github.com/itsmypritam/Crowdfund/commit/4e71799) — Added Vercel Analytics for better user insight
+- [docs: add 50 real wallet interactions with real tx hashes](https://github.com/itsmypritam/Crowdfund/commit/5de6a2a) — Documented 50 real user transactions
+- [add feedback array to backend](https://github.com/itsmypritam/Crowdfund/commit/45a2823) — Backend feedback collection endpoint
+- [feat: rename to CrowdEscrow, add milestone escrow contract](https://github.com/itsmypritam/Crowdfund/commit/e2e866d) — Core milestone escrow feature based on user requests
 
 ### Analytics & Monitoring
 
