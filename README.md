@@ -300,6 +300,8 @@ Feedback is collected via the in-app feedback form (star rating + message) and a
 - Events tracked: `page_view`, `wallet_connect`, `donate` (sent to all configured systems)
 
 #### Backend Analytics
+<img width="1912" height="940" alt="image" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
+
 - **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
 - **Analytics API**: `GET /api/analytics` — returns summary stats + daily breakdown + recent events
 - **Analytics Dashboard**: `GET /api/analytics/dashboard` — visual dashboard for monitoring (HTML)
