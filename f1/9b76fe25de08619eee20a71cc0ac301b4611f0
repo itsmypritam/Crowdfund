@@ -1,0 +1,24 @@
+public/user-data.csv
+  s_fc3f94af390f87::t_48ed8f968e93aa 1-51
+README.md
+  s_fc3f94af390f87::t_6516daafb7d949 298
+  s_fc3f94af390f87::t_c8432816f716ca 359-367,370-372,374,377-392,394-399
+  s_fc3f94af390f87::t_c3b6bdcaf6b5d5 189,191-194,373,393
+  s_fc3f94af390f87::t_c8c927ba0d172c 244-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "f19b76fe25de08619eee20a71cc0ac301b4611f0",
+  "prompts": {},
+  "sessions": {
+    "s_fc3f94af390f87": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_05293ab15ffe7SOK11M2sL2sk2",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    }
+  }
+}
