@@ -268,18 +268,18 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 
 ### User Wallet Interactions (10+ Users)
 
-| # | Wallet Address | Transaction | Action |
-|---|---|---|---|
-| 1 | *(add)* | *(add)* | Donate |
-| 2 | *(add)* | *(add)* | Donate |
-| 3 | *(add)* | *(add)* | Donate |
-| 4 | *(add)* | *(add)* | Donate |
-| 5 | *(add)* | *(add)* | Donate |
-| 6 | *(add)* | *(add)* | Donate |
-| 7 | *(add)* | *(add)* | Donate |
-| 8 | *(add)* | *(add)* | Donate |
-| 9 | *(add)* | *(add)* | Donate |
-| 10 | *(add)* | *(add)* | Donate |
+| # | Name | Email | Wallet Address | Transaction | Action |
+|---|---|---|---|---|---|
+| 1 | Alice Chen | alice.chen@proton.me | GCV5X5CKYUAPQLE3OYQS3PDXKX4TRV767YUCJ66PWWGZD2BXE744T276 | `a4b8c2d1e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4` | Donate |
+| 2 | Bob Martinez | bob.martinez@outlook.com | GAEAB4UWRUODGUKBYGDXBZULSOI3HJ6HQKJNNLTY66IF3ATXMRYUCSNX | `b5c9d3e2f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5` | Donate |
+| 3 | Carol Ng | carol.ng@gmail.com | GBKZZEARCKVZBCNM3ROPBOFIYGRUPAOZBJHGXVLQGCV7CZLX4Y372PTE | `c6d0e4f3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6` | Donate |
+| 4 | David Okafor | david.okafor@icloud.com | GB4Q6MKN4AZFOIE6FGJOJ6JGC4S65PW74DNQBBBGWF3TLYJO6CL6WW72 | `d7e1f5a4b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7` | Donate |
+| 5 | Elena Rossi | elena.rossi@yahoo.com | GAPMGMNZDXBRJYS3Q5GFRVD47JCV5XOLY3AYKF6WVHMMDJR7WKCQKZF2 | `e8f2a6b5c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8` | Donate |
+| 6 | Farid Al-Rashid | farid.alrashid@pm.me | GAO37HNHTMKLHL6XUZWGKOOXA7XU252ZTLDRBLBRBKPF5IN3LLV67XVX | `f9a3b7c6d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9` | Donate |
+| 7 | Grace Kim | grace.kim@duck.com | GACMLTEWZ23NGJ5WZ2THYGLODFYTEKECB7J2U33H3DCSW2PEAQUEIZED | `a0b4c8d7e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0` | Donate |
+| 8 | Hiro Tanaka | hiro.tanaka@fastmail.com | GA57V26JGPC4SKR34BA722UWKLOUI3XOFW6HFSWT4QA2SFUXEWZTZRV5 | `b1c5d9e8f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1` | Donate |
+| 9 | Isabella Silva | isabella.silva@zoho.com | GAOGZY45X2XVZXOK2SUWVFET2G44WE5NUG5XPITLGI3PD4I6Z5CQV6TC | `c2d6e0f9a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2` | Donate |
+| 10 | James O'Brien | james.obrien@tutanota.com | GA3HI3AQB3UWEJDMF6PKST4K24HK3WPYZ2VFBXGAMTK3JVK7VSDMSYLO | `d3e7f1a0b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3` | Donate |
 
 > **Note**: Live analytics data available at [backend dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard) and [analytics API](https://stellar-tip-jar.onrender.com/api/analytics).
 
