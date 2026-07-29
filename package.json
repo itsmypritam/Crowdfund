@@ -14,10 +14,6 @@
     "test:backend": "cd backend && npm test",
     "test:all": "npm run test:backend"
   },
-  "optionalDependencies": {
-    "@emnapi/core": "1.11.1",
-    "@emnapi/runtime": "1.11.1"
-  },
   "dependencies": {
     "@astrojs/react": "^6.0.0",
     "@base-ui/react": "^1.6.0",
