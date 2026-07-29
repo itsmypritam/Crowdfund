@@ -1,0 +1,27 @@
+src/lib/analytics.ts
+  s_7e9c1a16748d6b::t_ea946ef3449515 1-2,17
+src/pages/index.astro
+  s_7e9c1a16748d6b::t_28c8c5597f90f1 5,16
+src/components/VercelAnalytics.tsx
+  s_7e9c1a16748d6b::t_c82d4be7823c8f 1-5
+package.json
+  s_7e9c1a16748d6b::t_b4b8d75979969c 30
+package-lock.json
+  s_7e9c1a16748d6b::t_6b6c6c521a8b9a 2,8,19,3165-3206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "4e71799f191cfe24dc8d386b23ee86d030d59aba",
+  "prompts": {},
+  "sessions": {
+    "s_7e9c1a16748d6b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_053062851ffeFkJbiXsbehDkmJ",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    }
+  }
+}
