@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { trackEvent } from "@/lib/analytics";
 import {
   Card,
   CardContent,
@@ -109,6 +110,10 @@ export default function TipJar() {
   const [msAmount, setMsAmount] = useState("");
   const [msDeadline, setMsDeadline] = useState("");
   const [msApprovals, setMsApprovals] = useState("1");
+
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const socketRef = useRef<WebSocket | null>(null);
 
@@ -372,6 +377,12 @@ export default function TipJar() {
         case "lobstr": await connectLobstr(); break;
         case "xbull": await connectXbull(); break;
       }
+      trackEvent("wallet_connect", { wallet: type });
+      fetch(`${BACKEND}/api/analytics/event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "wallet_connect", wallet: type, address }),
+      }).catch(() => {});
     } catch (err: any) {
       setTx({ hash: "", status: "error", message: err?.message || "Connection failed" });
     } finally {
@@ -462,6 +473,12 @@ export default function TipJar() {
 
         if (getResponse.status === "SUCCESS") {
           setTx({ hash: sendResponse.hash, status: "success", message: `Donated ${donationAmount} XLM!` });
+          trackEvent("donate", { amount: donationAmount, wallet: walletType });
+          fetch(`${BACKEND}/api/analytics/event`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "donation", amount: donationAmount, wallet: walletType, address }),
+          }).catch(() => {});
           try {
             await fetch(`${BACKEND}/api/donation`, {
               method: "POST",
@@ -950,6 +967,25 @@ export default function TipJar() {
     }
   };
 
+  const submitFeedback = async () => {
+    if (!address || feedbackRating === 0) return;
+    setBusy(true);
+    try {
+      await fetch(`${BACKEND}/api/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wallet: address, rating: feedbackRating, message: feedbackMessage }),
+      });
+      setFeedbackSubmitted(true);
+      setFeedbackRating(0);
+      setFeedbackMessage("");
+    } catch {
+      setTx({ hash: "", status: "error", message: "Failed to submit feedback" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const isOwner = address && campaign && address === campaign.owner;
   const progress = campaign
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
@@ -1227,6 +1263,47 @@ export default function TipJar() {
           </div>
         )}
       </div>
+
+      {/* ── Feedback Section ── */}
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>💬 Share Your Feedback</CardTitle>
+          <CardDescription>Help us improve CrowdEscrow</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Rating</p>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className={`text-2xl transition-colors ${star <= feedbackRating ? "text-yellow-400" : "text-muted-foreground/30"} hover:text-yellow-400`}
+                  onClick={() => setFeedbackRating(star)}
+                >
+                  {star <= feedbackRating ? "★" : "☆"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Input
+            placeholder="Tell us about your experience..."
+            value={feedbackMessage}
+            onChange={(e) => setFeedbackMessage(e.target.value)}
+          />
+          <Button
+            onClick={submitFeedback}
+            disabled={busy || feedbackRating === 0}
+            variant="outline"
+            className="w-full"
+          >
+            {busy ? "Sending..." : "Submit Feedback"}
+          </Button>
+          {feedbackSubmitted && (
+            <p className="text-sm text-emerald-400 text-center">Thanks for your feedback! 🎉</p>
+          )}
+        </CardContent>
+      </Card>
     </section>
   );
 }

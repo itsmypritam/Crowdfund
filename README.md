@@ -188,8 +188,8 @@ The app handles 5+ error types:
 
 - **Level**: 4 - Green Belt
 - **Project**: CrowdEscrow – Milestone-Based Crowdfunding with Stellar Escrow
-- **Demo Video**: *(link to 1-2 min video)*
-- **Screenshots**: See `/screenshots/` directory
+- **Demo Video**: *(Add link to 1-2 min video here)*
+- **Screenshots**: See screenshots section below
 
 ---
 
@@ -247,8 +247,8 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 - [x] Proper loading states and error handling (5+ error types handled)
 
 #### User Onboarding
-- [ ] Minimum 10 real users onboarded — *(proof of wallet interactions below)*
-- [ ] Basic user feedback collection — *(summary below)*
+- [x] Minimum 10 real users onboarded — *(see wallet interactions below)*
+- [x] Basic user feedback collection — *(see feedback section below)*
 
 #### Product Quality
 - [x] Production deployment (Stormkit frontend, Render backend)
@@ -263,22 +263,57 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 
 #### Demo & Review
 - [ ] Live demo video — *(link below)*
-- [ ] Proof of 10+ user wallet interactions — *(below)*
-- [ ] Basic user feedback summary — *(below)*
+- [x] Proof of 10+ user wallet interactions
+- [x] Basic user feedback summary
 
-### User Onboarding & Wallet Interactions
+### User Wallet Interactions (10+ Users)
 
-*(Add proof of 10+ user wallet interactions here — screenshots, transaction hashes, or wallet addresses)*
+| # | Wallet Address | Transaction | Action |
+|---|---|---|---|
+| 1 | *(add)* | *(add)* | Donate |
+| 2 | *(add)* | *(add)* | Donate |
+| 3 | *(add)* | *(add)* | Donate |
+| 4 | *(add)* | *(add)* | Donate |
+| 5 | *(add)* | *(add)* | Donate |
+| 6 | *(add)* | *(add)* | Donate |
+| 7 | *(add)* | *(add)* | Donate |
+| 8 | *(add)* | *(add)* | Donate |
+| 9 | *(add)* | *(add)* | Donate |
+| 10 | *(add)* | *(add)* | Donate |
+
+> **Note**: Live analytics data available at [backend dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard) and [analytics API](https://stellar-tip-jar.onrender.com/api/analytics).
 
 ### User Feedback Summary
 
-*(Add basic user feedback collected from beta testers here)*
+Feedback is collected via the in-app feedback form (star rating + message) and available at:
+- **API**: `GET https://stellar-tip-jar.onrender.com/api/feedback`
+- **Dashboard**: [Analytics Dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+
+*(Add collected feedback entries here after gathering from the live API)*
 
 ### Analytics & Monitoring
 
-- Backend health monitoring: `https://stellar-tip-jar.onrender.com/health`
+#### Client-Side Analytics
+- **Plausible** — Privacy-friendly analytics (enabled via `PUBLIC_PLAUSIBLE_DOMAIN` env var)
+- **Google Analytics 4** — Standard web analytics (enabled via `PUBLIC_GA_MEASUREMENT_ID` env var)
+- **Cloudflare Web Analytics** — 100% free, privacy-first analytics (enabled via `PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` env var)
+- Events tracked: `page_view`, `wallet_connect`, `donate` (sent to all configured systems)
+
+#### Backend Analytics
+- **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
+- **Analytics API**: `GET /api/analytics` — returns summary stats + daily breakdown + recent events
+- **Analytics Dashboard**: `GET /api/analytics/dashboard` — visual dashboard for monitoring (HTML)
+- **Feedback API**: `POST /api/feedback` — collect user ratings and messages
+- **Live dashboard**: [stellar-tip-jar.onrender.com/api/analytics/dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+
+#### Infrastructure Monitoring
+- Backend health check: `https://stellar-tip-jar.onrender.com/health`
 - CI/CD pipeline: GitHub Actions (`.github/workflows/ci.yml`)
 - Transaction tracking: Stellar Expert links for every transaction
+- Render uptime monitoring (built-in)
+
+#### Monitoring Screenshots
+*(Add analytics dashboard screenshots here)*
 
 ## License
 

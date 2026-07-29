@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { WebSocketServer, WebSocket } = require("ws");
 const http = require("http");
+const path = require("path");
 require("dotenv/config");
 
 const PORT = process.env.PORT || 3001;
@@ -11,11 +12,77 @@ const app = express();
 app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS"], allowedHeaders: ["Content-Type"] }));
 
 app.use(express.json());
+
+// ── Analytics store ──────────────────────────────────────────────
+const analyticsEvents = [];
+function recordEvent(type, data = {}) {
+  const event = { type, timestamp: Date.now(), ...data };
+  analyticsEvents.push(event);
+  // keep last 10k events in memory
+  if (analyticsEvents.length > 10000) analyticsEvents.shift();
+}
+// ── Logging middleware ───────────────────────────────────────────
+app.use((req, _res, next) => {
+  recordEvent("request", { method: req.method, path: req.path });
+  next();
+});
+// ── In-memory stores ─────────────────────────────────────────────
 const campaigns = new Map();
 const donations = new Map();
 const feedback = [];
 let contractId = process.env.CONTRACT_ID || "";
 const wsClients = new Set();
+
+// ── Analytics endpoints ─────────────────────────────────────────
+app.get("/api/analytics", (_req, res) => {
+  const totalRequests = analyticsEvents.filter(e => e.type === "request").length;
+  const walletConnects = analyticsEvents.filter(e => e.type === "wallet_connect").length;
+  const donations = analyticsEvents.filter(e => e.type === "donation").length;
+  const feedbackCount = analyticsEvents.filter(e => e.type === "feedback").length;
+  const uniqueVisitors = new Set(
+    analyticsEvents.filter(e => e.address).map(e => e.address)
+  ).size;
+
+  // daily breakdown (last 7 days)
+  const now = Date.now();
+  const dayMs = 86400000;
+  const daily = [];
+  for (let i = 6; i >= 0; i--) {
+    const start = now - i * dayMs;
+    const end = start + dayMs;
+    const dayEvents = analyticsEvents.filter(e => e.timestamp >= start && e.timestamp < end);
+    daily.push({
+      date: new Date(start).toISOString().slice(0, 10),
+      requests: dayEvents.filter(e => e.type === "request").length,
+      connects: dayEvents.filter(e => e.type === "wallet_connect").length,
+      donations: dayEvents.filter(e => e.type === "donation").length,
+    });
+  }
+
+  res.json({
+    summary: {
+      totalRequests,
+      walletConnects,
+      donations,
+      feedbackCount,
+      uniqueVisitors,
+    },
+    daily,
+    recentEvents: analyticsEvents.slice(-50).reverse(),
+  });
+});
+
+app.post("/api/analytics/event", (req, res) => {
+  const { type, ...data } = req.body;
+  if (!type) return res.status(400).json({ error: "type required" });
+  recordEvent(type, data);
+  res.json({ ok: true });
+});
+
+app.get("/api/analytics/dashboard", (_req, res) => {
+  res.sendFile(path.join(__dirname, "dashboard.html"));
+});
+// ── End Analytics endpoints ─────────────────────────────────────
 
 app.get("/", (_req, res) => res.json({ service: "CrowdEscrow", status: "running", contractId }));
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
@@ -44,6 +111,7 @@ app.post("/api/campaigns", (req, res) => {
   };
   campaigns.set(id, campaign);
   donations.set(id, []);
+  recordEvent("campaign_created", { campaignId: id, owner });
   broadcast({ type: "campaign:updated", campaignId: id });
   res.status(201).json(campaign);
 });
@@ -82,6 +150,7 @@ app.post("/api/donations", (req, res) => {
 
   const donation = { donor, amount: donateAmount, hash, timestamp: Date.now() };
   donations.get(campaignId).push(donation);
+  recordEvent("donation", { campaignId, donor, amount: donateAmount });
   broadcast({ type: "donation:new", ...donation, campaignId });
   broadcast({ type: "campaign:updated", campaignId });
   res.status(201).json(donation);
@@ -102,8 +171,22 @@ app.post("/api/withdrawals", (req, res) => {
 
   const withdrawn = c.totalRaised;
   c.totalRaised = 0;
+  recordEvent("withdrawal", { campaignId, owner, amount: withdrawn });
   broadcast({ type: "campaign:updated", campaignId });
   res.json({ withdrawn });
+});
+
+// ── Feedback endpoint ───────────────────────────────────────────
+app.post("/api/feedback", (req, res) => {
+  const { wallet, rating, message } = req.body;
+  if (!wallet) return res.status(400).json({ error: "wallet address required" });
+  feedback.push({ wallet, rating: rating || null, message: message || "", timestamp: Date.now() });
+  recordEvent("feedback", { wallet, rating });
+  res.status(201).json({ ok: true });
+});
+
+app.get("/api/feedback", (_req, res) => {
+  res.json(feedback);
 });
 
 const server = http.createServer(app);

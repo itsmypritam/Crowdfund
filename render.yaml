@@ -11,3 +11,7 @@ services:
         sync: false
       - key: STELLAR_NETWORK
         value: testnet
+      - key: PUBLIC_PLAUSIBLE_DOMAIN
+        value: warriorpinto-6k1ikg.stormkit.dev
+      - key: PUBLIC_GA_MEASUREMENT_ID
+        value: G-XXXXXXXXXX

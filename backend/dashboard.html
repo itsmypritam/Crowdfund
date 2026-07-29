@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CrowdEscrow Analytics</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e4e4e7; padding: 24px; }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 24px; color: #fff; }
+  h2 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #a1a1aa; margin-bottom: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; }
+  .card .label { font-size: 12px; color: #a1a1aa; text-transform: uppercase; letter-spacing: .05em; }
+  .card .value { font-size: 32px; font-weight: 700; margin-top: 8px; color: #fff; }
+  .card .value.green { color: #22c55e; }
+  .card .value.blue { color: #3b82f6; }
+  .card .value.purple { color: #a855f7; }
+  .card .value.yellow { color: #eab308; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; border-bottom: 1px solid #27272a; color: #a1a1aa; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  td { padding: 8px 12px; border-bottom: 1px solid #1f1f23; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge.request { background: #1e3a5f; color: #60a5fa; }
+  .badge.wallet_connect { background: #1a3a2a; color: #4ade80; }
+  .badge.donation { background: #3a1a3a; color: #c084fc; }
+  .badge.feedback { background: #3a2a1a; color: #fbbf24; }
+  .badge.page_view { background: #1a2a3a; color: #38bdf8; }
+  .section { margin-bottom: 32px; }
+  .timestamp { color: #71717a; font-size: 11px; }
+  .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #a1a1aa; }
+  .bar-chart { display: flex; gap: 8px; align-items: end; height: 120px; padding: 16px 0; }
+  .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: height .3s; }
+  .bar-label { font-size: 10px; color: #71717a; }
+  .bar-value { font-size: 10px; font-weight: 600; color: #a1a1aa; }
+  .feedback-card { background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 16px; margin-bottom: 8px; }
+  .feedback-card .rating { color: #eab308; font-size: 16px; }
+  .feedback-card .message { margin-top: 4px; font-size: 13px; color: #d4d4d8; }
+  .feedback-card .meta { font-size: 11px; color: #71717a; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <h1>📊 CrowdEscrow Analytics Dashboard</h1>
+  <div class="grid" id="summary"></div>
+
+  <div class="section">
+    <h2>Daily Activity (Last 7 Days)</h2>
+    <div class="card">
+      <div class="bar-chart" id="dailyChart"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>User Feedback</h2>
+    <div id="feedback"></div>
+  </div>
+
+  <div class="section">
+    <h2>Recent Events</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Time</th><th>Type</th><th>Details</th></tr></thead>
+        <tbody id="events"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+async function load() {
+  const [analytics, feedbackData] = await Promise.all([
+    fetch('/api/analytics').then(r => r.json()),
+    fetch('/api/feedback').then(r => r.json()),
+  ]);
+
+  const s = analytics.summary;
+  document.getElementById('summary').innerHTML = `
+    <div class="card"><div class="label">Total Requests</div><div class="value blue">${s.totalRequests}</div></div>
+    <div class="card"><div class="label">Wallet Connects</div><div class="value green">${s.walletConnects}</div></div>
+    <div class="card"><div class="label">Donations</div><div class="value purple">${s.donations}</div></div>
+    <div class="card"><div class="label">Feedback Entries</div><div class="value yellow">${s.feedbackCount}</div></div>
+    <div class="card"><div class="label">Unique Visitors</div><div class="value">${s.uniqueVisitors}</div></div>
+  `;
+
+  const days = analytics.daily;
+  const maxVal = Math.max(...days.map(d => Math.max(d.requests, d.connects, d.donations)), 1);
+  document.getElementById('dailyChart').innerHTML = days.map(d => `
+    <div class="bar-wrapper">
+      <div class="bar-value">${d.requests}</div>
+      <div style="display:flex;gap:2px;width:100%;height:${(d.requests/maxVal)*100}px;align-items:end;justify-content:center;">
+        <div class="bar" style="flex:1;background:#3b82f6;height:${(d.requests/maxVal)*100}%"></div>
+        <div class="bar" style="flex:1;background:#22c55e;height:${(d.connects/maxVal)*100}%"></div>
+        <div class="bar" style="flex:1;background:#a855f7;height:${(d.donations/maxVal)*100}%"></div>
+      </div>
+      <div class="bar-label">${d.date.slice(5)}</div>
+    </div>
+  `).join('');
+
+  const fbDiv = document.getElementById('feedback');
+  if (feedbackData.length === 0) {
+    fbDiv.innerHTML = '<div class="card"><p style="color:#71717a;font-size:13px;">No feedback collected yet.</p></div>';
+  } else {
+    fbDiv.innerHTML = feedbackData.slice().reverse().slice(0, 20).map(f => `
+      <div class="feedback-card">
+        <div class="rating">${'★'.repeat(f.rating || 0)}${'☆'.repeat(5 - (f.rating || 0))}</div>
+        ${f.message ? `<div class="message">${f.message}</div>` : ''}
+        <div class="meta">${f.wallet.slice(0, 8)}...${f.wallet.slice(-4)} &middot; ${new Date(f.timestamp).toLocaleString()}</div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('events').innerHTML = analytics.recentEvents.slice(0, 50).map(e => `
+    <tr>
+      <td class="timestamp">${new Date(e.timestamp).toLocaleTimeString()}</td>
+      <td><span class="badge ${e.type}">${e.type}</span></td>
+      <td class="mono">${JSON.stringify(Object.fromEntries(Object.entries(e).filter(([k]) => !['type','timestamp'].includes(k))))}</td>
+    </tr>
+  `).join('');
+}
+load();
+</script>
+</body>
+</html>
