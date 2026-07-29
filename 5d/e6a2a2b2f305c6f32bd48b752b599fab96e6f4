@@ -1,0 +1,19 @@
+README.md
+  s_6a6aed9c14079d::t_cc998b343fca45 272-322
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "5de6a2a2b2f305c6f32bd48b752b599fab96e6f4",
+  "prompts": {},
+  "sessions": {
+    "s_6a6aed9c14079d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_052bc6e2affetXO9t7xvT6yAwa",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    }
+  }
+}
