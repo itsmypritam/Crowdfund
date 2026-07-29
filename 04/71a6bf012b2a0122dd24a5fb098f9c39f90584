@@ -1,0 +1,66 @@
+src/lib/analytics.ts
+  s_a29248a7025c53::t_ac732a3c114662 1-15
+README.md
+  s_7e9c1a16748d6b::t_cc445766b17b2e 191-192
+  s_08461a1758e63b::t_9e6126d9a27316 291,296-298,301-306,308-310,313
+  s_7e9c1a16748d6b::t_322beec505077f 250-251,266-284,288-290,292,299-300,307,314-316
+src/components/Analytics.astro
+  s_a29248a7025c53::t_b0171fc441c99b 1-5,8-30
+  s_7e9c1a16748d6b::t_98adcf0dec00d8 6-7,31-47
+src/pages/index.astro
+  s_a29248a7025c53::t_cbfabe08b9cdda 14
+  s_a29248a7025c53::t_82247ddd593ffe 3
+src/components/TipJar.tsx
+  s_7e9c1a16748d6b::t_4c27c875c29b48 114-117
+  s_a29248a7025c53::t_ace34c9939b2ca 380
+  s_08461a1758e63b::t_63794cf008173e 477-481
+  s_08461a1758e63b::t_4c1f432f3e1ae3 1266-1306
+  s_08461a1758e63b::t_977226e8f6c336 381-385
+  s_a29248a7025c53::t_5d4d5288f86527 476
+  s_7e9c1a16748d6b::t_5a7de929338f56 970-988
+  s_a29248a7025c53::t_c5c07f1cf692e0 26
+backend/server.js
+  s_08461a1758e63b::t_3c9325588c8a0a 5,15-29,190-191
+  s_08461a1758e63b::t_7ce687b4a5b36f 36-86,114,153,174,179-189
+.env.example
+  s_7e9c1a16748d6b::t_9ad6db1d7f8310 7-8,10
+  s_7e9c1a16748d6b::t_07481c1a268aec 9
+  s_a29248a7025c53::t_cfbff213775025 3-4,6,11
+  s_08461a1758e63b::t_ebc8233ebba491 1-2,5,12,20,25-28
+render.yaml
+  s_08461a1758e63b::t_4f902429cb6d55 14-17
+backend/dashboard.html
+  s_08461a1758e63b::t_5f2cd1741bc848 1-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "0471a6bf012b2a0122dd24a5fb098f9c39f90584",
+  "prompts": {},
+  "sessions": {
+    "s_08461a1758e63b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0530ba3d2ffeV5UGBZ2HIrrKyK",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    },
+    "s_7e9c1a16748d6b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_053062851ffeFkJbiXsbehDkmJ",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    },
+    "s_a29248a7025c53": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "200f46fa-5b3f-4101-9afb-86885bd65f66",
+        "model": "composer-2.5"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    }
+  }
+}
