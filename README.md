@@ -189,6 +189,7 @@ The app handles 5+ error types:
 - **Level**: 5 - Blue Belt
 - **Project**: CrowdEscrow – Milestone-Based Crowdfunding with Stellar Escrow
 - **Pitch Deck**: [View Pitch Deck](https://gamma.app/docs/CrowdEscrow-ha2y1vectpj4gfz)
+  <br><iframe src="https://gamma.app/embed/ha2y1vectpj4gfz" style="width: 700px; max-width: 100%; height: 450px" allow="fullscreen" title="CrowdEscrow"></iframe>
 - **Demo Video**: [Watch Demo Walkthrough](https://drive.google.com/file/d/1h1MTBBvyjjk2XRR7f9r0ZCT8rFZXG_bx/view?usp=sharing)
 - **User Onboarding Form**: [Google Form](https://docs.google.com/forms/d/18tphIiImjw-RJDh5lWIlMbNYZ9lzzLBcttMEue5yu60/edit)
 - **User Data (Excel)**: [Google Sheet – 50 User Transactions](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
