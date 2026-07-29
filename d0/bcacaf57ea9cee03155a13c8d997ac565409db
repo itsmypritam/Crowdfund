@@ -1,0 +1,19 @@
+package-lock.json
+  s_7e9c1a16748d6b::t_a5950c33a57f9c 1156-1176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d0bcacaf57ea9cee03155a13c8d997ac565409db",
+  "prompts": {},
+  "sessions": {
+    "s_7e9c1a16748d6b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_053062851ffeFkJbiXsbehDkmJ",
+        "model": "unknown"
+      },
+      "human_author": "poppritu-cmd <pritamsdev2@gmail.com>"
+    }
+  }
+}
