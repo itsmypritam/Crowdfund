@@ -371,6 +371,7 @@ We collect user feedback and onboarding data via a Google Form:
 - All 50 user wallet interactions have been exported to an Excel sheet for analysis:
   - **Excel Export**: [Google Sheet – 50 User Transactions](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
   - **CSV Backup**: [`public/user-data.csv`](public/user-data.csv)
+  - **Auto-submit script**: `node backend/scripts/submit-form-entries.mjs` posts every verified row in `user-data.csv` (tx hash, wallet, name, email) to the challenge submission Google Form (override the required feedback rating with `RATING=4`, preview without sending with `DRY_RUN=1`)
 
 ### User Feedback Summary
 
