@@ -507,6 +507,7 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 ### User Wallet Interactions (10+ Users)
 
 | # | Name | Email | Wallet Address | Transaction | Action |
+|---|---|---|---|---|---|
 | 1 | Aarav Sharma | aaravsharma@gmail.com | [GBE3...JYOF](https://stellar.expert/explorer/testnet/account/GBE3SBYEYCR3MA6EKDP4XQJA2WOXETNMYXT67C246N6K2FA5BMFHJYOF) | [`e214...2e18`](https://stellar.expert/explorer/testnet/tx/e2148d97c2fd44ea4c87c6733f36fa2f041ceff8d8ad958536dd699da3c22e18) | Donate |
 | 2 | Vivaan Patel | vivaanpatel@gmail.com | [GBHI...KLVX](https://stellar.expert/explorer/testnet/account/GBHIZR2HUJ3KCIZZH4XR3QEVFXXIFE6UHFYQ6RJD4UYGRK6OUEX6KLVX) | [`1b8d...6c49`](https://stellar.expert/explorer/testnet/tx/1b8d4864f5bc705cb59838ce187ea4c3034e6e0d594c91a4868369a766656c49) | Donate |
 | 3 | Aditya Singh | adityasingh@gmail.com | [GDID...PY4Q](https://stellar.expert/explorer/testnet/account/GDIDTPEEPBATRQSYX7GBVDPWZ6HIP4A27FFVAYMCN7KSGBJWXWUGPY4Q) | [`1a1f...c425`](https://stellar.expert/explorer/testnet/tx/1a1f3dadc3b850869b8aa0fd57495ea07aaa0121f91cc694505893c20876c425) | Donate |
