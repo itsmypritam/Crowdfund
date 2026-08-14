@@ -98,19 +98,61 @@ https://github.com/user-attachments/assets/853efdd2-501d-49dc-8342-98e923029bc3
 | 📱 **Mobile Responsive** | Fully responsive UI built with Tailwind CSS |
 | 🔄 **CI/CD** | Automated test + build pipeline for backend, contract, and frontend |
 
-### ✨ New: Referrals, Badges, Leaderboard, Notifications
+### ✨ New: Referrals · Badges · Leaderboard · Notifications
 
-![Referrals](https://img.shields.io/badge/Referrals-0D9488?style=for-the-badge)
-![Badges](https://img.shields.io/badge/Badges-DB2777?style=for-the-badge)
-![Leaderboard](https://img.shields.io/badge/Leaderboard-2563EB?style=for-the-badge)
-![Notifications](https://img.shields.io/badge/Notifications-7C3AED?style=for-the-badge)
+<div align="center">
 
-| Feature | Description |
-|---|---|
-| 🤝 **Referral Hub** | Generate a shareable code at `/referrals`, track clicks and redemptions, and redeem friends' codes |
-| 🏅 **On-Chain Badges** | `get_badges` reads earned badges (Supporter, Gold Supporter, Reviewer, Refund Claimant, Creator, Deliverer) straight from the contract — shown on every campaign page |
-| 📊 **Leaderboard** | `/leaderboard` ranks the biggest supporters by total XLM pledged (aggregated backend endpoint + on-chain `get_leaderboard`) |
-| 🔔 **Notifications** | `/notifications` inbox with per-wallet pledge/approval/refund updates, unread badges, and mark-all-read |
+![Referrals](https://img.shields.io/badge/Referrals-0D9488?style=for-the-badge&logo=linktree&logoColor=white)
+![Badges](https://img.shields.io/badge/Badges-DB2777?style=for-the-badge&logo=medal&logoColor=white)
+![Leaderboard](https://img.shields.io/badge/Leaderboard-2563EB?style=for-the-badge&logo=chart-bar&logoColor=white)
+![Notifications](https://img.shields.io/badge/Notifications-7C3AED?style=for-the-badge&logo=bell&logoColor=white)
+
+</div>
+
+<table align="center">
+  <tr>
+    <td align="center" width="25%">
+      <div><b>🤝 Referral Hub</b></div>
+      <p style="font-size:13px;color:#94a3b8">
+        Invite friends with a shareable code — track clicks and redemptions, and redeem codes from others.
+      </p>
+      <p><code>🗂️ /referrals</code></p>
+      <p style="font-size:12px;color:#64748b">
+        <code>POST /api/referrals</code> · <code>GET /api/referrals/:code</code> · <code>POST /api/referrals/redeem</code>
+      </p>
+    </td>
+    <td align="center" width="25%">
+      <div><b>🏅 On-Chain Badges</b></div>
+      <p style="font-size:13px;color:#94a3b8">
+        Supporter · Gold Supporter · Reviewer · Refund Claimant · Creator · Deliverer — read straight from the contract.
+      </p>
+      <p><code>📜 get_badges</code></p>
+      <p style="font-size:12px;color:#64748b">
+        Shown on every campaign page via <code>BadgeWall</code>
+      </p>
+    </td>
+    <td align="center" width="25%">
+      <div><b>📊 Leaderboard</b></div>
+      <p style="font-size:13px;color:#94a3b8">
+        Top supporters ranked by total XLM pledged across all campaigns.
+      </p>
+      <p><code>🗂️ /leaderboard</code></p>
+      <p style="font-size:12px;color:#64748b">
+        <code>GET /api/leaderboard</code> · on-chain <code>get_leaderboard</code>
+      </p>
+    </td>
+    <td align="center" width="25%">
+      <div><b>🔔 Notifications</b></div>
+      <p style="font-size:13px;color:#94a3b8">
+        Pledge, approval, and refund updates for your wallet — with unread badges and mark-all-read.
+      </p>
+      <p><code>🗂️ /notifications</code></p>
+      <p style="font-size:12px;color:#64748b">
+        <code>GET/POST /api/notifications</code> · <code>POST /api/notifications/read</code>
+      </p>
+    </td>
+  </tr>
+</table>
 
 ## Requirements
 
@@ -154,10 +196,10 @@ After changing the contract, regenerate the embedded WASM so the frontend ships 
 ## Testing
 
 ```bash
-# Backend tests (29)
+# Backend tests (41)
 cd backend && npm test
 
-# Contract tests (10)
+# Contract tests (13)
 cd contract && cargo test
 
 # Frontend build
@@ -185,27 +227,87 @@ npm run build
 ## Architecture
 
 ```
-├── src/                # Astro + React frontend
+├── src/                      # Astro + React frontend
 │   ├── components/
-│   │   ├── TipJar.tsx  # Main CrowdEscrow component (deliverables, votes, refunds)
-│   │   ├── CampaignBrowse.tsx, CampaignFallback.tsx
-│   │   ├── wasm_base64.ts # Embedded contract WASM (lazy-loaded)
-│   │   └── ui/         # shadcn components
-│   ├── lib/config.ts   # Env-driven network/backend/token config
-│   ├── layouts/        # SiteLayout.astro
-│   └── pages/          # index, campaigns, campaigns/[id], 404
-├── backend/            # Express.js + WebSocket
-│   ├── app.js          # createApp factory (routes, CORS, rate-limit, admin key)
-│   ├── db.js           # SQLite (better-sqlite3), WAL, migrations
-│   ├── config.js       # env config
-│   ├── horizon.js      # on-chain donation verification
-│   ├── server.js       # HTTP + WebSocket entrypoint
-│   └── server.test.mjs # API tests
-├── contract/           # Soroban Rust contract
-│   ├── src/lib.rs      # v2 contract (proofs, votes, refunds)
-│   ├── tests/          # Rust unit tests + snapshots
-│   └── scripts/check-wasm.mjs # CI check: embedded WASM matches build
-└── scripts/            # Deployment scripts
+│   │   ├── TipJar.tsx            # Main CrowdEscrow UI (deploy, donate, milestones, proofs, votes, refunds, withdraw)
+│   │   ├── CampaignBrowse.tsx    # Campaign listing grid
+│   │   ├── CampaignFallback.tsx  # Client-side campaign route fallback
+│   │   ├── BadgeWall.tsx         # 🏅 On-chain badges for the connected wallet
+│   │   ├── Leaderboard.tsx       # 📊 Top-supporter leaderboard
+│   │   ├── ReferralTool.tsx      # 🤝 Referral codes, share links, redemption
+│   │   ├── NotificationsInbox.tsx# 🔔 Per-wallet notification inbox
+│   │   ├── AnalyticsTab.tsx · VercelAnalytics.tsx
+│   │   ├── wasm_base64.ts        # Embedded contract WASM + source hash (lazy-loaded)
+│   │   └── ui/                   # shadcn/ui components (button, card, badge, input, …)
+│   ├── lib/
+│   │   ├── config.ts             # Env-driven network / backend / token config
+│   │   ├── wallet.ts             # Freighter connect + address helpers
+│   │   └── analytics.ts · utils.ts
+│   ├── layouts/SiteLayout.astro  # Shared header/nav + footer
+│   ├── pages/                    # index, campaigns, campaigns/[id], leaderboard, referrals, notifications, 404
+│   └── styles/global.css
+├── backend/                  # Express.js + WebSocket API
+│   ├── app.js               # createApp factory — campaigns, donations, withdrawals, feedback, analytics,
+│   │                        #   leaderboard, referrals, notifications (CORS, rate-limit, admin key)
+│   ├── db.js                # SQLite (better-sqlite3), WAL, migrations (incl. referrals/notifications tables)
+│   ├── config.js            # env config
+│   ├── horizon.js           # on-chain donation verification
+│   ├── server.js            # HTTP + WebSocket entrypoint
+│   ├── server.test.mjs      # API tests (41)
+│   └── scripts/             # backfill-analytics · submit-form-entries
+├── contract/                # Soroban Rust contract
+│   ├── src/lib.rs           # v2 contract — proofs, votes, refunds + get_badges, get_leaderboard
+│   ├── tests/               # Rust unit tests + snapshots (13)
+│   └── scripts/
+│       ├── check-wasm.mjs   # CI: embedded WASM freshness (source hash + export set)
+│       └── update-wasm.mjs  # regenerate wasm_base64.ts from a build
+└── scripts/                 # Deployment helpers
+```
+
+## System Internals
+
+```mermaid
+flowchart LR
+    subgraph UI["🌐 Frontend · Astro + React"]
+        direction TB
+        P["Pages — / · /campaigns · /campaigns/[id] · /leaderboard · /referrals · /notifications"]
+        TJ["TipJar — donate · milestones · proofs · votes · refunds · deploy · withdraw"]
+        BW["BadgeWall — on-chain badges"]
+        NEW["Leaderboard · ReferralTool · NotificationsInbox"]
+        WASM["wasm_base64.ts — embedded contract WASM + source hash"]
+    end
+
+    subgraph API["⚙️ Backend · Express + SQLite"]
+        direction TB
+        R["REST /api/* — campaigns · donations · withdrawals · feedback · analytics · leaderboard · referrals · notifications"]
+        WS["WebSocket — live donation feed"]
+        DB[("SQLite · WAL — campaigns · donations · referrals · notifications")]
+        HZ["Horizon donation verifier"]
+    end
+
+    subgraph CH["🔗 Stellar Testnet"]
+        direction TB
+        RPC["Soroban RPC"]
+        CT["CrowdEscrow contract — initialize · donate · add_milestone · submit_proof · approve_milestone · vote_missed · request_refund · release_milestone · withdraw · get_badges · get_leaderboard"]
+        WL["Wallets — Freighter · Albedo · LOBSTR · xBull"]
+        HOR["Horizon"]
+    end
+
+    TJ --> P
+    BW --> P
+    NEW --> P
+    P -->|REST + WebSocket| R
+    WS -. real-time feed .-> TJ
+    R --> DB
+    R --> HZ
+    HZ --> HOR
+    TJ -->|simulate / submit| RPC
+    BW -->|get_badges| RPC
+    WL -->|sign & send| RPC
+    RPC --> CT
+    R --> TJ
+    R --> NEW
+    TJ --> WASM
 ```
 
 ## Smart Contract
