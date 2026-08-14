@@ -3,7 +3,7 @@ const sdk = require("@stellar/stellar-sdk");
 
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NET = sdk.Networks.TESTNET;
-const CONTRACT_ID = "CAZZTPKG54TM5CGPPZQSQWAEYRGKGWM2PDR232TUMZITK3JYKSGCUT5S";
+const CONTRACT_ID = "CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5";
 // Donor secret - use a funded testnet account
 const DONOR_SECRET = process.env.STELLAR_SECRET || "SCHHJJGBCLCFQUDUIUZ7SIS2BIH4EEOENDWFKRH6W6U656AYHMQUEFVC";
 

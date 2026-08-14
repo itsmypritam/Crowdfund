@@ -36,7 +36,7 @@ const STELLAR_PUBLIC_KEY_RE = /^G[A-Z2-7]{55}$/;
 const HORIZON = "https://horizon-testnet.stellar.org";
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NET = Networks.TESTNET;
-const BACKEND = "https://stellar-tip-jar.onrender.com";
+const BACKEND = "https://crowdfund-enq9.onrender.com";
 
 type WalletType = "freighter" | "albedo" | "lobstr" | "xbull";
 

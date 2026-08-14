@@ -8,7 +8,7 @@ const NET = sdk.Networks.TESTNET;
 const PUBKEY = "GCG5DOV4HMZT73OWJMZCUTHTWP3PQYC2S3GNOARUGPTPVH2IAR6REWQN";
 const PORT = 4444;
 
-const wasm = fs.readFileSync("contract/target/wasm32-unknown-unknown/release/crowd_escrow.wasm");
+const wasm = fs.readFileSync("contract/target/wasm32v1-none/release/crowd_escrow.wasm");
 const wasmHash = crypto.createHash("sha256").update(wasm).digest();
 const server = new sdk.rpc.Server(RPC_URL);
 

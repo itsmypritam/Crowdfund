@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const BACKEND = "https://stellar-tip-jar.onrender.com";
+const BACKEND = "https://crowdfund-enq9.onrender.com";
 
 interface AnalyticsSummary {
   totalRequests: number;

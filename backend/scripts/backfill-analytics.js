@@ -2,7 +2,7 @@
 // (public/user-data.csv) into the backend analytics store.
 //
 //   Usage:
-//     BACKEND_URL=https://stellar-tip-jar.onrender.com node backend/scripts/backfill-analytics.js
+//     BACKEND_URL=https://crowdfund-enq9.onrender.com node backend/scripts/backfill-analytics.js
 //
 // Every row in the CSV corresponds to a verified Stellar testnet
 // transaction (see the README user interaction table). This script
@@ -16,7 +16,7 @@
 const fs = require("fs");
 const path = require("path");
 const csvPath = path.join(__dirname, "..", "..", "public", "user-data.csv");
-const backendUrl = process.env.BACKEND_URL || "https://stellar-tip-jar.onrender.com";
+const backendUrl = process.env.BACKEND_URL || "https://crowdfund-enq9.onrender.com";
 const horizonUrl = process.env.HORIZON_URL || "https://horizon-testnet.stellar.org";
 
 function parseCsv(text) {

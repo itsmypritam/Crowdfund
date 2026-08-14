@@ -20,8 +20,8 @@ A milestone-based crowdfunding platform with escrow protection, built on **Stell
 ## Live Demo
 
 - **Frontend**:[ https://warriorpinto-6k1ikg.stormkit.dev/ (Stormkit)](https://warriorpinto-6k1ikg.stormkit.dev/)
-- **Backend API**: https://stellar-tip-jar.onrender.com
-- **Backend Health**: https://stellar-tip-jar.onrender.com/health
+- **Backend API**: https://crowdfund-enq9.onrender.com
+- **Backend Health**: https://crowdfund-enq9.onrender.com/health
 
 
 
@@ -76,7 +76,7 @@ npm start
 
 ```bash
 cd contract
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32v1-none --release
 ```
 
 ## Testing
@@ -149,9 +149,9 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 ### Contract Details
 
 - **Network**: Stellar Testnet
-- **Contract ID**: `CAZZTPKG54TM5CGPPZQSQWAEYRGKGWM2PDR232TUMZITK3JYKSGCUT5S`
-- **Deployment Tx**: [`63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784`](https://stellar.expert/explorer/testnet/tx/63ea3ad51e915382bf901ea5282151f885d1244a56476b6d262e24d74456d784)
-- **WASM Upload Tx**: [`c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3`](https://stellar.expert/explorer/testnet/tx/c69b31a9f4eef9b5bf6d4bee6aad5e9abf7f957bd98f1a77e17b485e606117f3)
+- **Contract ID**: `CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5`
+- **Deployment Tx**: [`556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5`](https://stellar.expert/explorer/testnet/tx/556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5)
+- **WASM Upload Tx**: [`bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd`](https://stellar.expert/explorer/testnet/tx/bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd)
 
 
 
@@ -364,7 +364,7 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 
 > Wallet addresses and transaction hashes are truncated for readability - click any value to view it in full on Stellar Expert (testnet). Full data: [`public/user-data.csv`](public/user-data.csv).
 
-> **Note**: Live analytics data available at [backend dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard) and [analytics API](https://stellar-tip-jar.onrender.com/api/analytics).
+> **Note**: Live analytics data available at [backend dashboard](https://crowdfund-enq9.onrender.com/api/analytics/dashboard) and [analytics API](https://crowdfund-enq9.onrender.com/api/analytics).
 
 ### User Onboarding Form
 
@@ -383,8 +383,8 @@ Feedback is collected via:
 2. **Google Form** for structured onboarding data (wallet, email, name, rating)
 
 Available at:
-- **API**: `GET https://stellar-tip-jar.onrender.com/api/feedback`
-- **Dashboard**: [Analytics Dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+- **API**: `GET https://crowdfund-enq9.onrender.com/api/feedback`
+- **Dashboard**: [Analytics Dashboard](https://crowdfund-enq9.onrender.com/api/analytics/dashboard)
 - **Google Form Responses**: [Google Sheet](https://docs.google.com/spreadsheets/d/1-eLvp_nKOQOvvvqe1E_99eFwXFBSxkpGqZWubfQiXys/edit?usp=sharing)
 
 ### User Feedback Iteration & Improvement Plan
@@ -428,7 +428,7 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 - **Analytics API**: `GET /api/analytics` — returns summary stats + daily breakdown + recent events
 - **Analytics Dashboard**: `GET /api/analytics/dashboard` — visual dashboard for monitoring (HTML)
 - **Feedback API**: `POST /api/feedback` — collect user ratings and messages
-- **Live dashboard**: [stellar-tip-jar.onrender.com/api/analytics/dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+- **Live dashboard**: [crowdfund-enq9.onrender.com/api/analytics/dashboard](https://crowdfund-enq9.onrender.com/api/analytics/dashboard)
 
 #### Backfill Verified On-Chain Interactions
 
@@ -437,13 +437,13 @@ The 50 user wallet interactions in `public/user-data.csv` are real, verified Ste
 ```bash
 cd backend
 npm install
-BACKEND_URL=https://stellar-tip-jar.onrender.com node scripts/backfill-analytics.js
+BACKEND_URL=https://crowdfund-enq9.onrender.com node scripts/backfill-analytics.js
 ```
 
 Each row is recorded as a `donation` analytics event with its on-chain `txHash`, wallet, and real transaction timestamp (fetched from Horizon). Re-running the script is safe — the server dedupes by `txHash`.
 
 #### Infrastructure Monitoring
-- Backend health check: `https://stellar-tip-jar.onrender.com/health`
+- Backend health check: `https://crowdfund-enq9.onrender.com/health`
 - CI/CD pipeline: GitHub Actions (`.github/workflows/ci.yml`)
 - Transaction tracking: Stellar Expert links for every transaction
 - Render uptime monitoring (built-in)
@@ -451,9 +451,9 @@ Each row is recorded as a `donation` analytics event with its on-chain `txHash`,
 #### Monitoring Screenshots
 
 Live backend analytics dashboard:
-- [View live dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
-- [View raw analytics API](https://stellar-tip-jar.onrender.com/api/analytics)
-- [View collected feedback](https://stellar-tip-jar.onrender.com/api/feedback)
+- [View live dashboard](https://crowdfund-enq9.onrender.com/api/analytics/dashboard)
+- [View raw analytics API](https://crowdfund-enq9.onrender.com/api/analytics)
+- [View collected feedback](https://crowdfund-enq9.onrender.com/api/feedback)
 
 Dashboard screenshot (shows live donation, wallet connect and page-view metrics):
 
