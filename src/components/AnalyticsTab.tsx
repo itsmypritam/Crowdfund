@@ -74,12 +74,25 @@ export default function AnalyticsTab() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    const fetchWithRetry = async (url: string, retries = 3): Promise<Response> => {
+      let lastErr: any;
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) return res;
+          lastErr = new Error(`Request failed (${res.status})`);
+        } catch (err: any) {
+          lastErr = err;
+        }
+        if (i < retries) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+      }
+      throw lastErr;
+    };
     try {
       const [analyticsRes, feedbackRes] = await Promise.all([
-        fetch(`${BACKEND}/api/analytics`),
-        fetch(`${BACKEND}/api/feedback`),
+        fetchWithRetry(`${BACKEND}/api/analytics`),
+        fetchWithRetry(`${BACKEND}/api/feedback`),
       ]);
-      if (!analyticsRes.ok || !feedbackRes.ok) throw new Error("Failed to load analytics");
       const analytics = await analyticsRes.json();
       const feedbackData = await feedbackRes.json();
       setSummary(analytics.summary);

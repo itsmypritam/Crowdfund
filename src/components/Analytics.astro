@@ -28,9 +28,8 @@ const backendUrl = import.meta.env.PUBLIC_BACKEND_URL ?? "https://crowdfund-enq9
   </>
 )}
 
-<script is:inline>
-  const backend = "{backendUrl}";
-  fetch(backend + "/api/analytics/event", {
+<script is:inline define:vars={{ backendUrl }}>
+  fetch(backendUrl + "/api/analytics/event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type: "page_view", url: location.pathname }),
