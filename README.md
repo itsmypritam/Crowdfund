@@ -409,6 +409,7 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 ### Analytics & Monitoring
 
 #### Client-Side Analytics
+- **Mixpanel** — Product analytics with autocapture + 100% session recording (token embedded in `src/lib/analytics.ts`, tracks `wallet_connect`, `donate` and all custom events)
 - **Plausible** — Privacy-friendly analytics (enabled via `PUBLIC_PLAUSIBLE_DOMAIN` env var)
 - **Google Analytics 4** — Standard web analytics (enabled via `PUBLIC_GA_MEASUREMENT_ID` env var)
 - **Cloudflare Web Analytics** — 100% free, privacy-first analytics (enabled via `PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` env var)
