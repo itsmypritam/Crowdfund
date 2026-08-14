@@ -557,7 +557,6 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 | 48 | Uday Shankar | udayshankar@gmail.com | [GA2T...EJF3](https://stellar.expert/explorer/testnet/account/GA2T34AXWOM7TMC2YSGXFQFAIBLNOI2ASNUB7YI2VU5T3AYFFC2EEJF3) | [`240b...1352`](https://stellar.expert/explorer/testnet/tx/240b1ff4da64812a25be259dfbf7befd23480293e37cbacb54c9a0d8fe951352) | Donate |
 | 49 | Yuvraj Tomar | yuvrajtomar@gmail.com | [GAC2...OUBU](https://stellar.expert/explorer/testnet/account/GAC23W7ZGU6JB25QH5AMH6XEPCEHQQD2PKPUOTBOF4UUWSL3LSCPOUBU) | [`e8d0...f20c`](https://stellar.expert/explorer/testnet/tx/e8d08fa856134007d79f26d9c8dc4691b1885f9d4622eef8638b956902b2f20c) | Donate |
 | 50 | Zubin Khosla | zubinkhosla@gmail.com | [GA3P...WYF3](https://stellar.expert/explorer/testnet/account/GA3PA3SYBKO7LN5Q2DXB2LEGS5SFZ7HRA5SL6OKHDDIR3BCXWRMRWYF3) | [`33cf...a463`](https://stellar.expert/explorer/testnet/tx/33cf13328ca3e341ccc21fa514a029ae169255e387e25e446be9eaf0734ba463) | Donate |
-| 50 | Zubin Khosla | zubinkhosla@gmail.com | [GACN...K3KZ](https://stellar.expert/explorer/testnet/account/GACN6JGAGRPBNGPTJBDWJD5LEU72YPOIMAZXSIJHZSWFLDPTVTSBK3KZ) | [`0453...0a7d`](https://stellar.expert/explorer/testnet/tx/0453b3e401a8c193ea5a3def9f6d5d5283f60c7d7afacc6ca1d01dee77d70a7d) | Donate |
 
 > Wallet addresses and transaction hashes are truncated for readability - click any value to view it in full on Stellar Expert (testnet). Full data: [`public/user-data.csv`](public/user-data.csv).
 
