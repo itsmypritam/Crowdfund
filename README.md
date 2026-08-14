@@ -159,6 +159,9 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 
 ## CI/CD Pipeline
 ## Vitest Test Report
+#Analytics setup
+
+<img width="1816" height="901" alt="anna" src="https://github.com/user-attachments/assets/a4a4f6fd-9cd1-4ede-ac59-15e5ecf77f5e" />
 
 ### Summary
 
