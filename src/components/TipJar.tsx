@@ -874,6 +874,7 @@ export default function TipJar() {
       const sourceAccount = await server.getAccount(address);
 
       const scParams = [
+        nativeToScVal(address, { type: "address" }),
         nativeToScVal(milestoneId, { type: "u32" }),
       ];
 

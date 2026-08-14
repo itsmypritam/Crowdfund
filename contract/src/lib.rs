@@ -199,7 +199,8 @@ impl CrowdEscrowContract {
         idx
     }
 
-    pub fn approve_milestone(env: Env, milestone_id: u32) {
+    pub fn approve_milestone(env: Env, approver: Address, milestone_id: u32) {
+        approver.require_auth();
         let campaign: Campaign = env
             .storage()
             .instance()
@@ -222,7 +223,6 @@ impl CrowdEscrowContract {
         assert!(!milestone.released, "milestone already released");
         assert!(!milestone.completed, "milestone already completed");
 
-        let approver = env.invoker();
         assert!(approver != campaign.owner, "owner cannot approve own milestone");
 
         assert!(
@@ -295,7 +295,7 @@ impl CrowdEscrowContract {
             .set(&DataKey::Campaign, &campaign);
 
         env.events().publish(
-            (symbol_short!("ms_release"),),
+            (symbol_short!("ms_rel"),),
             (milestone_id, milestone.amount),
         );
     }
@@ -395,7 +395,7 @@ fn get_total_escrowed(env: &Env) -> i128 {
         .unwrap_or(0);
     let mut total: i128 = 0;
     for i in 1..=count {
-        if let Some(m) = env.storage().instance().get::<DataKey, Milestone>(DataKey::Milestone(i))
+        if let Some(m) = env.storage().instance().get::<DataKey, Milestone>(&DataKey::Milestone(i))
         {
             if !m.released {
                 total += m.amount;
