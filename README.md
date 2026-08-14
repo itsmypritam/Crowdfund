@@ -496,6 +496,10 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 
 #### Backend Analytics
 <img width="1912" height="940" alt="image" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
+
+<img width="1885" height="772" alt="ana13" src="https://github.com/user-attachments/assets/d5b5802c-d302-471f-803d-129985c81b4f" />
+<img width="1855" height="866" alt="ana12" src="https://github.com/user-attachments/assets/d8e82a16-c84f-4bd9-9e6b-b7748301a465" />
+
 https://crowdfund-enq9.onrender.com/api/analytics/dashboard
 - **Analytics tab in the frontend** — The live app (`#analytics` nav link) shows a real-time analytics tab: summary stat cards (requests, wallet connects, donations, unique visitors, feedback), a 7-day daily activity chart, a recent activity feed (with Stellar Expert links for every tx), and collected user feedback
 - **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
@@ -533,7 +537,6 @@ Live backend analytics dashboard:
 
 Dashboard screenshot (shows live donation, wallet connect and page-view metrics):
 
-<img width="1912" height="940" alt="analytics dashboard" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
 
 ## License
 
