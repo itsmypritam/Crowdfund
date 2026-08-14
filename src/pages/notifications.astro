@@ -1,0 +1,18 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import NotificationsInbox from "../components/NotificationsInbox";
+---
+
+<SiteLayout title="Notifications – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-3xl">
+      <div class="mb-10">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Notifications</h1>
+        <p class="mt-2 max-w-lg text-sm text-muted-foreground">
+          Pledge, approval, and refund updates for your wallet, all in one inbox.
+        </p>
+      </div>
+      <NotificationsInbox client:only="react" />
+    </div>
+  </section>
+</SiteLayout>

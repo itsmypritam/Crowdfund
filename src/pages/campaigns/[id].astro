@@ -1,6 +1,7 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import TipJar from "../../components/TipJar";
+import BadgeWall from "../../components/BadgeWall";
 
 export async function getStaticPaths() {
   const backendUrl = import.meta.env.PUBLIC_BACKEND_URL ?? "https://crowdfund-enq9.onrender.com";
@@ -27,6 +28,7 @@ const { id } = Astro.params;
         </a>
       </div>
       <TipJar client:only="react" contractId={id} />
+      <BadgeWall client:only="react" contractId={id} />
     </div>
   </section>
 </SiteLayout>

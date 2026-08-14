@@ -7,8 +7,8 @@
 **Deliver-or-refund crowdfunding on Stellar Soroban** — funds stay in on-chain escrow until the creator proves each milestone, backers vote to mark missed work, and everyone can claim pro-rata refunds. Multi-wallet. Real-time. On-chain.
 
 [![CI](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml)
-![Backend Tests](https://img.shields.io/badge/backend%20tests-29%20passing-brightgreen?style=flat-square)
-![Contract Tests](https://img.shields.io/badge/contract%20tests-10%20passing-blue?style=flat-square)
+![Backend Tests](https://img.shields.io/badge/backend%20tests-41%20passing-brightgreen?style=flat-square)
+![Contract Tests](https://img.shields.io/badge/contract%20tests-13%20passing-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-10B981?style=flat-square)
 
 ![Stellar](https://img.shields.io/badge/Stellar-Testnet-8B5CF6?style=flat-square&logo=stellar&logoColor=white)
@@ -97,6 +97,20 @@ https://github.com/user-attachments/assets/853efdd2-501d-49dc-8342-98e923029bc3
 | 🔗 **Transaction Status** | Track pending/success/fail states with Stellar Expert links |
 | 📱 **Mobile Responsive** | Fully responsive UI built with Tailwind CSS |
 | 🔄 **CI/CD** | Automated test + build pipeline for backend, contract, and frontend |
+
+### ✨ New: Referrals, Badges, Leaderboard, Notifications
+
+![Referrals](https://img.shields.io/badge/Referrals-0D9488?style=for-the-badge)
+![Badges](https://img.shields.io/badge/Badges-DB2777?style=for-the-badge)
+![Leaderboard](https://img.shields.io/badge/Leaderboard-2563EB?style=for-the-badge)
+![Notifications](https://img.shields.io/badge/Notifications-7C3AED?style=for-the-badge)
+
+| Feature | Description |
+|---|---|
+| 🤝 **Referral Hub** | Generate a shareable code at `/referrals`, track clicks and redemptions, and redeem friends' codes |
+| 🏅 **On-Chain Badges** | `get_badges` reads earned badges (Supporter, Gold Supporter, Reviewer, Refund Claimant, Creator, Deliverer) straight from the contract — shown on every campaign page |
+| 📊 **Leaderboard** | `/leaderboard` ranks the biggest supporters by total XLM pledged (aggregated backend endpoint + on-chain `get_leaderboard`) |
+| 🔔 **Notifications** | `/notifications` inbox with per-wallet pledge/approval/refund updates, unread badges, and mark-all-read |
 
 ## Requirements
 
@@ -218,6 +232,8 @@ The Soroban contract (`contract/src/lib.rs`, **v2**) supports:
 - `get_missed_vote_count` / `has_voted` / `has_refunded` – Missed-milestone state
 - `get_donors` / `get_donor_count` / `get_donor_total` – Donor list and per-donor totals
 - `get_total_escrowed` – Total XLM currently held in escrow
+- `get_badges` – Earned on-chain badges for an address (Supporter, Gold Supporter, Reviewer, Refund Claimant, Creator, Deliverer)
+- `get_leaderboard` – Top donors ranked by total contributed (aggregated on-chain)
 
 ### Contract Details
 

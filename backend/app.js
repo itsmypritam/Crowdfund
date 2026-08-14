@@ -429,6 +429,164 @@ function createApp({
     res.sendFile(path.join(__dirname, "dashboard.html"));
   });
 
+  // ── leaderboard ────────────────────────────────────────────────
+  app.get("/api/leaderboard", (req, res) => {
+    const requested = parseInt(req.query.limit || "50", 10);
+    const limit = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), 200) : 50;
+    const rows = db
+      .prepare(
+        `SELECT donor, SUM(amount) AS total, COUNT(*) AS donations, MAX(timestamp) AS last_donation
+         FROM donations GROUP BY donor ORDER BY total DESC LIMIT ?`
+      )
+      .all(limit);
+    const entries = rows.map((r, i) => ({
+      rank: i + 1,
+      donor: r.donor,
+      total: r.total,
+      donations: r.donations,
+      lastDonation: r.last_donation,
+    }));
+    const totalDonors = db.prepare("SELECT COUNT(DISTINCT donor) c FROM donations").get().c;
+    res.json({ entries, totalDonors });
+  });
+
+  // ── referrals ─────────────────────────────────────────────────
+  const referralSchema = z.object({
+    wallet: z.string().min(8).max(70),
+  });
+
+  const redeemSchema = z.object({
+    code: z.string().min(3).max(40),
+    wallet: z.string().min(8).max(70),
+  });
+
+  function makeReferralCode() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 8; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  }
+
+  app.post("/api/referrals", (req, res) => {
+    const parsed = referralSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.issues[0].message });
+    }
+    const { wallet } = parsed.data;
+    const existing = db.prepare("SELECT * FROM referrals WHERE wallet = ?").get(wallet);
+    if (existing) {
+      return res.json({
+        code: existing.code,
+        uses: existing.uses,
+        clicks: existing.clicks,
+        created: false,
+      });
+    }
+    let code = makeReferralCode();
+    while (db.prepare("SELECT 1 FROM referrals WHERE code = ?").get(code)) {
+      code = makeReferralCode();
+    }
+    db.prepare("INSERT INTO referrals (code, wallet, created_at) VALUES (?,?,?)").run(
+      code,
+      wallet,
+      Date.now()
+    );
+    recordEvent("referral_created", { wallet, address: wallet });
+    res.status(201).json({ code, uses: 0, clicks: 0, created: true });
+  });
+
+  app.get("/api/referrals/:code", (req, res) => {
+    const row = db.prepare("SELECT * FROM referrals WHERE code = ?").get(req.params.code);
+    if (!row) return res.status(404).json({ error: "referral not found" });
+    db.prepare("UPDATE referrals SET clicks = clicks + 1 WHERE code = ?").run(row.code);
+    recordEvent("referral_click", { wallet: row.wallet });
+    res.json({ code: row.code, wallet: row.wallet, uses: row.uses, clicks: row.clicks + 1 });
+  });
+
+  app.post("/api/referrals/redeem", (req, res) => {
+    const parsed = redeemSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.issues[0].message });
+    }
+    const { code, wallet } = parsed.data;
+    const row = db.prepare("SELECT * FROM referrals WHERE code = ?").get(code);
+    if (!row) return res.status(404).json({ error: "referral not found" });
+    if (row.wallet === wallet) {
+      return res.status(400).json({ error: "cannot redeem your own referral" });
+    }
+    const used = db.prepare("SELECT 1 FROM referrals_used WHERE wallet = ?").get(wallet);
+    if (used) return res.status(409).json({ error: "already referred" });
+    db.prepare("UPDATE referrals SET uses = uses + 1 WHERE code = ?").run(code);
+    db.prepare("INSERT INTO referrals_used (wallet, code, used_at) VALUES (?,?,?)").run(
+      wallet,
+      code,
+      Date.now()
+    );
+    recordEvent("referral_redeem", { wallet, address: wallet });
+    res.json({ ok: true, code, uses: row.uses + 1 });
+  });
+
+  // ── notifications ─────────────────────────────────────────────
+  const notificationSchema = z.object({
+    wallet: z.string().min(8).max(70),
+    type: z.string().min(1).max(40),
+    title: z.string().min(1).max(120),
+    body: z.string().max(1000).optional().default(""),
+    campaignId: z.string().max(80).optional().default(""),
+    link: z.string().max(500).optional().default(""),
+  });
+
+  const ROW_TO_NOTIFICATION = (r) => ({
+    id: r.id,
+    wallet: r.wallet,
+    type: r.type,
+    title: r.title,
+    body: r.body,
+    campaignId: r.campaign_id,
+    link: r.link,
+    read: Boolean(r.read),
+    createdAt: r.created_at,
+  });
+
+  app.post("/api/notifications", (req, res) => {
+    const parsed = notificationSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.issues[0].message });
+    }
+    const { wallet, type, title, body, campaignId, link } = parsed.data;
+    const info = db
+      .prepare(
+        `INSERT INTO notifications (wallet, type, title, body, campaign_id, link, read, created_at)
+         VALUES (?,?,?,?,?,?,0,?)`
+      )
+      .run(wallet, type, title, body, campaignId || null, link, Date.now());
+    const created = db.prepare("SELECT * FROM notifications WHERE id = ?").get(info.lastInsertRowid);
+    recordEvent("notification", { wallet, address: wallet, campaignId: campaignId || null });
+    res.status(201).json(ROW_TO_NOTIFICATION(created));
+  });
+
+  app.get("/api/notifications", (req, res) => {
+    const wallet = typeof req.query.wallet === "string" ? req.query.wallet : "";
+    if (wallet.length < 8) return res.status(400).json({ error: "wallet required" });
+    const requested = parseInt(req.query.limit || "50", 10);
+    const limit = Number.isFinite(requested) ? Math.min(Math.max(requested, 1), 100) : 50;
+    const rows = db
+      .prepare("SELECT * FROM notifications WHERE wallet = ? ORDER BY created_at DESC LIMIT ?")
+      .all(wallet, limit);
+    res.json(rows.map(ROW_TO_NOTIFICATION));
+  });
+
+  app.post("/api/notifications/read", (req, res) => {
+    const parsed = referralSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: parsed.error.issues[0].message });
+    }
+    db.prepare("UPDATE notifications SET read = 1 WHERE wallet = ?").run(parsed.data.wallet);
+    res.json({ ok: true });
+  });
+
   app.use((_req, res) => res.status(404).json({ error: "not found" }));
   app.use((err, _req, res, _next) => {
     if (logger) logger.error(err);

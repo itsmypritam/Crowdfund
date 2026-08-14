@@ -74,6 +74,34 @@ function migrate(db) {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS referrals (
+      code TEXT PRIMARY KEY,
+      wallet TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      uses INTEGER NOT NULL DEFAULT 0,
+      clicks INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_referrals_wallet ON referrals (wallet);
+
+    CREATE TABLE IF NOT EXISTS referrals_used (
+      wallet TEXT PRIMARY KEY,
+      code TEXT NOT NULL,
+      used_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      wallet TEXT NOT NULL,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT DEFAULT '',
+      campaign_id TEXT,
+      link TEXT DEFAULT '',
+      read INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_notifications_wallet ON notifications (wallet);
   `);
   db.pragma("user_version = 1");
 }

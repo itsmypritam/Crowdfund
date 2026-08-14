@@ -49,6 +49,13 @@ pub struct Proof {
 }
 
 #[contracttype]
+#[derive(Clone, Debug)]
+pub struct Badge {
+    pub name: String,
+    pub description: String,
+}
+
+#[contracttype]
 pub enum DataKey {
     Campaign,
     DonorCount,
@@ -712,6 +719,156 @@ impl CrowdEscrowContract {
         }
         proofs
     }
+
+    pub fn get_badges(env: Env, addr: Address) -> Vec<Badge> {
+        let campaign: Option<Campaign> = env.storage().instance().get(&DataKey::Campaign);
+        let mut badges: Vec<Badge> = Vec::new(&env);
+
+        let donor_total: i128 = env
+            .storage()
+            .instance()
+            .get(&DataKey::DonorTotal(addr.clone()))
+            .unwrap_or(0);
+        if donor_total > 0 {
+            badges.push_back(Badge {
+                name: String::from_str(&env, "Supporter"),
+                description: String::from_str(&env, "Contributed to this campaign"),
+            });
+            if let Some(c) = &campaign {
+                if donor_total * 10 >= c.goal {
+                    badges.push_back(Badge {
+                        name: String::from_str(&env, "Gold Supporter"),
+                        description: String::from_str(&env, "Contributed at least 10% of the campaign goal"),
+                    });
+                }
+            }
+        }
+
+        let ms_count: u32 = env
+            .storage()
+            .instance()
+            .get(&DataKey::MilestoneCount)
+            .unwrap_or(0);
+        let mut approved_any = false;
+        let mut refunded_any = false;
+        for i in 1..=ms_count {
+            if env
+                .storage()
+                .instance()
+                .has(&DataKey::MilestoneApproval(i, addr.clone()))
+            {
+                approved_any = true;
+            }
+            if env.storage().instance().has(&DataKey::Refunded(i, addr.clone())) {
+                refunded_any = true;
+            }
+            if approved_any && refunded_any {
+                break;
+            }
+        }
+        if approved_any {
+            badges.push_back(Badge {
+                name: String::from_str(&env, "Reviewer"),
+                description: String::from_str(&env, "Approved a delivered milestone"),
+            });
+        }
+        if refunded_any {
+            badges.push_back(Badge {
+                name: String::from_str(&env, "Refund Claimant"),
+                description: String::from_str(&env, "Claimed a pro-rata refund on a missed milestone"),
+            });
+        }
+
+        if let Some(c) = &campaign {
+            if c.owner == addr {
+                badges.push_back(Badge {
+                    name: String::from_str(&env, "Creator"),
+                    description: String::from_str(&env, "Created this campaign"),
+                });
+                let mut released_any = false;
+                for i in 1..=ms_count {
+                    let milestone: Option<Milestone> = env
+                        .storage()
+                        .instance()
+                        .get(&DataKey::Milestone(i));
+                    if let Some(m) = milestone {
+                        if m.released {
+                            released_any = true;
+                            break;
+                        }
+                    }
+                }
+                if released_any {
+                    badges.push_back(Badge {
+                        name: String::from_str(&env, "Deliverer"),
+                        description: String::from_str(&env, "Successfully delivered a milestone"),
+                    });
+                }
+            }
+        }
+
+        badges
+    }
+
+    pub fn get_leaderboard(env: Env, limit: u32) -> Vec<DonorInfo> {
+        let count: u32 = env
+            .storage()
+            .instance()
+            .get(&DataKey::DonorCount)
+            .unwrap_or(0);
+        let lim = if limit == 0 { 50 } else { limit.min(200) };
+
+        let mut entries: Vec<DonorInfo> = Vec::new(&env);
+        for i in 1..=count {
+            let donation: Option<DonorInfo> = env.storage().instance().get(&DataKey::Donation(i));
+            if let Some(d) = donation {
+                let mut found = false;
+                for e in 0..entries.len() {
+                    if entries.get(e).unwrap().donor == d.donor {
+                        let cur = entries.get(e).unwrap().clone();
+                        let upd = DonorInfo {
+                            donor: cur.donor,
+                            amount: cur.amount + d.amount,
+                            timestamp: cur.timestamp.max(d.timestamp),
+                        };
+                        entries.set(e, upd);
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    entries.push_back(d);
+                }
+            }
+        }
+
+        let mut sorted: Vec<DonorInfo> = Vec::new(&env);
+        while entries.len() > 0 {
+            let mut best = 0u32;
+            for i in 1..entries.len() {
+                if entries.get(i).unwrap().amount > entries.get(best).unwrap().amount {
+                    best = i;
+                }
+            }
+            sorted.push_back(entries.get(best).unwrap().clone());
+            let mut rest: Vec<DonorInfo> = Vec::new(&env);
+            for i in 0..entries.len() {
+                if i != best {
+                    rest.push_back(entries.get(i).unwrap().clone());
+                }
+            }
+            entries = rest;
+        }
+
+        let mut out: Vec<DonorInfo> = Vec::new(&env);
+        for i in 0..lim {
+            if i >= sorted.len() {
+                break;
+            }
+            out.push_back(sorted.get(i).unwrap().clone());
+        }
+        out
+    }
 }
 
 #[cfg(test)]
@@ -999,5 +1156,92 @@ mod test {
         client.vote_missed(&backer2, &1);
         client.request_refund(&backer1, &1);
         client.request_refund(&backer1, &1);
+    }
+
+    fn badge_names(env: &Env, badges: &Vec<Badge>) -> Vec<String> {
+        let mut names: Vec<String> = Vec::new(env);
+        for i in 0..badges.len() {
+            names.push_back(badges.get(i).unwrap().name.clone());
+        }
+        names
+    }
+
+    #[test]
+    fn test_badges_supporter_and_creator() {
+        let env = Env::default();
+        let (client, owner, backer1, backer2, stranger, _token, _addr) = setup(&env);
+        client.donate(&backer1, &6_000_000_000i128);
+        client.donate(&backer2, &800_000_000i128);
+
+        let owner_badges = badge_names(&env, &client.get_badges(&owner));
+        assert!(owner_badges.contains(&String::from_str(&env, "Creator")));
+        assert!(!owner_badges.contains(&String::from_str(&env, "Supporter")));
+
+        let b1 = badge_names(&env, &client.get_badges(&backer1));
+        assert!(b1.contains(&String::from_str(&env, "Supporter")));
+        assert!(b1.contains(&String::from_str(&env, "Gold Supporter")));
+
+        let b2 = badge_names(&env, &client.get_badges(&backer2));
+        assert!(b2.contains(&String::from_str(&env, "Supporter")));
+        assert!(!b2.contains(&String::from_str(&env, "Gold Supporter")));
+
+        assert_eq!(client.get_badges(&stranger).len(), 0);
+    }
+
+    #[test]
+    fn test_badges_reviewer_deliverer_refund() {
+        let env = Env::default();
+        let (client, owner, backer1, backer2, _stranger, _token, _addr) = setup(&env);
+        client.donate(&backer1, &6_000_000_000i128);
+        client.donate(&backer2, &4_000_000_000i128);
+
+        client.add_milestone(
+            &String::from_str(&env, "Phase 1"),
+            &5_000_000_000i128,
+            &200_000u64,
+            &2u32,
+        );
+        client.approve_milestone(&backer1, &1);
+        client.approve_milestone(&backer2, &1);
+        assert!(badge_names(&env, &client.get_badges(&backer1))
+            .contains(&String::from_str(&env, "Reviewer")));
+
+        client.release_milestone(&1);
+        let owner_badges = badge_names(&env, &client.get_badges(&owner));
+        assert!(owner_badges.contains(&String::from_str(&env, "Creator")));
+        assert!(owner_badges.contains(&String::from_str(&env, "Deliverer")));
+
+        client.add_milestone(
+            &String::from_str(&env, "Missed"),
+            &2_000_000_000i128,
+            &5_000u64,
+            &1u32,
+        );
+        set_time(&env, 6_000);
+        client.vote_missed(&backer1, &2);
+        client.vote_missed(&backer2, &2);
+        client.request_refund(&backer1, &2);
+        assert!(badge_names(&env, &client.get_badges(&backer1))
+            .contains(&String::from_str(&env, "Refund Claimant")));
+    }
+
+    #[test]
+    fn test_leaderboard_aggregates_and_sorts() {
+        let env = Env::default();
+        let (client, _owner, backer1, backer2, _stranger, _token, _addr) = setup(&env);
+        client.donate(&backer1, &2_000_000_000i128);
+        client.donate(&backer2, &5_000_000_000i128);
+        client.donate(&backer1, &2_000_000_000i128);
+
+        let lb = client.get_leaderboard(&10);
+        assert_eq!(lb.len(), 2);
+        assert_eq!(lb.get(0).unwrap().donor, backer2);
+        assert_eq!(lb.get(0).unwrap().amount, 5_000_000_000i128);
+        assert_eq!(lb.get(1).unwrap().donor, backer1);
+        assert_eq!(lb.get(1).unwrap().amount, 4_000_000_000i128);
+
+        let truncated = client.get_leaderboard(&1);
+        assert_eq!(truncated.len(), 1);
+        assert_eq!(truncated.get(0).unwrap().donor, backer2);
     }
 }

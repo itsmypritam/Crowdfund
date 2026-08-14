@@ -1,0 +1,18 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import Leaderboard from "../components/Leaderboard";
+---
+
+<SiteLayout title="Leaderboard – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-10">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Supporters Leaderboard</h1>
+        <p class="mt-2 max-w-lg text-sm text-muted-foreground">
+          The biggest backers across all campaigns, ranked by total XLM pledged.
+        </p>
+      </div>
+      <Leaderboard client:only="react" />
+    </div>
+  </section>
+</SiteLayout>

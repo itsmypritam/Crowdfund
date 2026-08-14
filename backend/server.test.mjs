@@ -378,6 +378,137 @@ describe("persistence", () => {
   });
 });
 
+describe("leaderboard", () => {
+  it("returns an empty leaderboard when there are no donations", async () => {
+    const { app } = makeApp();
+    const res = await request(app).get("/api/leaderboard");
+    expect(res.status).toBe(200);
+    expect(res.body.entries).toEqual([]);
+    expect(res.body.totalDonors).toBe(0);
+  });
+
+  it("aggregates donations per donor sorted by total", async () => {
+    const { app } = makeApp();
+    await createCampaign(app, "lb1");
+    await request(app).post("/api/donations").send({ campaignId: "lb1", donor: BACKER, amount: 30, hash: HASH });
+    await request(app).post("/api/donations").send({ campaignId: "lb1", donor: OWNER, amount: 100, hash: HASH2 });
+    await request(app).post("/api/donations").send({ campaignId: "lb1", donor: BACKER, amount: 20, hash: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde0" });
+    const res = await request(app).get("/api/leaderboard");
+    expect(res.status).toBe(200);
+    expect(res.body.totalDonors).toBe(2);
+    expect(res.body.entries[0].donor).toBe(OWNER);
+    expect(res.body.entries[0].total).toBe(100);
+    expect(res.body.entries[0].donations).toBe(1);
+    expect(res.body.entries[1].donor).toBe(BACKER);
+    expect(res.body.entries[1].total).toBe(50);
+    expect(res.body.entries[1].donations).toBe(2);
+  });
+});
+
+describe("referrals", () => {
+  it("creates a referral code for a wallet", async () => {
+    const { app } = makeApp();
+    const res = await request(app).post("/api/referrals").send({ wallet: BACKER });
+    expect(res.status).toBe(201);
+    expect(res.body.created).toBe(true);
+    expect(res.body.code).toMatch(/^[A-Z2-9]{8}$/);
+  });
+
+  it("returns the same code on repeat request", async () => {
+    const { app } = makeApp();
+    await request(app).post("/api/referrals").send({ wallet: BACKER });
+    const res = await request(app).post("/api/referrals").send({ wallet: BACKER });
+    expect(res.status).toBe(200);
+    expect(res.body.created).toBe(false);
+    expect(res.body.code).toMatch(/^[A-Z2-9]{8}$/);
+  });
+
+  it("rejects invalid wallets", async () => {
+    const { app } = makeApp();
+    const res = await request(app).post("/api/referrals").send({ wallet: "x" });
+    expect(res.status).toBe(400);
+  });
+
+  it("resolves and counts clicks on a referral", async () => {
+    const { app } = makeApp();
+    await request(app).post("/api/referrals").send({ wallet: BACKER });
+    const created = await request(app).get("/api/referrals/XXXXXXXX");
+    expect(created.status).toBe(404);
+    const create = await request(app).post("/api/referrals").send({ wallet: BACKER });
+    const resolve = await request(app).get(`/api/referrals/${create.body.code}`);
+    expect(resolve.status).toBe(200);
+    expect(resolve.body.wallet).toBe(BACKER);
+    expect(resolve.body.clicks).toBe(1);
+    const again = await request(app).get(`/api/referrals/${create.body.code}`);
+    expect(again.body.clicks).toBe(2);
+  });
+
+  it("redeems a referral for a different wallet only once", async () => {
+    const { app } = makeApp();
+    const create = await request(app).post("/api/referrals").send({ wallet: BACKER });
+    const code = create.body.code;
+    const redeem = await request(app).post("/api/referrals/redeem").send({ code, wallet: OWNER });
+    expect(redeem.status).toBe(200);
+    expect(redeem.body.uses).toBe(1);
+    const dup = await request(app).post("/api/referrals/redeem").send({ code, wallet: OWNER });
+    expect(dup.status).toBe(409);
+    const self = await request(app).post("/api/referrals/redeem").send({ code, wallet: BACKER });
+    expect(self.status).toBe(400);
+  });
+
+  it("rejects redeeming an unknown code", async () => {
+    const { app } = makeApp();
+    const res = await request(app).post("/api/referrals/redeem").send({ code: "ZZZZZZZZ", wallet: OWNER });
+    expect(res.status).toBe(404);
+  });
+});
+
+describe("notifications", () => {
+  it("rejects invalid notification payloads", async () => {
+    const { app } = makeApp();
+    const res = await request(app).post("/api/notifications").send({ wallet: BACKER });
+    expect(res.status).toBe(400);
+  });
+
+  it("creates and lists notifications for a wallet", async () => {
+    const { app } = makeApp();
+    await request(app).post("/api/notifications").send({
+      wallet: BACKER,
+      type: "refund",
+      title: "Refund available",
+      body: "Claim your refund now",
+      campaignId: "camp1",
+      link: "/campaigns/camp1",
+    });
+    const res = await request(app).get(`/api/notifications?wallet=${BACKER}`);
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].title).toBe("Refund available");
+    expect(res.body[0].campaignId).toBe("camp1");
+    expect(res.body[0].read).toBe(false);
+  });
+
+  it("requires a wallet to list notifications", async () => {
+    const { app } = makeApp();
+    const res = await request(app).get("/api/notifications");
+    expect(res.status).toBe(400);
+  });
+
+  it("marks notifications read", async () => {
+    const { app } = makeApp();
+    await request(app).post("/api/notifications").send({
+      wallet: BACKER,
+      type: "welcome",
+      title: "Welcome",
+    });
+    const res = await request(app).post("/api/notifications/read").send({ wallet: BACKER });
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    const list = await request(app).get(`/api/notifications?wallet=${BACKER}`);
+    expect(list.body[0].read).toBe(true);
+  });
+});
+
 describe("unknown routes", () => {
   it("returns JSON 404", async () => {
     const { app } = makeApp();

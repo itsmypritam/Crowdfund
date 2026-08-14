@@ -1,0 +1,18 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import ReferralTool from "../components/ReferralTool";
+---
+
+<SiteLayout title="Referrals – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-3xl">
+      <div class="mb-10">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Referral Hub</h1>
+        <p class="mt-2 max-w-lg text-sm text-muted-foreground">
+          Get a shareable referral code, track clicks and redemptions, and redeem codes from friends.
+        </p>
+      </div>
+      <ReferralTool client:only="react" />
+    </div>
+  </section>
+</SiteLayout>
