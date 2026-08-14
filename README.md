@@ -251,7 +251,7 @@ Traditional crowdfunding (Kickstarter, GoFundMe) takes 5-10% fees, delays payout
 #### User Growth
 - [x] Minimum 50 testnet users onboarded — *(see 50 wallet interactions table below)*
 - [x] Real transaction activity — *(all 50 transactions confirmed on Stellar testnet)*
-- [x] Active usage proof — *(analytics dashboard + transaction hashes)*
+- [x] Active usage proof — *(in-app analytics tab, analytics dashboard + transaction hashes)*
 
 #### Product Improvements
 - [x] Analytics tracking added (Cloudflare, Vercel, custom backend)
@@ -416,6 +416,7 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 #### Backend Analytics
 <img width="1912" height="940" alt="image" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
 
+- **Analytics tab in the frontend** — The live app (`#analytics` nav link) shows a real-time analytics tab: summary stat cards (requests, wallet connects, donations, unique visitors, feedback), a 7-day daily activity chart, a recent activity feed (with Stellar Expert links for every tx), and collected user feedback
 - **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
 - **Persistent storage** — Events, feedback and campaign data are persisted to `backend/data/db.json` so metrics survive process restarts (disable with `DISABLE_PERSISTENCE=1`, override location with `DATA_FILE=...`)
 - **Deduplication** — Events keyed by an on-chain `txHash` are recorded only once, so backfills are idempotent

@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Analytics from "../components/Analytics.astro";
+import AnalyticsTab from "../components/AnalyticsTab";
 import TipJar from "../components/TipJar";
 import VercelAnalytics from "../components/VercelAnalytics";
 ---
@@ -24,6 +25,7 @@ import VercelAnalytics from "../components/VercelAnalytics";
           <a href="#features" class="hover:text-foreground transition-colors">Features</a>
           <a href="#crowdescrow" class="hover:text-foreground transition-colors">Campaign</a>
           <a href="#testimonials" class="hover:text-foreground transition-colors">Testimonials</a>
+          <a href="#analytics" class="hover:text-foreground transition-colors">Analytics</a>
         </nav>
       </div>
     </header>
@@ -114,6 +116,9 @@ import VercelAnalytics from "../components/VercelAnalytics";
           </div>
         </div>
       </section>
+
+      <!-- ANALYTICS (React island) -->
+      <AnalyticsTab client:only="react" />
 
       <!-- CTA -->
       <section class="relative overflow-hidden px-4 py-24">
