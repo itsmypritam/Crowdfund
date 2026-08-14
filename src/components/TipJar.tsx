@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { WASM_B64 } from "./wasm_base64";
 import {
   isConnected,
   getAddress,
@@ -9,7 +8,6 @@ import {
 import {
   Transaction,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   Account,
   Contract,
@@ -31,12 +29,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const STELLAR_PUBLIC_KEY_RE = /^G[A-Z2-7]{55}$/;
-const HORIZON = "https://horizon-testnet.stellar.org";
-const RPC_URL = "https://soroban-testnet.stellar.org";
-const NET = Networks.TESTNET;
-const BACKEND = "https://crowdfund-enq9.onrender.com";
+import {
+  RPC_URL,
+  NET,
+  BACKEND_URL,
+  WS_URL,
+  EXPLORER_URL,
+  NATIVE_TOKEN,
+  isValidAddress,
+} from "@/lib/config";
 
 type WalletType = "freighter" | "albedo" | "lobstr" | "xbull";
 
@@ -77,15 +78,26 @@ interface MilestoneInfo {
   requiredApprovals: number;
   released: boolean;
   completed: boolean;
+  missed: boolean;
+  refunded: string;
 }
 
-function isValidAddress(addr: string): boolean {
-  return typeof addr === "string" && STELLAR_PUBLIC_KEY_RE.test(addr);
+interface ProofInfo {
+  id: number;
+  milestoneId: number;
+  description: string;
+  proofHash: string;
+  timestamp: number;
 }
 
 const CONTRACT_ID_KEY = "crowdescrow_contract_id";
+const SIM_SOURCE = "SIM_SOURCE";
 
-export default function TipJar() {
+interface TipJarProps {
+  contractId?: string;
+}
+
+export default function TipJar({ contractId: propContractId }: TipJarProps) {
   const [address, setAddress] = useState<string | null>(null);
   const [walletType, setWalletType] = useState<WalletType>("freighter");
   const [showWalletPicker, setShowWalletPicker] = useState(false);
@@ -99,7 +111,7 @@ export default function TipJar() {
   const [recentDonations, setRecentDonations] = useState<DonationEvent[]>([]);
 
   const [contractId, setContractId] = useState<string>(() => {
-    return localStorage.getItem(CONTRACT_ID_KEY) || "";
+    return propContractId || localStorage.getItem(CONTRACT_ID_KEY) || "";
   });
   const [editingContract, setEditingContract] = useState(false);
   const [contractInput, setContractInput] = useState(contractId);
@@ -111,6 +123,16 @@ export default function TipJar() {
   const [msDeadline, setMsDeadline] = useState("");
   const [msApprovals, setMsApprovals] = useState("1");
 
+  const [proofsByMs, setProofsByMs] = useState<Record<number, ProofInfo[]>>({});
+  const [votesByMs, setVotesByMs] = useState<Record<number, number>>({});
+  const [votedByMs, setVotedByMs] = useState<Record<number, boolean>>({});
+  const [refundedByMs, setRefundedByMs] = useState<Record<number, boolean>>({});
+  const [donorTotal, setDonorTotal] = useState("0");
+  const [escrowed, setEscrowed] = useState("0");
+  const [proofFormFor, setProofFormFor] = useState<number | null>(null);
+  const [proofDesc, setProofDesc] = useState("");
+  const [proofHash, setProofHash] = useState("");
+
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -118,12 +140,18 @@ export default function TipJar() {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(BACKEND.replace(/^http/, "ws"));
+    if (propContractId && propContractId !== contractId) {
+      setContractId(propContractId);
+    }
+  }, [propContractId]);
+
+  useEffect(() => {
+    const ws = new WebSocket(WS_URL);
     socketRef.current = ws;
 
     ws.onopen = () => {
       if (contractId) {
-        ws.send(JSON.stringify({ type: "subscribe:campaign", contractId }));
+        ws.send(JSON.stringify({ type: "subscribe:campaign", campaignId: contractId }));
       }
     };
 
@@ -181,7 +209,7 @@ export default function TipJar() {
   const registerCampaign = useCallback(async (c: Campaign) => {
     if (!contractId || campaignRegisteredRef.current === contractId) return;
     try {
-      const res = await fetch(`${BACKEND}/api/campaigns`, {
+      const res = await fetch(`${BACKEND_URL}/api/campaigns`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -202,7 +230,7 @@ export default function TipJar() {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+      const simSource = new Account("SIM_SOURCE", "0");
       const simTx = new TransactionBuilder(simSource, {
         fee: "100",
         networkPassphrase: NET,
@@ -234,7 +262,7 @@ export default function TipJar() {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+      const simSource = new Account("SIM_SOURCE", "0");
 
       const countTx = new TransactionBuilder(simSource, {
         fee: "100",
@@ -281,7 +309,7 @@ export default function TipJar() {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA", "0");
+      const simSource = new Account("SIM_SOURCE", "0");
 
       const countTx = new TransactionBuilder(simSource, {
         fee: "100",
@@ -317,6 +345,8 @@ export default function TipJar() {
                 requiredApprovals: Number(m.required_approvals),
                 released: Boolean(m.released),
                 completed: Boolean(m.completed),
+                missed: Boolean(m.missed),
+                refunded: (Number(m.refunded) / 1e7).toString(),
               }))
             );
           }
@@ -327,9 +357,88 @@ export default function TipJar() {
     }
   }, [contractId]);
 
+  const refreshDeliverables = useCallback(async () => {
+    if (!contractId || milestones.length === 0) return;
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const simSource = new Account(SIM_SOURCE, "0");
+
+      const call = async (method: string, args: any[] = []) => {
+        const tx = new TransactionBuilder(simSource, {
+          fee: "100",
+          networkPassphrase: NET,
+        })
+          .addOperation(contract.call(method, ...args))
+          .setTimeout(30)
+          .build();
+        const result = await server.simulateTransaction(tx);
+        if (rpc.Api.isSimulationSuccess(result) && result.result) {
+          return scValToNative(result.result.retval);
+        }
+        return null;
+      };
+
+      const proofs: Record<number, ProofInfo[]> = {};
+      const votes: Record<number, number> = {};
+      for (const m of milestones) {
+        const p = await call("get_proofs", [nativeToScVal(m.id, { type: "u32" })]);
+        if (Array.isArray(p)) {
+          proofs[m.id] = p.map((x: any) => ({
+            id: Number(x.id),
+            milestoneId: Number(x.milestone_id),
+            description: x.description?.toString() || "",
+            proofHash: x.proof_hash?.toString() || "",
+            timestamp: Number(x.timestamp),
+          }));
+        }
+        const v = await call("get_missed_vote_count", [nativeToScVal(m.id, { type: "u32" })]);
+        if (v != null) votes[m.id] = Number(v);
+      }
+      setProofsByMs(proofs);
+      setVotesByMs(votes);
+
+      const esc = await call("get_total_escrowed");
+      if (esc != null) setEscrowed((Number(esc) / 1e7).toString());
+
+      if (address) {
+        const dt = await call("get_donor_total", [nativeToScVal(address, { type: "address" })]);
+        if (dt != null) setDonorTotal((Number(dt) / 1e7).toString());
+        const voted: Record<number, boolean> = {};
+        const refunded: Record<number, boolean> = {};
+        for (const m of milestones) {
+          const hv = await call("has_voted", [
+            nativeToScVal(m.id, { type: "u32" }),
+            nativeToScVal(address, { type: "address" }),
+          ]);
+          if (hv != null) voted[m.id] = Boolean(hv);
+          const hr = await call("has_refunded", [
+            nativeToScVal(m.id, { type: "u32" }),
+            nativeToScVal(address, { type: "address" }),
+          ]);
+          if (hr != null) refunded[m.id] = Boolean(hr);
+        }
+        setVotedByMs(voted);
+        setRefundedByMs(refunded);
+      } else {
+        setDonorTotal("0");
+        setVotedByMs({});
+        setRefundedByMs({});
+      }
+    } catch (e) {
+      console.warn("refreshDeliverables error:", e);
+    }
+  }, [contractId, milestones, address]);
+
+  useEffect(() => {
+    if (contractId && milestones.length > 0) {
+      refreshDeliverables();
+    }
+  }, [contractId, milestones, address, refreshDeliverables]);
+
   const syncContractId = async () => {
     try {
-      const res = await fetch(`${BACKEND}/api/contract-id`);
+      const res = await fetch(`${BACKEND_URL}/api/contract-id`);
       const data = await res.json();
       if (data.contractId && data.contractId !== contractId) {
         setContractId(data.contractId);
@@ -345,7 +454,7 @@ export default function TipJar() {
     localStorage.setItem(CONTRACT_ID_KEY, cid);
     setEditingContract(false);
     try {
-      await fetch(`${BACKEND}/api/contract-id`, {
+      await fetch(`${BACKEND_URL}/api/contract-id`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contractId: cid }),
@@ -406,7 +515,7 @@ export default function TipJar() {
         case "xbull": connectedAddress = await connectXbull(); break;
       }
       trackEvent("wallet_connect", { wallet: type });
-      fetch(`${BACKEND}/api/analytics/event`, {
+      fetch(`${BACKEND_URL}/api/analytics/event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "wallet_connect", wallet: type, address: connectedAddress }),
@@ -502,13 +611,13 @@ export default function TipJar() {
         if (getResponse.status === "SUCCESS") {
           setTx({ hash: sendResponse.hash, status: "success", message: `Donated ${donationAmount} XLM!` });
           trackEvent("donate", { amount: donationAmount, wallet: walletType });
-          fetch(`${BACKEND}/api/analytics/event`, {
+          fetch(`${BACKEND_URL}/api/analytics/event`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ type: "donation", amount: donationAmount, wallet: walletType, address }),
           }).catch(() => {});
           try {
-            await fetch(`${BACKEND}/api/donations`, {
+            await fetch(`${BACKEND_URL}/api/donations`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ campaignId: contractId, donor: address, amount: donationAmount, hash: sendResponse.hash }),
@@ -516,6 +625,7 @@ export default function TipJar() {
           } catch {}
           fetchCampaign();
           fetchMilestones();
+          refreshDeliverables();
         } else {
           setTx({ hash: sendResponse.hash, status: "error", message: `Transaction failed: ${getResponse.status}` });
         }
@@ -563,6 +673,7 @@ export default function TipJar() {
         nativeToScVal(deadlineTs, { type: "u64" }),
         nativeToScVal(initTitle, { type: "string" }),
         nativeToScVal(initDesc, { type: "string" }),
+        nativeToScVal(NATIVE_TOKEN, { type: "address" }),
       ];
 
       const txn = new TransactionBuilder(sourceAccount, {
@@ -699,6 +810,7 @@ export default function TipJar() {
     setTx({ hash: "", status: "pending", message: "Preparing deploy..." });
 
     try {
+      const { WASM_B64 } = await import("./wasm_base64");
       const wasmBytes = Uint8Array.from(atob(WASM_B64), (c) => c.charCodeAt(0));
       const hashBuffer = await crypto.subtle.digest("SHA-256", wasmBytes);
       const wasmHash = new Uint8Array(hashBuffer);
@@ -769,7 +881,7 @@ export default function TipJar() {
         setContractId(newContractId);
         setContractInput(newContractId);
         localStorage.setItem(CONTRACT_ID_KEY, newContractId);
-        try { await fetch(`${BACKEND}/api/contract-id`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contractId: newContractId }) }); } catch {}
+        try { await fetch(`${BACKEND_URL}/api/contract-id`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contractId: newContractId }) }); } catch {}
       }
       setTx({ hash: createResp.hash, status: "success", message: newContractId ? `Contract: ${short(newContractId)}` : "Deployed!" });
     } catch (err: any) {
@@ -996,11 +1108,131 @@ export default function TipJar() {
     }
   };
 
+  const sendContractCall = async (opts: {
+    method: string;
+    scParams: any[];
+    pendingMessage: string;
+    successMessage: string;
+    onSuccess?: () => void;
+  }): Promise<boolean> => {
+    if (!address || !contractId) return false;
+    setBusy(true);
+    setTx({ hash: "", status: "pending", message: opts.pendingMessage });
+    try {
+      const server = new rpc.Server(RPC_URL);
+      const contract = new Contract(contractId);
+      const sourceAccount = await server.getAccount(address);
+
+      const txn = new TransactionBuilder(sourceAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: NET,
+      })
+        .addOperation(contract.call(opts.method, ...opts.scParams))
+        .setTimeout(30);
+
+      const builtTx = txn.build();
+      const simResp = await server.simulateTransaction(builtTx, undefined, "record");
+      if (!simResp || simResp.error) throw new Error(simResp?.error || "Simulation failed");
+      if (!rpc.Api.isSimulationSuccess(simResp)) throw new Error("Contract simulation failed");
+
+      const preparedTxn = rpc.assembleTransaction(builtTx, simResp);
+      const xdr = preparedTxn.build().toXDR();
+      const signedTxXdr = await signWithWallet(xdr, { networkPassphrase: NET, address });
+
+      setTx({ hash: "", status: "pending", message: "Submitting transaction..." });
+      const sendResponse = await server.sendTransaction(new Transaction(signedTxXdr, NET));
+
+      if (sendResponse.status === "PENDING" || sendResponse.status === "DUPLICATE") {
+        let getResponse = await server.getTransaction(sendResponse.hash);
+        let retries = 0;
+        while (getResponse.status === "NOT_FOUND" && retries < 30) {
+          await new Promise((r) => setTimeout(r, 1000));
+          getResponse = await server.getTransaction(sendResponse.hash);
+          retries++;
+        }
+        if (getResponse.status === "SUCCESS") {
+          setTx({ hash: sendResponse.hash, status: "success", message: opts.successMessage });
+          opts.onSuccess?.();
+          return true;
+        }
+        setTx({ hash: sendResponse.hash, status: "error", message: `Transaction failed: ${getResponse.status}` });
+      } else {
+        setTx({ hash: sendResponse.hash || "", status: "error", message: `Failed: ${sendResponse.error || "submission failed"}` });
+      }
+    } catch (err: any) {
+      const msg = err?.message || "";
+      if (msg.includes("cancelled") || msg.includes("denied") || msg.includes("rejected")) {
+        setTx({ hash: "", status: "error", message: "Transaction was cancelled." });
+      } else {
+        setTx({ hash: "", status: "error", message: msg || "Something went wrong" });
+      }
+    } finally {
+      setBusy(false);
+    }
+    return false;
+  };
+
+  const submitProof = async (milestoneId: number) => {
+    if (!proofDesc.trim() || !proofHash.trim()) return;
+    const ok = await sendContractCall({
+      method: "submit_proof",
+      scParams: [
+        nativeToScVal(milestoneId, { type: "u32" }),
+        nativeToScVal(proofDesc, { type: "string" }),
+        nativeToScVal(proofHash, { type: "string" }),
+      ],
+      pendingMessage: `Submitting proof for milestone #${milestoneId}...`,
+      successMessage: `Proof submitted for milestone #${milestoneId}!`,
+      onSuccess: () => {
+        setProofFormFor(null);
+        setProofDesc("");
+        setProofHash("");
+        refreshDeliverables();
+      },
+    });
+    void ok;
+  };
+
+  const voteMissed = async (milestoneId: number) => {
+    const ok = await sendContractCall({
+      method: "vote_missed",
+      scParams: [
+        nativeToScVal(address, { type: "address" }),
+        nativeToScVal(milestoneId, { type: "u32" }),
+      ],
+      pendingMessage: `Voting milestone #${milestoneId} missed...`,
+      successMessage: `Vote recorded for milestone #${milestoneId}!`,
+      onSuccess: () => {
+        fetchMilestones();
+        refreshDeliverables();
+      },
+    });
+    void ok;
+  };
+
+  const claimRefund = async (milestoneId: number) => {
+    const ok = await sendContractCall({
+      method: "request_refund",
+      scParams: [
+        nativeToScVal(address, { type: "address" }),
+        nativeToScVal(milestoneId, { type: "u32" }),
+      ],
+      pendingMessage: `Claiming refund for milestone #${milestoneId}...`,
+      successMessage: `Refund claimed for milestone #${milestoneId}!`,
+      onSuccess: () => {
+        fetchMilestones();
+        fetchCampaign();
+        refreshDeliverables();
+      },
+    });
+    void ok;
+  };
+
   const submitFeedback = async () => {
     if (!address || feedbackRating === 0) return;
     setBusy(true);
     try {
-      await fetch(`${BACKEND}/api/feedback`, {
+      await fetch(`${BACKEND_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ wallet: address, rating: feedbackRating, message: feedbackMessage }),
@@ -1019,6 +1251,12 @@ export default function TipJar() {
   const progress = campaign
     ? Math.min((parseFloat(campaign.totalRaised) / parseFloat(campaign.goal)) * 100, 100)
     : 0;
+  const deliveredCount = milestones.filter((m) => m.released).length;
+  const missedCount = milestones.filter((m) => m.missed).length;
+  const deliveryScore =
+    deliveredCount + missedCount > 0
+      ? Math.round((deliveredCount / (deliveredCount + missedCount)) * 100)
+      : null;
 
   const walletNames: Record<WalletType, string> = {
     freighter: "Freighter", albedo: "Albedo", lobstr: "LOBSTR", xbull: "xBull",
@@ -1109,6 +1347,22 @@ export default function TipJar() {
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">Deadline: {new Date(Number(campaign.deadline) * 1000).toLocaleDateString()}</div>
+                {milestones.length > 0 && (
+                  <div className="rounded-lg border border-border/40 bg-muted/20 px-3 py-2 text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Milestones delivered</span>
+                      <span className="font-medium text-emerald-400">{deliveredCount} / {milestones.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Creator delivery score</span>
+                      <span className="font-medium">{deliveryScore !== null ? `${deliveryScore}%` : "—"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Escrowed (held on-chain)</span>
+                      <span className="font-medium">{parseFloat(escrowed).toFixed(2)} XLM</span>
+                    </div>
+                  </div>
+                )}
                 {isOwner && (
                   <Button size="sm" variant="outline" className="w-full" onClick={withdrawFunds} disabled={busy}>
                     {busy ? "Processing..." : "Withdraw Funds"}
@@ -1151,6 +1405,9 @@ export default function TipJar() {
                   </Button>
                   <Button variant="ghost" onClick={disconnect}>Disconnect</Button>
                 </div>
+                {parseFloat(donorTotal) > 0 && (
+                  <p className="text-xs text-muted-foreground">Your contribution: {parseFloat(donorTotal).toFixed(2)} XLM</p>
+                )}
               </>
             )}
 
@@ -1161,7 +1418,7 @@ export default function TipJar() {
                   {tx.message}
                 </p>
                 {tx.hash && (
-                  <a href={`https://stellar.expert/explorer/testnet/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs underline underline-offset-2 hover:no-underline">
+                  <a href={`${EXPLORER_URL}/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs underline underline-offset-2 hover:no-underline">
                     View on Stellar Expert →
                   </a>
                 )}
@@ -1208,7 +1465,7 @@ export default function TipJar() {
                 <div key={i} className="flex items-center justify-between rounded-lg bg-emerald-500/5 border border-emerald-500/20 px-3 py-2 text-sm">
                   <div>
                     <span className="font-mono text-xs">{short(d.donor)}</span>
-                    <a href={`https://stellar.expert/explorer/testnet/tx/${d.hash}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-xs text-muted-foreground underline">tx</a>
+                    <a href={`${EXPLORER_URL}/tx/${d.hash}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-xs text-muted-foreground underline">tx</a>
                   </div>
                   <span className="font-medium text-emerald-400">+{parseFloat(d.amount).toFixed(2)} XLM</span>
                 </div>
@@ -1255,40 +1512,145 @@ export default function TipJar() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {milestones.map((m) => (
-              <Card key={m.id} className={m.released ? "border-emerald-500/30 opacity-70" : m.completed ? "border-amber-500/30" : ""}>
-                <CardContent className="pt-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant={m.released ? "default" : m.completed ? "secondary" : "outline"}>
-                          {m.released ? "Released" : m.completed ? "Approved" : "Pending"}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">#{m.id}</span>
+            {milestones.map((m) => {
+              const deadlinePassed = Date.now() > m.deadline * 1000;
+              const isDonor = address && parseFloat(donorTotal) > 0;
+              const requiredVotes = Math.floor(donorCount / 2) + 1;
+              const votes = votesByMs[m.id] ?? 0;
+              const proofs = proofsByMs[m.id] ?? [];
+              const hasVoted = !!votedByMs[m.id];
+              const hasRefunded = !!refundedByMs[m.id];
+              return (
+                <Card key={m.id} className={m.released ? "border-emerald-500/30 opacity-70" : m.completed ? "border-amber-500/30" : ""}>
+                  <CardContent className="pt-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant={m.released ? "default" : m.missed ? "destructive" : m.completed ? "secondary" : "outline"}>
+                            {m.released ? "Released" : m.missed ? "Missed" : m.completed ? "Approved" : "Pending"}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">#{m.id}</span>
+                        </div>
+                        <p className="text-sm font-medium">{m.description}</p>
+                        <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                          <span>{m.amount} XLM</span>
+                          <span>{m.approvals}/{m.requiredApprovals} approvals</span>
+                          <span>Deadline: {new Date(m.deadline * 1000).toLocaleDateString()}</span>
+                        </div>
+                        {m.missed && parseFloat(m.refunded) > 0 && (
+                          <p className="mt-1 text-xs text-amber-400">{parseFloat(m.refunded).toFixed(2)} XLM refunded</p>
+                        )}
                       </div>
-                      <p className="text-sm font-medium">{m.description}</p>
-                      <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                        <span>{m.amount} XLM</span>
-                        <span>{m.approvals}/{m.requiredApprovals} approvals</span>
-                        <span>Deadline: {new Date(m.deadline * 1000).toLocaleDateString()}</span>
+                      <div className="flex flex-wrap gap-2 justify-end">
+                        {m.missed && !m.released && address && isDonor && (
+                          <Button
+                            size="sm"
+                            onClick={() => claimRefund(m.id)}
+                            disabled={busy || hasRefunded}
+                            variant="outline"
+                          >
+                            {hasRefunded ? "Refunded ✓" : "Claim Refund"}
+                          </Button>
+                        )}
+                        {deadlinePassed && !m.released && !m.completed && !m.missed && address && !isOwner && isDonor && !hasVoted && (
+                          <Button size="sm" variant="outline" onClick={() => voteMissed(m.id)} disabled={busy}>
+                            Vote Missed
+                          </Button>
+                        )}
+                        {!deadlinePassed && !m.released && !m.completed && address && !isOwner && (
+                          <Button size="sm" variant="outline" onClick={() => approveMilestone(m.id)} disabled={busy}>
+                            Approve
+                          </Button>
+                        )}
+                        {m.completed && !m.released && isOwner && (
+                          <Button size="sm" onClick={() => releaseMilestone(m.id)} disabled={busy}>
+                            Release
+                          </Button>
+                        )}
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      {!m.released && !m.completed && address && !isOwner && (
-                        <Button size="sm" variant="outline" onClick={() => approveMilestone(m.id)} disabled={busy}>
-                          Approve
-                        </Button>
-                      )}
-                      {m.completed && !m.released && isOwner && (
-                        <Button size="sm" onClick={() => releaseMilestone(m.id)} disabled={busy}>
-                          Release
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                    {deadlinePassed && !m.released && !m.completed && !m.missed && (
+                      <div className="mt-3 rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                          <span>Backer review — did the creator miss this milestone?</span>
+                          <span>{votes}/{requiredVotes} votes to mark missed</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-destructive/70"
+                            style={{ width: `${Math.min((votes / requiredVotes) * 100, 100)}%` }}
+                          />
+                        </div>
+                        {hasVoted && <p className="mt-1 text-xs text-emerald-400">You voted to mark this milestone missed.</p>}
+                      </div>
+                    )}
+
+                    {isOwner && !m.released && !m.completed && !m.missed && (
+                      <div className="mt-3 rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
+                        {proofFormFor === m.id ? (
+                          <div className="space-y-2">
+                            <Input
+                              placeholder="What did you deliver? (e.g. final design files)"
+                              value={proofDesc}
+                              onChange={(e) => setProofDesc(e.target.value)}
+                              disabled={busy}
+                            />
+                            <Input
+                              placeholder="Proof link or hash (URL, IPFS CID...)"
+                              value={proofHash}
+                              onChange={(e) => setProofHash(e.target.value)}
+                              disabled={busy}
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => submitProof(m.id)} disabled={busy || !proofDesc.trim() || !proofHash.trim()}>
+                                {busy ? "Submitting..." : "Submit Proof"}
+                              </Button>
+                              <Button size="sm" variant="ghost" onClick={() => setProofFormFor(null)} disabled={busy}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">
+                              {proofs.length > 0 ? `${proofs.length} proof${proofs.length !== 1 ? "s" : ""} submitted` : "No proofs submitted yet"}
+                            </span>
+                            <Button size="sm" variant="outline" onClick={() => setProofFormFor(m.id)} disabled={busy}>
+                              + Add Proof
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {proofs.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {proofs.map((p) => (
+                          <div key={p.id} className="flex items-center justify-between rounded-lg border border-border/30 bg-muted/10 px-3 py-2 text-xs">
+                            <div className="min-w-0">
+                              <p className="truncate font-medium text-foreground">{p.description}</p>
+                              <p className="mt-0.5 truncate text-muted-foreground">
+                                <a
+                                  href={p.proofHash.startsWith("http") ? p.proofHash : `https://ipfs.io/ipfs/${p.proofHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="underline underline-offset-2"
+                                >
+                                  {p.proofHash}
+                                </a>
+                                {" · "}{new Date(p.timestamp * 1000).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <span className="ml-2 shrink-0 text-muted-foreground">proof #{p.id}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

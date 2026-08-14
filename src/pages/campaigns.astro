@@ -1,0 +1,26 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import CampaignBrowse from "../components/CampaignBrowse";
+---
+
+<SiteLayout title="Campaigns – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-5xl">
+      <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Active Campaigns</h1>
+          <p class="mt-2 max-w-lg text-sm text-muted-foreground">
+            Fund milestone-based projects with escrow protection on Stellar Soroban. Every contribution is released only when creators deliver.
+          </p>
+        </div>
+        <a
+          href="/#crowdescrow"
+          class="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/80"
+        >
+          Start a Campaign
+        </a>
+      </div>
+      <CampaignBrowse client:only="react" />
+    </div>
+  </section>
+</SiteLayout>

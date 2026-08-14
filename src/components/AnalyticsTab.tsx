@@ -9,8 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const BACKEND = "https://crowdfund-enq9.onrender.com";
+import { BACKEND_URL, EXPLORER_URL } from "@/lib/config";
 
 interface AnalyticsSummary {
   totalRequests: number;
@@ -90,8 +89,8 @@ export default function AnalyticsTab() {
     };
     try {
       const [analyticsRes, feedbackRes] = await Promise.all([
-        fetchWithRetry(`${BACKEND}/api/analytics`),
-        fetchWithRetry(`${BACKEND}/api/feedback`),
+        fetchWithRetry(`${BACKEND_URL}/api/analytics`),
+        fetchWithRetry(`${BACKEND_URL}/api/feedback`),
       ]);
       const analytics = await analyticsRes.json();
       const feedbackData = await feedbackRes.json();
@@ -208,7 +207,7 @@ export default function AnalyticsTab() {
                         <span className="font-medium whitespace-nowrap">{EVENT_LABEL[e.type] || e.type}</span>
                         {e.txHash && (
                           <a
-                            href={`https://stellar.expert/explorer/testnet/tx/${e.txHash}`}
+                            href={`${EXPLORER_URL}/tx/${e.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="truncate font-mono text-xs text-muted-foreground underline underline-offset-2"

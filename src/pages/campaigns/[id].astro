@@ -1,0 +1,32 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import TipJar from "../../components/TipJar";
+
+export async function getStaticPaths() {
+  const backendUrl = import.meta.env.PUBLIC_BACKEND_URL ?? "https://crowdfund-enq9.onrender.com";
+  let campaigns: { id: string }[] = [];
+  try {
+    const res = await fetch(`${backendUrl}/api/campaigns`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) campaigns = data.map((c: any) => ({ id: String(c.id) }));
+    }
+  } catch {}
+  return campaigns.map((c) => ({ params: { id: c.id } }));
+}
+
+const { id } = Astro.params;
+---
+
+<SiteLayout title="Campaign – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-4xl">
+      <div class="mb-8">
+        <a href="/campaigns" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          ← All Campaigns
+        </a>
+      </div>
+      <TipJar client:only="react" contractId={id} />
+    </div>
+  </section>
+</SiteLayout>

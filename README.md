@@ -1,4 +1,27 @@
-## 🎯 CrowdEscrow
+<div align="center">
+
+# 🎯 CrowdEscrow
+
+**Deliver-or-refund crowdfunding on Stellar Soroban** — funds stay in on-chain escrow until the creator proves each milestone, backers vote to mark missed work, and everyone can claim pro-rata refunds. Multi-wallet. Real-time. On-chain.
+
+[![CI](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml)
+![Backend Tests](https://img.shields.io/badge/backend%20tests-29%20passing-brightgreen?style=flat-square)
+![Contract Tests](https://img.shields.io/badge/contract%20tests-10%20passing-blue?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-10B981?style=flat-square)
+
+![Stellar](https://img.shields.io/badge/Stellar-Testnet-8B5CF6?style=flat-square&logo=stellar&logoColor=white)
+![Soroban](https://img.shields.io/badge/Soroban%20SDK-27-7C3AED?style=flat-square)
+![Rust](https://img.shields.io/badge/Rust-1.82-DEA584?style=flat-square&logo=rust&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+
+![Astro](https://img.shields.io/badge/Astro-FF5D01?style=flat-square&logo=astro&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)
+
+</div>
+
 <img width="1891" height="902" alt="lanidng page" src="https://github.com/user-attachments/assets/f32b1d1f-94f4-4c5e-abe1-ed7029c91ec8" />
 
 <img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
@@ -10,12 +33,6 @@
 ## Multiple wallets support
 <img width="1372" height="911" alt="multiple wallet" src="https://github.com/user-attachments/assets/0e172dcb-9e8f-4eb3-8982-68d157c5d1cf" />
 <img width="1567" height="865" alt="success9999" src="https://github.com/user-attachments/assets/d4f71a2e-ba08-4a2d-ade1-fb9c19fc6e17" />
-
-
-A milestone-based crowdfunding platform with escrow protection, built on **Stellar Soroban** with multi-wallet support and real-time WebSocket updates.
-
-[![CI](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml/badge.svg)](https://github.com/itsmypritam/Crowdfund/actions/workflows/ci.yml)
-![Test Status](https://img.shields.io/badge/tests-6%20passing-brightgreen)
 
 ## Live Demo
 
@@ -35,13 +52,40 @@ https://github.com/user-attachments/assets/d55b5894-b587-4db2-a9c5-9e2b82c3fd55
 
 ## Features
 
-- **Multi-Wallet** – Connect via Freighter, Albedo, LOBSTR, or xBull
-- **Smart Contract** – Campaign logic runs on-chain via a Soroban contract
-- **Real-Time Feed** – Donations appear instantly via WebSocket
-- **Transaction Status** – Track pending/success/fail states with Stellar Expert links
-- **Campaign Dashboard** – Progress bar, donor list, live feed
-- **Mobile Responsive** – Fully responsive UI built with Tailwind CSS
-- **CI/CD** – Automated test and build pipeline via GitHub Actions
+### 🆕 v2 · Deliver-or-Refund
+
+![Deliver-or-Refund](https://img.shields.io/badge/Deliver--or--Refund-4F46E5?style=for-the-badge)
+![Proof-of-Delivery](https://img.shields.io/badge/Proof--of--Delivery-0EA5E9?style=for-the-badge)
+![Missed-Milestone Votes](https://img.shields.io/badge/Missed--Milestone%20Voting-F59E0B?style=for-the-badge)
+![Pro-Rata Refunds](https://img.shields.io/badge/Pro--Rata%20Refunds-10B981?style=for-the-badge)
+![Creator Reputation](https://img.shields.io/badge/Creator%20Reputation-EC4899?style=for-the-badge)
+
+| Feature | Description |
+|---|---|
+| 🛡️ **Deliver-or-Refund** | Escrow holds funds until milestones are proven and approved |
+| 📜 **Proof-of-Delivery** | Creators submit proofs (description + link/hash) per milestone; backers approve before funds release |
+| 🗳️ **Missed-Milestone Votes** | Backers vote to mark a milestone missed after its deadline (majority wins) |
+| 💸 **Pro-Rata Refunds** | Backers claim refunds from escrow for missed milestones — automatically pro-rated |
+| ⭐ **Creator Reputation** | Delivery score shown per campaign (released vs missed milestones), plus escrowed balance |
+
+### Core Platform
+
+![Multi-Wallet](https://img.shields.io/badge/Multi--Wallet-6D28D9?style=for-the-badge)
+![Multi-Campaign](https://img.shields.io/badge/Multi--Campaign-0891B2?style=for-the-badge)
+![Smart Contract](https://img.shields.io/badge/Smart%20Contract-15803D?style=for-the-badge)
+![Real-Time Feed](https://img.shields.io/badge/Real--Time%20Feed-C2410C?style=for-the-badge)
+![Mobile Responsive](https://img.shields.io/badge/Mobile%20Responsive-0369A1?style=for-the-badge)
+![CI/CD](https://img.shields.io/badge/CI--CD-334155?style=for-the-badge)
+
+| Feature | Description |
+|---|---|
+| 👛 **Multi-Wallet** | Connect via Freighter, Albedo, LOBSTR, or xBull |
+| 🗂️ **Multi-Campaign** | Browse and donate to any deployed campaign at `/campaigns` |
+| ⚙️ **Smart Contract** | All campaign logic runs on-chain via a Soroban contract |
+| ⚡ **Real-Time Feed** | Donations appear instantly via WebSocket |
+| 🔗 **Transaction Status** | Track pending/success/fail states with Stellar Expert links |
+| 📱 **Mobile Responsive** | Fully responsive UI built with Tailwind CSS |
+| 🔄 **CI/CD** | Automated test + build pipeline for backend, contract, and frontend |
 
 ## Requirements
 
@@ -66,27 +110,33 @@ npm install
 npm start
 ```
 
-
-##Mobile Responsiveness
-
-<img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 35 AM" src="https://github.com/user-attachments/assets/bd298c29-bade-4a1c-a15d-69850591d89e" />
-<img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 26 AM" src="https://github.com/user-attachments/assets/44f26c93-492b-49af-9fa5-237bc667e0a0" />
+Data persists to SQLite at `backend/data/db.sqlite` (WAL mode). Configure `CONTRACT_ID`, `ADMIN_KEY`, `CORS_ORIGINS`, and `HORIZON_URL`/`RPC_URL` in `.env`.
 
 ### 3. Contract
 
 ```bash
 cd contract
+cargo test
 cargo build --target wasm32v1-none --release
+node scripts/check-wasm.mjs   # verifies src/components/wasm_base64.ts matches the built WASM
 ```
+
+After changing the contract, regenerate the embedded WASM so the frontend ships the new logic: base64-encode `target/wasm32v1-none/release/crowd_escrow.wasm` into `WASM_B64` in `src/components/wasm_base64.ts` (CI enforces this via `check-wasm.mjs`).
+
+<img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 35 AM" src="https://github.com/user-attachments/assets/bd298c29-bade-4a1c-a15d-69850591d89e" />
+<img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 26 AM" src="https://github.com/user-attachments/assets/44f26c93-492b-49af-9fa5-237bc667e0a0" />
 
 ## Testing
 
 ```bash
-# Run all tests
-npm test
-
-# Or backend tests only
+# Backend tests (29)
 cd backend && npm test
+
+# Contract tests (10)
+cd contract && cargo test
+
+# Frontend build
+npm run build
 ```
 
 ### Test Results
@@ -112,16 +162,24 @@ cd backend && npm test
 ```
 ├── src/                # Astro + React frontend
 │   ├── components/
-│   │   ├── TipJar.tsx  # Main CrowdEscrow component
+│   │   ├── TipJar.tsx  # Main CrowdEscrow component (deliverables, votes, refunds)
+│   │   ├── CampaignBrowse.tsx, CampaignFallback.tsx
+│   │   ├── wasm_base64.ts # Embedded contract WASM (lazy-loaded)
 │   │   └── ui/         # shadcn components
-│   └── pages/
+│   ├── lib/config.ts   # Env-driven network/backend/token config
+│   ├── layouts/        # SiteLayout.astro
+│   └── pages/          # index, campaigns, campaigns/[id], 404
 ├── backend/            # Express.js + WebSocket
-│   ├── server.js       # HTTP + WebSocket server
-│   ├── server.test.mjs # API tests
-│   └── package.json
+│   ├── app.js          # createApp factory (routes, CORS, rate-limit, admin key)
+│   ├── db.js           # SQLite (better-sqlite3), WAL, migrations
+│   ├── config.js       # env config
+│   ├── horizon.js      # on-chain donation verification
+│   ├── server.js       # HTTP + WebSocket entrypoint
+│   └── server.test.mjs # API tests
 ├── contract/           # Soroban Rust contract
-│   ├── Cargo.toml
-│   └── src/lib.rs
+│   ├── src/lib.rs      # v2 contract (proofs, votes, refunds)
+│   ├── tests/          # Rust unit tests + snapshots
+│   └── scripts/check-wasm.mjs # CI check: embedded WASM matches build
 └── scripts/            # Deployment scripts
 ```
 
@@ -134,22 +192,28 @@ cd backend && npm test
 <img width="1918" height="852" alt="555" src="https://github.com/user-attachments/assets/b2927b22-cdd8-4943-8f58-e8ce892547af" />
 
 
-The Soroban contract (`contract/src/lib.rs`) supports:
-- `initialize` – Set up a campaign with owner, goal, deadline, title, description
-- `donate` – Contribute XLM to the campaign (caps at goal)
+The Soroban contract (`contract/src/lib.rs`, **v2**) supports:
+- `initialize` – Set up a campaign with owner, goal, deadline, title, description, and native token address
+- `donate` – Contribute XLM to the campaign (caps at goal, funds held in escrow)
 - `add_milestone` – Owner adds a milestone with description, amount, and deadline
+- `submit_proof` – Owner posts a proof (description + hash/link) for a milestone
 - `approve_milestone` – Backer approves a completed milestone
+- `vote_missed` – Backers vote to mark a milestone missed after its deadline (threshold = donor_count/2 + 1)
+- `request_refund` – Backer claims a pro-rata refund from escrow for a missed milestone
 - `release_milestone` – Release escrowed funds for an approved milestone
-- `withdraw` – Owner withdraws funds after campaign ends or goal is reached
-- `get_campaign` – View campaign details
-- `get_milestones` – Paginated milestone list
-- `get_donors` – Paginated donor list
-- `get_donor_count` – Total donor count
+- `withdraw` – Owner withdraws funds after campaign ends or goal is reached (never drains escrowed funds)
+- `get_campaign` / `get_milestone` / `get_milestones` – View campaign and milestone details
+- `get_proofs` – View proofs for a milestone
+- `get_missed_vote_count` / `has_voted` / `has_refunded` – Missed-milestone state
+- `get_donors` / `get_donor_count` / `get_donor_total` – Donor list and per-donor totals
+- `get_total_escrowed` – Total XLM currently held in escrow
 
 ### Contract Details
 
 - **Network**: Stellar Testnet
-- **Contract ID**: `CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5`
+- **Contract SDK**: `soroban-sdk = "27.0.0-rc.1"` (Protocol 27)
+- **Legacy Contract ID (v1)**: `CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5`
+- **Note**: v2 changed the `initialize` signature (added `token` param) and added proof/vote/refund functions — this is a **breaking change**. Redeploy the contract from `contract/`, set the new ID as `CONTRACT_ID` (backend env) / `contractId` (TipJar), and point new campaigns at it.
 - **Deployment Tx**: [`556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5`](https://stellar.expert/explorer/testnet/tx/556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5)
 - **WASM Upload Tx**: [`bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd`](https://stellar.expert/explorer/testnet/tx/bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd)
 
@@ -170,6 +234,7 @@ The Soroban contract (`contract/src/lib.rs`) supports:
 The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push:
 1. Backend: Install dependencies + Run tests
 2. Frontend: Install dependencies + Build
+3. Contract: `cargo test` + WASM release build + verify `wasm_base64.ts` matches the artifact
 
 ## Error Handling
 
@@ -423,7 +488,7 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 https://crowdfund-enq9.onrender.com/api/analytics/dashboard
 - **Analytics tab in the frontend** — The live app (`#analytics` nav link) shows a real-time analytics tab: summary stat cards (requests, wallet connects, donations, unique visitors, feedback), a 7-day daily activity chart, a recent activity feed (with Stellar Expert links for every tx), and collected user feedback
 - **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
-- **Persistent storage** — Events, feedback and campaign data are persisted to `backend/data/db.json` so metrics survive process restarts (disable with `DISABLE_PERSISTENCE=1`, override location with `DATA_FILE=...`)
+- **Persistent storage** — Events, feedback and campaign data are persisted to SQLite (`backend/data/db.sqlite`, WAL mode) so metrics survive process restarts (override location with `DATA_FILE=...`, seeded once from the legacy `data/db.json`)
 - **Deduplication** — Events keyed by an on-chain `txHash` are recorded only once, so backfills are idempotent
 - **Analytics API**: `GET /api/analytics` — returns summary stats + daily breakdown + recent events
 - **Analytics Dashboard**: `GET /api/analytics/dashboard` — visual dashboard for monitoring (HTML)

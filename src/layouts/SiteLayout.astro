@@ -1,0 +1,39 @@
+---
+import "../styles/global.css";
+import Analytics from "../components/Analytics.astro";
+import VercelAnalytics from "../components/VercelAnalytics";
+
+const { title = "CrowdEscrow – Milestone-Based Crowdfunding on Stellar" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+    <Analytics />
+    <VercelAnalytics client:only="react" />
+  </head>
+  <body class="bg-background text-foreground">
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md">
+      <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+        <a href="/" class="text-lg font-bold tracking-tight">🎯 CrowdEscrow</a>
+        <nav class="flex items-center gap-6 text-sm text-muted-foreground">
+          <a href="/campaigns" class="hover:text-foreground transition-colors">Campaigns</a>
+          <a href="/#crowdescrow" class="hover:text-foreground transition-colors">Create</a>
+          <a href="/#analytics" class="hover:text-foreground transition-colors">Analytics</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="pt-14">
+      <slot />
+    </main>
+
+    <footer class="border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
+      <p>Built with 🎯 for the Stellar Green Belt Challenge</p>
+    </footer>
+  </body>
+</html>

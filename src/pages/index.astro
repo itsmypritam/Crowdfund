@@ -22,9 +22,9 @@ import VercelAnalytics from "../components/VercelAnalytics";
       <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <a href="#" class="text-lg font-bold tracking-tight">🎯 CrowdEscrow</a>
         <nav class="flex items-center gap-6 text-sm text-muted-foreground">
+          <a href="/campaigns" class="hover:text-foreground transition-colors">Campaigns</a>
           <a href="#features" class="hover:text-foreground transition-colors">Features</a>
-          <a href="#crowdescrow" class="hover:text-foreground transition-colors">Campaign</a>
-          <a href="#testimonials" class="hover:text-foreground transition-colors">Testimonials</a>
+          <a href="#crowdescrow" class="hover:text-foreground transition-colors">Create</a>
           <a href="#analytics" class="hover:text-foreground transition-colors">Analytics</a>
         </nav>
       </div>
@@ -49,14 +49,14 @@ import VercelAnalytics from "../components/VercelAnalytics";
             </span>
           </h1>
           <p class="mt-4 text-base text-muted-foreground sm:text-lg max-w-lg mx-auto leading-relaxed">
-            Milestone-based crowdfunding with escrow protection on Stellar Soroban.
-            Connect your wallet, pick a campaign, and donate in real-time.
+            Deliver-or-refund crowdfunding: funds stay in escrow until milestones are proven,
+            and backers can vote to refund missed work. Connect your wallet and pick a campaign.
           </p>
           <a
-            href="#crowdescrow"
+            href="/campaigns"
             class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/80"
           >
-            View Campaign →
+            Browse Campaigns →
           </a>
         </div>
       </section>
@@ -64,12 +64,12 @@ import VercelAnalytics from "../components/VercelAnalytics";
       <!-- FEATURES -->
       <section id="features" class="border-t border-border/40 px-4 py-20">
         <div class="mx-auto max-w-5xl text-center">
-          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Why CrowdEscrow on Stellar?</h2>
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Crowdfunding Without the "Never Delivered" Fear</h2>
           <div class="mt-12 grid gap-6 sm:grid-cols-3">
             {[
               { icon: "🔗", title: "Multi-Wallet", desc: "Supports Freighter, Albedo, LOBSTR, and xBull — you choose." },
-              { icon: "📜", title: "Smart Contract", desc: "Campaign logic runs on-chain via Soroban. Transparent and trustless." },
-              { icon: "⚡", title: "Real-Time", desc: "Donations appear instantly via WebSocket. Watch the progress live." },
+              { icon: "📜", title: "Proof-of-Delivery", desc: "Creators post proofs for every milestone. Backers approve before escrow funds are released." },
+              { icon: "⚡", title: "Deliver-or-Refund", desc: "Milestone missed? Backers vote, then claim pro-rata refunds straight from on-chain escrow." },
             ].map((f) => (
               <div
                 key={f.title}
@@ -132,7 +132,7 @@ import VercelAnalytics from "../components/VercelAnalytics";
             Connect your wallet and support the campaign. Every contribution brings us closer to the goal.
           </p>
           <a
-            href="#crowdescrow"
+            href="/campaigns"
             class="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-indigo-500 px-6 text-sm font-medium text-indigo-950 shadow-sm transition-colors hover:bg-indigo-400"
           >
             Donate Now →

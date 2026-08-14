@@ -7,11 +7,21 @@ services:
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
     envVars:
-      - key: CONTRACT_ID
-        sync: false
       - key: STELLAR_NETWORK
         value: testnet
-      - key: PUBLIC_PLAUSIBLE_DOMAIN
-        value: warriorpinto-6k1ikg.stormkit.dev
-      - key: PUBLIC_GA_MEASUREMENT_ID
-        value: G-XXXXXXXXXX
+      - key: DATA_FILE
+        value: /var/data/db.sqlite
+      - key: CORS_ORIGINS
+        value: https://warriorpinto-6k1ikg.stormkit.dev,http://localhost:4321
+      - key: LOG_LEVEL
+        value: info
+      - key: VERIFY_DONATIONS
+        value: "1"
+      - key: CONTRACT_ID
+        sync: false
+      - key: ADMIN_KEY
+        sync: false
+    disks:
+      - name: crowdescrow-data
+        mountPath: /var/data
+        sizeGB: 1

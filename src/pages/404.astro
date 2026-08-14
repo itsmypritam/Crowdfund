@@ -1,0 +1,12 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import CampaignFallback from "../components/CampaignFallback";
+---
+
+<SiteLayout title="Page not found – CrowdEscrow">
+  <section class="px-4 py-16 md:py-20">
+    <div class="mx-auto max-w-4xl">
+      <CampaignFallback client:only="react" />
+    </div>
+  </section>
+</SiteLayout>
