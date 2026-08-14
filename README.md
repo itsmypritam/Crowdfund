@@ -121,7 +121,7 @@ cargo build --target wasm32v1-none --release
 node scripts/check-wasm.mjs   # verifies src/components/wasm_base64.ts matches the built WASM
 ```
 
-After changing the contract, regenerate the embedded WASM so the frontend ships the new logic: base64-encode `target/wasm32v1-none/release/crowd_escrow.wasm` into `WASM_B64` in `src/components/wasm_base64.ts` (CI enforces this via `check-wasm.mjs`).
+After changing the contract, regenerate the embedded WASM so the frontend ships the new logic (this also updates the source hash that CI checks): `cargo build --target wasm32v1-none --release && node scripts/update-wasm.mjs` (writes `WASM_B64` + `WASM_SHA` in `src/components/wasm_base64.ts`). CI enforces freshness via `check-wasm.mjs`, comparing the embedded source hash and export set — platform-independent (no byte-for-byte comparison).
 
 <img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 35 AM" src="https://github.com/user-attachments/assets/bd298c29-bade-4a1c-a15d-69850591d89e" />
 <img width="120" height="150" alt="WhatsApp Image 2026-07-04 at 6 56 26 AM" src="https://github.com/user-attachments/assets/44f26c93-492b-49af-9fa5-237bc667e0a0" />
