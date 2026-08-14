@@ -69,4 +69,84 @@ describe("POST /api/donations", () => {
     expect(res.status).toBe(404);
     expect(res.body.error).toBe("campaign not found");
   });
+
+  it("records a donation once the campaign exists", async () => {
+    await request(app)
+      .post("/api/campaigns")
+      .send({
+        id: "camp1",
+        owner: "GA...",
+        goal: "100",
+        deadline: new Date(Date.now() + 86400000).toISOString(),
+        title: "Test campaign",
+      })
+      .set("Content-Type", "application/json");
+
+    const res = await request(app)
+      .post("/api/donations")
+      .send({ campaignId: "camp1", donor: "GB...", amount: "10", hash: "tx123" })
+      .set("Content-Type", "application/json");
+    expect(res.status).toBe(201);
+    expect(res.body.amount).toBe(10);
+
+    const countRes = await request(app).get("/api/campaigns/camp1/donor-count");
+    expect(countRes.body.count).toBe(1);
+  });
+});
+
+describe("POST /api/analytics/event", () => {
+  it("returns 400 when type is missing", async () => {
+    const res = await request(app)
+      .post("/api/analytics/event")
+      .send({})
+      .set("Content-Type", "application/json");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("type required");
+  });
+
+  it("records an event and exposes it via /api/analytics", async () => {
+    await request(app)
+      .post("/api/analytics/event")
+      .send({ type: "donation", donor: "GCAT...", txHash: "hash1" })
+      .set("Content-Type", "application/json");
+
+    const res = await request(app).get("/api/analytics");
+    expect(res.status).toBe(200);
+    expect(res.body.summary.donations).toBeGreaterThanOrEqual(1);
+    expect(res.body.recentEvents.some((e) => e.txHash === "hash1")).toBe(true);
+  });
+
+  it("dedupes events that share the same on-chain txHash", async () => {
+    for (let i = 0; i < 3; i++) {
+      await request(app)
+        .post("/api/analytics/event")
+        .send({ type: "donation", donor: "GCAT...", txHash: "hash-dupe" })
+        .set("Content-Type", "application/json");
+    }
+
+    const res = await request(app).get("/api/analytics");
+    expect(res.body.recentEvents.filter((e) => e.txHash === "hash-dupe").length).toBe(1);
+  });
+});
+
+describe("POST /api/feedback", () => {
+  it("records feedback that is returned by GET /api/feedback", async () => {
+    await request(app)
+      .post("/api/feedback")
+      .send({ wallet: "GA...", rating: 5, message: "works great" })
+      .set("Content-Type", "application/json");
+
+    const res = await request(app).get("/api/feedback");
+    expect(res.status).toBe(200);
+    expect(res.body.some((f) => f.wallet === "GA..." && f.rating === 5 && f.message === "works great")).toBe(true);
+  });
+
+  it("returns 400 when wallet is missing", async () => {
+    const res = await request(app)
+      .post("/api/feedback")
+      .send({ rating: 4 })
+      .set("Content-Type", "application/json");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("wallet address required");
+  });
 });
