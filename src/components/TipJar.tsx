@@ -176,6 +176,27 @@ export default function TipJar() {
     return () => { cancelled = true; };
   }, []);
 
+  const campaignRegisteredRef = useRef<string | null>(null);
+
+  const registerCampaign = useCallback(async (c: Campaign) => {
+    if (!contractId || campaignRegisteredRef.current === contractId) return;
+    try {
+      const res = await fetch(`${BACKEND}/api/campaigns`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: contractId,
+          owner: c.owner,
+          goal: c.goal,
+          deadline: new Date(Number(c.deadline) * 1000).toISOString(),
+          title: c.title,
+          description: c.description,
+        }),
+      });
+      if (res.ok || res.status === 409) campaignRegisteredRef.current = contractId;
+    } catch {}
+  }, [contractId]);
+
   const fetchCampaign = useCallback(async () => {
     if (!contractId) return;
     try {
@@ -192,19 +213,21 @@ export default function TipJar() {
       const result = await server.simulateTransaction(simTx);
       if (rpc.Api.isSimulationSuccess(result) && result.result) {
         const parsed = scValToNative(result.result.retval) as any;
-        setCampaign({
+        const campaign: Campaign = {
           owner: parsed.owner?.toString() || "",
           goal: (Number(parsed.goal) / 1e7).toString(),
           totalRaised: (Number(parsed.total_raised) / 1e7).toString(),
           deadline: Number(parsed.deadline),
           title: parsed.title?.toString() || "Campaign",
           description: parsed.description?.toString() || "",
-        });
+        };
+        setCampaign(campaign);
+        registerCampaign(campaign);
       }
     } catch (e) {
       console.warn("fetchCampaign error:", e);
     }
-  }, [contractId]);
+  }, [contractId, registerCampaign]);
 
   const fetchDonors = useCallback(async () => {
     if (!contractId) return;
@@ -330,39 +353,43 @@ export default function TipJar() {
     } catch {}
   };
 
-  const connectFreighter = async () => {
+  const connectFreighter = async (): Promise<string> => {
     const a = await requestAccess();
     if (a.error) throw new Error("Wallet access denied. Please allow access in Freighter.");
     if (!isValidAddress(a.address)) throw new Error("Freighter returned an invalid address.");
     sessionStorage.setItem("walletAddress", a.address);
     setAddress(a.address);
+    return a.address;
   };
 
-  const connectAlbedo = async () => {
+  const connectAlbedo = async (): Promise<string> => {
     const albedo = (window as any).albedo;
     if (!albedo?.publicKey) throw new Error("Albedo not detected. Install the Albedo wallet.");
     const res = await albedo.publicKey({ allowAllAccounts: true });
     if (!res?.publicKey) throw new Error("Albedo access was denied.");
     sessionStorage.setItem("walletAddress", res.publicKey);
     setAddress(res.publicKey);
+    return res.publicKey;
   };
 
-  const connectLobstr = async () => {
+  const connectLobstr = async (): Promise<string> => {
     const lobstr = (window as any).lobstr;
     if (!lobstr?.connect) throw new Error("LOBSTR not detected. Install the LOBSTR wallet.");
     const res = await lobstr.connect();
     if (!res?.publicKey) throw new Error("LOBSTR access was denied.");
     sessionStorage.setItem("walletAddress", res.publicKey);
     setAddress(res.publicKey);
+    return res.publicKey;
   };
 
-  const connectXbull = async () => {
+  const connectXbull = async (): Promise<string> => {
     const xbull = (window as any).xbull;
     if (!xbull?.connect) throw new Error("xBull not detected. Install the xBull wallet.");
     const res = await xbull.connect();
     if (!res?.publicKey) throw new Error("xBull access was denied.");
     sessionStorage.setItem("walletAddress", res.publicKey);
     setAddress(res.publicKey);
+    return res.publicKey;
   };
 
   const connectWallet = async (type: WalletType) => {
@@ -371,17 +398,18 @@ export default function TipJar() {
     setTx(null);
     try {
       setWalletType(type);
+      let connectedAddress = "";
       switch (type) {
-        case "freighter": await connectFreighter(); break;
-        case "albedo": await connectAlbedo(); break;
-        case "lobstr": await connectLobstr(); break;
-        case "xbull": await connectXbull(); break;
+        case "freighter": connectedAddress = await connectFreighter(); break;
+        case "albedo": connectedAddress = await connectAlbedo(); break;
+        case "lobstr": connectedAddress = await connectLobstr(); break;
+        case "xbull": connectedAddress = await connectXbull(); break;
       }
       trackEvent("wallet_connect", { wallet: type });
       fetch(`${BACKEND}/api/analytics/event`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "wallet_connect", wallet: type, address }),
+        body: JSON.stringify({ type: "wallet_connect", wallet: type, address: connectedAddress }),
       }).catch(() => {});
     } catch (err: any) {
       setTx({ hash: "", status: "error", message: err?.message || "Connection failed" });
@@ -480,10 +508,10 @@ export default function TipJar() {
             body: JSON.stringify({ type: "donation", amount: donationAmount, wallet: walletType, address }),
           }).catch(() => {});
           try {
-            await fetch(`${BACKEND}/api/donation`, {
+            await fetch(`${BACKEND}/api/donations`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ donor: address, amount: donationAmount, hash: sendResponse.hash }),
+              body: JSON.stringify({ campaignId: contractId, donor: address, amount: donationAmount, hash: sendResponse.hash }),
             });
           } catch {}
           fetchCampaign();
