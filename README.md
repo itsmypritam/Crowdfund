@@ -100,6 +100,9 @@ https://github.com/user-attachments/assets/853efdd2-501d-49dc-8342-98e923029bc3
 
 ### ✨ New: Referrals · Badges · Leaderboard · Notifications
 
+<img width="1742" height="863" alt="noti" src="https://github.com/user-attachments/assets/59a67f39-366c-4417-98e2-171eb342aefa" />
+<img width="1533" height="898" alt="redem" src="https://github.com/user-attachments/assets/ae211cea-9de0-474e-ac75-f9458d14c086" />
+
 <div align="center">
 
 ![Referrals](https://img.shields.io/badge/Referrals-0D9488?style=for-the-badge&logo=linktree&logoColor=white)
