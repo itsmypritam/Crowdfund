@@ -1,6 +1,8 @@
+
+https://github.com/user-attachments/assets/23c07fe3-4ead-466d-b3fb-cf85c6fac6c2
 <div align="center">
 
-# 🎯 CrowdEscrow
+##🎯 CrowdEscrow
 
 **Deliver-or-refund crowdfunding on Stellar Soroban** — funds stay in on-chain escrow until the creator proves each milestone, backers vote to mark missed work, and everyone can claim pro-rata refunds. Multi-wallet. Real-time. On-chain.
 
@@ -22,9 +24,11 @@
 
 </div>
 
-<img width="1891" height="902" alt="lanidng page" src="https://github.com/user-attachments/assets/f32b1d1f-94f4-4c5e-abe1-ed7029c91ec8" />
+<img width="1900" height="898" alt="f1" src="https://github.com/user-attachments/assets/b94d4246-cada-4104-ae8d-0690a75612f5" />
 
-<img width="1631" height="832" alt="image" src="https://github.com/user-attachments/assets/756d2ae0-04d5-4f4a-b7d1-247bd9084e5f" />
+
+<img width="1898" height="678" alt="f2" src="https://github.com/user-attachments/assets/a26c3faf-580f-4762-8468-c0534f888b12" />
+
 
 <img width="1191" height="813" alt="image" src="https://github.com/user-attachments/assets/80c75d24-9763-4b21-acec-3e9251cf9b5f" />
 
@@ -33,6 +37,7 @@
 ## Multiple wallets support
 <img width="1372" height="911" alt="multiple wallet" src="https://github.com/user-attachments/assets/0e172dcb-9e8f-4eb3-8982-68d157c5d1cf" />
 <img width="1567" height="865" alt="success9999" src="https://github.com/user-attachments/assets/d4f71a2e-ba08-4a2d-ade1-fb9c19fc6e17" />
+<img width="1673" height="893" alt="f4" src="https://github.com/user-attachments/assets/3ec501ef-5e31-472b-81a2-578fc10d603a" />
 
 ## Live Demo
 
@@ -43,9 +48,15 @@
 
 
 
+https://github.com/user-attachments/assets/853efdd2-501d-49dc-8342-98e923029bc3
 
 
-https://github.com/user-attachments/assets/d55b5894-b587-4db2-a9c5-9e2b82c3fd55
+
+
+
+
+
+
 
 
 
