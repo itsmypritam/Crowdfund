@@ -95,13 +95,16 @@ cd backend && npm test
 
 ```
 
-✓ server.test.mjs (6 tests)
+✓ server.test.mjs (9 tests)
   ✓ GET / → returns service info with status running
   ✓ GET /health → returns ok status
   ✓ POST /api/contract-id → saves and returns contractId
   ✓ POST /api/contract-id → clears contractId when empty
-  ✓ POST /api/donation → returns 400 when fields missing
-  ✓ POST /api/donation → accepts valid donation and returns ok
+  ✓ POST /api/donations → returns 400 when fields missing
+  ✓ POST /api/donations → returns 404 when campaign not found
+  ✓ POST /api/donations → records a donation once the campaign exists
+  ✓ POST /api/analytics/event → records + dedupes events by txHash
+  ✓ POST /api/feedback → records feedback
 ```
 
 ## Architecture
@@ -182,7 +185,7 @@ The app handles 5+ error types:
 
 ## Commits
 
-- 10+ meaningful commits with descriptive messages
+- 80+ meaningful commits with descriptive messages
 - Full project history: https://github.com/itsmypritam/Crowdfund/commits/master
 
 ## Submission
@@ -414,10 +417,24 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 <img width="1912" height="940" alt="image" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
 
 - **Custom event tracking** — All key actions (wallet connects, donations, page views, feedback) recorded server-side
+- **Persistent storage** — Events, feedback and campaign data are persisted to `backend/data/db.json` so metrics survive process restarts (disable with `DISABLE_PERSISTENCE=1`, override location with `DATA_FILE=...`)
+- **Deduplication** — Events keyed by an on-chain `txHash` are recorded only once, so backfills are idempotent
 - **Analytics API**: `GET /api/analytics` — returns summary stats + daily breakdown + recent events
 - **Analytics Dashboard**: `GET /api/analytics/dashboard` — visual dashboard for monitoring (HTML)
 - **Feedback API**: `POST /api/feedback` — collect user ratings and messages
 - **Live dashboard**: [stellar-tip-jar.onrender.com/api/analytics/dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+
+#### Backfill Verified On-Chain Interactions
+
+The 50 user wallet interactions in `public/user-data.csv` are real, verified Stellar testnet transactions. To make the live analytics dashboard reflect them, run the backfill script against the deployed backend:
+
+```bash
+cd backend
+npm install
+BACKEND_URL=https://stellar-tip-jar.onrender.com node scripts/backfill-analytics.js
+```
+
+Each row is recorded as a `donation` analytics event with its on-chain `txHash`, wallet, and real transaction timestamp (fetched from Horizon). Re-running the script is safe — the server dedupes by `txHash`.
 
 #### Infrastructure Monitoring
 - Backend health check: `https://stellar-tip-jar.onrender.com/health`
@@ -426,7 +443,15 @@ Based on collected user feedback and 50+ testnet user interactions, we have iden
 - Render uptime monitoring (built-in)
 
 #### Monitoring Screenshots
-*(Add analytics dashboard screenshots here)*
+
+Live backend analytics dashboard:
+- [View live dashboard](https://stellar-tip-jar.onrender.com/api/analytics/dashboard)
+- [View raw analytics API](https://stellar-tip-jar.onrender.com/api/analytics)
+- [View collected feedback](https://stellar-tip-jar.onrender.com/api/feedback)
+
+Dashboard screenshot (shows live donation, wallet connect and page-view metrics):
+
+<img width="1912" height="940" alt="analytics dashboard" src="https://github.com/user-attachments/assets/30d33838-624d-44e3-9ecb-86cacbd5ab43" />
 
 ## License
 
