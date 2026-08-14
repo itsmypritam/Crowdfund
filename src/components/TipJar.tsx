@@ -91,7 +91,7 @@ interface ProofInfo {
 }
 
 const CONTRACT_ID_KEY = "crowdescrow_contract_id";
-const SIM_SOURCE = "SIM_SOURCE";
+const SIM_SOURCE = "GBRLJZKCAANA7A3XU6RB4643VPIEKXH5R76GIQAWS2V6JRU37N3JAFCA";
 
 interface TipJarProps {
   contractId?: string;
@@ -230,7 +230,7 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("SIM_SOURCE", "0");
+      const simSource = new Account(SIM_SOURCE, "0");
       const simTx = new TransactionBuilder(simSource, {
         fee: "100",
         networkPassphrase: NET,
@@ -262,7 +262,7 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("SIM_SOURCE", "0");
+      const simSource = new Account(SIM_SOURCE, "0");
 
       const countTx = new TransactionBuilder(simSource, {
         fee: "100",
@@ -309,7 +309,7 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
     try {
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
-      const simSource = new Account("SIM_SOURCE", "0");
+      const simSource = new Account(SIM_SOURCE, "0");
 
       const countTx = new TransactionBuilder(simSource, {
         fee: "100",
