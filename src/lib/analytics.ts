@@ -20,7 +20,12 @@ function initMixpanel() {
     autocapture: true,
     record_sessions_percent: 100,
   });
+  mixpanel.track("page_view");
   mixpanelInitialized = true;
+}
+
+if (typeof window !== "undefined") {
+  initMixpanel();
 }
 
 export function trackEvent(name: string, props?: EventProps) {
