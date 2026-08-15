@@ -74,6 +74,7 @@ function createApp({
   verifyDonation = null,
   enableRateLimit = true,
   rateLimitOptions = {},
+  notificationQueue = null,
 }) {
   const app = express();
   const server = http.createServer(app);
@@ -550,12 +551,26 @@ function createApp({
     createdAt: r.created_at,
   });
 
-  app.post("/api/notifications", (req, res) => {
+  app.post("/api/notifications", async (req, res) => {
     const parsed = notificationSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.issues[0].message });
     }
     const { wallet, type, title, body, campaignId, link } = parsed.data;
+    recordEvent("notification", { wallet, address: wallet, campaignId: campaignId || null });
+
+    if (notificationQueue) {
+      const job = await notificationQueue.add("notification", {
+        wallet,
+        type,
+        title,
+        body,
+        campaignId: campaignId || null,
+        link,
+      });
+      return res.status(202).json({ queued: true, jobId: job.id });
+    }
+
     const info = db
       .prepare(
         `INSERT INTO notifications (wallet, type, title, body, campaign_id, link, read, created_at)
@@ -563,7 +578,6 @@ function createApp({
       )
       .run(wallet, type, title, body, campaignId || null, link, Date.now());
     const created = db.prepare("SELECT * FROM notifications WHERE id = ?").get(info.lastInsertRowid);
-    recordEvent("notification", { wallet, address: wallet, campaignId: campaignId || null });
     res.status(201).json(ROW_TO_NOTIFICATION(created));
   });
 

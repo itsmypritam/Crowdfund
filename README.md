@@ -157,6 +157,75 @@ https://github.com/user-attachments/assets/853efdd2-501d-49dc-8342-98e923029bc3
   </tr>
 </table>
 
+## 📬 Background Jobs — Notification Queue (BullMQ + Upstash Redis)
+
+The notification service is powered by a **BullMQ** job queue backed by **Upstash Redis**. When the app needs to deliver a notification (pledge received, milestone approved, refund ready, withdrawal confirmed…), it doesn't write straight to the database inside the request handler. Instead it drops a job onto a Redis queue, returns to the user instantly, and a background **worker** performs the actual database insert moments later.
+
+### How it works
+
+```mermaid
+flowchart LR
+    subgraph Client
+        UI["Frontend / other services"]
+    end
+    subgraph Backend
+        API["POST /api/notifications"]
+        VAL["Validate payload (zod)"]
+        WORK["Worker — concurrency 10 · 3 retries"]
+        DB[("SQLite — notifications table")]
+    end
+    subgraph Upstash["Upstash Redis"]
+        Q["'notifications' queue (BullMQ)"]
+    end
+
+    UI --> API --> VAL --> Q
+    Q --> WORK --> DB
+    API -. "fallback: direct insert (no REDIS_URL)" .-> DB
+```
+
+1. **Produce** — `POST /api/notifications` validates the payload with `zod`, records an analytics event, then calls `queue.add("notification", { wallet, type, title, body, campaignId, link })`. The endpoint replies **`202 { queued: true, jobId }`** immediately — it never blocks on the database.
+2. **Queue** — the job sits in the `notifications` queue inside Upstash Redis until a worker is free. Redis holds jobs durably, so nothing is lost if the backend restarts mid-flight.
+3. **Consume** — a BullMQ `Worker` (concurrency 10) picks up each job and inserts the notification row into SQLite (`backend/notificationQueue.js`).
+4. **Retry & clean-up** — failed jobs are retried up to **3 attempts** with exponential backoff (1s → 2s → 4s); completed jobs are pruned (last 500 kept) and failed jobs retained for inspection (last 2000).
+
+**No-Redis fallback** — if `REDIS_URL` is empty, the endpoint falls back to the original synchronous insert (`201` + the created notification). Local dev and the test suite run this way, so the API behaves identically without Redis.
+
+### What this gives the product
+
+| Benefit | What it means |
+|---|---|
+| ⚡ **Non-blocking API** | Creating a notification no longer waits on a DB write — requests complete in milliseconds even under load. |
+| 📈 **Burst absorption** | A donation spike (e.g. 50 users donating in the same minute) queues jobs instead of hammering SQLite; the worker drains them at a steady pace. |
+| 🛡️ **Resilience** | Jobs are durable in Redis and retried with backoff — a transient DB or network error can never silently drop a user's notification. |
+| 🧩 **Decoupled producers & consumers** | The API only produces jobs; the worker owns persistence. Each side can be scaled or deployed independently. |
+| 🔧 **Operational visibility** | Failed jobs are retained for inspection, and the queue can be monitored with [BullMQ Board](https://github.com/taskforcesh/bullmq-board). |
+
+### What this gives users
+
+- **Faster interactions** — pages never wait on the notification write, so donating, approving, and refunding all feel snappier.
+- **Reliable delivery** — even during traffic bursts or backend restarts, notifications are never silently lost; failed jobs are retried automatically.
+- **A consistent inbox** — pledge confirmations, milestone approvals, refund and withdrawal notices land in order and in full, so backers and creators always see the latest state of their campaigns.
+
+### Tech
+
+- **[BullMQ](https://docs.bullmq.io/)** — Redis-backed job queue + worker for Node.js
+- **[Upstash Redis](https://upstash.com/)** — serverless Redis acting as the queue's transport layer
+
+### Setup (Upstash)
+
+1. Create a free database at [upstash.com](https://upstash.com/) → **Redis** → *Create database*.
+2. Copy your **REST URL** and **REST token** from the database details page.
+3. Build the BullMQ connection string. BullMQ speaks the Redis wire protocol (not the REST API), so compose `REDIS_URL` from your Upstash host + token — the REST token doubles as the Redis password, and the TLS port is `6380`:
+
+```bash
+# backend/.env
+REDIS_URL=rediss://default:<YOUR_UPSTASH_REST_TOKEN>@<your-database-name>.upstash.io:6380
+```
+
+4. Restart the backend. The startup log should show `Notification queue (BullMQ) enabled`.
+
+> ⚠️ **Never commit the token.** Keep it in `backend/.env` (git-ignored) or your host's secret manager.
+
 ## Requirements
 
 - Node.js >= 22
@@ -255,7 +324,8 @@ npm run build
 │   ├── db.js                # SQLite (better-sqlite3), WAL, migrations (incl. referrals/notifications tables)
 │   ├── config.js            # env config
 │   ├── horizon.js           # on-chain donation verification
-│   ├── server.js            # HTTP + WebSocket entrypoint
+│   ├── notificationQueue.js # BullMQ notification queue + worker (Upstash Redis)
+│   ├── server.js            # HTTP + WebSocket entrypoint (wires queue + worker)
 │   ├── server.test.mjs      # API tests (41)
 │   └── scripts/             # backfill-analytics · submit-form-entries
 ├── contract/                # Soroban Rust contract
@@ -286,6 +356,11 @@ flowchart LR
         WS["WebSocket — live donation feed"]
         DB[("SQLite · WAL — campaigns · donations · referrals · notifications")]
         HZ["Horizon donation verifier"]
+        NQ["Notification queue + worker (BullMQ)"]
+    end
+
+    subgraph CACHE["🗄️ Upstash Redis"]
+        Q["'notifications' queue"]
     end
 
     subgraph CH["🔗 Stellar Testnet"]
@@ -304,6 +379,8 @@ flowchart LR
     R --> DB
     R --> HZ
     HZ --> HOR
+    NQ --> Q
+    NQ --> DB
     TJ -->|simulate / submit| RPC
     BW -->|get_badges| RPC
     WL -->|sign & send| RPC

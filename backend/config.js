@@ -17,6 +17,7 @@ function loadConfig(env = process.env) {
     contractId: env.CONTRACT_ID || "",
     logLevel: env.LOG_LEVEL || "info",
     enableRateLimit: env.DISABLE_RATE_LIMIT !== "1",
+    redisUrl: env.REDIS_URL || "",
   };
 }
 

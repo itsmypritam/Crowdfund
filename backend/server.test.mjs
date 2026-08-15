@@ -41,6 +41,7 @@ function makeApp(overrides = {}) {
     verifyDonation: overrides.verifyDonation ?? null,
     enableRateLimit: config.enableRateLimit,
     rateLimitOptions: overrides.rateLimitOptions || {},
+    notificationQueue: overrides.notificationQueue || null,
   });
   return { app, db };
 }
@@ -506,6 +507,41 @@ describe("notifications", () => {
     expect(res.body.ok).toBe(true);
     const list = await request(app).get(`/api/notifications?wallet=${BACKER}`);
     expect(list.body[0].read).toBe(true);
+  });
+
+  it("enqueues a notification job when a queue is configured", async () => {
+    const jobs = [];
+    const notificationQueue = {
+      add: async (name, data) => {
+        jobs.push({ name, data });
+        return { id: "job-123" };
+      },
+    };
+    const { app, db } = makeApp({ notificationQueue });
+    const res = await request(app).post("/api/notifications").send({
+      wallet: BACKER,
+      type: "refund",
+      title: "Refund available",
+      body: "Claim your refund now",
+      campaignId: "camp1",
+      link: "/campaigns/camp1",
+    });
+    expect(res.status).toBe(202);
+    expect(res.body).toEqual({ queued: true, jobId: "job-123" });
+    expect(jobs.length).toBe(1);
+    expect(jobs[0].name).toBe("notification");
+    expect(jobs[0].data).toEqual({
+      wallet: BACKER,
+      type: "refund",
+      title: "Refund available",
+      body: "Claim your refund now",
+      campaignId: "camp1",
+      link: "/campaigns/camp1",
+    });
+    const persisted = db
+      .prepare("SELECT COUNT(*) c FROM notifications WHERE wallet = ?")
+      .get(BACKER);
+    expect(persisted.c).toBe(0);
   });
 });
 
