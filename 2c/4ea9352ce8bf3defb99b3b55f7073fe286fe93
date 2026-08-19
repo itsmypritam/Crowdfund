@@ -1,0 +1,21 @@
+contract/src/lib.rs
+  s_cee612b63f2a7c::t_938461fd0661d7 90
+contract/Cargo.toml
+  s_cee612b63f2a7c::t_3681508b0a9d88 12,15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2c4ea9352ce8bf3defb99b3b55f7073fe286fe93",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
