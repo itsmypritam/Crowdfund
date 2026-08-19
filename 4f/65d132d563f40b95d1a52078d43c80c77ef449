@@ -1,0 +1,40 @@
+scripts/donate_bulk.cjs
+  s_cee612b63f2a7c::t_36cf8dab4429e8 7
+scripts/init_rocket.cjs
+  s_cee612b63f2a7c::t_aa723cc917e955 6
+backend/server.test.mjs
+  s_cee612b63f2a7c::t_d7416ba07590c2 83,86
+.env.example
+  s_cee612b63f2a7c::t_e1b909092fca08 26
+scripts/donate_results.json
+  s_cee612b63f2a7c::t_61a6e16ce28dfd 6-7,14-15,22-23,30-31,38-39,46-47,54-55,62-63,70-71,78-79,86-87,94-95,102-103,110-111,118-119,126-127,134-135,142-143,150-151,158-159,166-167,174-175,182-183,190-191,198-199,206-207,214-215,222-223,230-231,238-239,246-247,254-255,262-263,270-271,278-279,286-287,294-295,302-303,310-311,318-319,326-327,334-335,342-343,350-351,358-359,366-367,374-375,382-383,390-391,398-399
+README.md
+  s_cee612b63f2a7c::t_957dca329ab746 426-488
+scripts/deploy_and_init.cjs
+  s_cee612b63f2a7c::t_3169d066b2d9f9 14
+  s_cee612b63f2a7c::t_111bcb14146913 128-129
+backend/.env.example
+  s_cee612b63f2a7c::t_33f66802662ace 2
+scripts/test_donate.cjs
+  s_cee612b63f2a7c::t_72a52d30d43ce5 6
+backend/package-lock.json
+  s_cee612b63f2a7c::t_493782bb3c4d62 699
+package-lock.json
+  s_cee612b63f2a7c::t_dbf817b69eff6b 322,2205,2246-2247,3209,3219,3768,4753,5504,7365,7375,8823,9026
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4f65d132d563f40b95d1a52078d43c80c77ef449",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
