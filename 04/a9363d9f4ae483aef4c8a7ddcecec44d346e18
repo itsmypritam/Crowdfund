@@ -1,0 +1,23 @@
+scripts/update-wasm.mjs
+  s_cee612b63f2a7c::t_78bab5ae4ab3aa 1-58
+scripts/check-wasm.mjs
+  s_cee612b63f2a7c::t_0c128418358f57 1-77
+src/components/wasm_base64.ts
+  s_cee612b63f2a7c::t_0cbaca7d5c992a 1,3-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "04a9363d9f4ae483aef4c8a7ddcecec44d346e18",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
