@@ -80,10 +80,10 @@ describe("service info", () => {
 
 describe("contract id", () => {
   it("GET /api/contract-id returns configured contract id", async () => {
-    const { app } = makeApp({ contractId: "CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5" });
+    const { app } = makeApp({ contractId: "CDL7NSGKCSDYRYZDNT3LLE4CDVQKRIISID5MP7G2G5OHTFW4SQYKSG4O" });
     const res = await request(app).get("/api/contract-id");
     expect(res.status).toBe(200);
-    expect(res.body.contractId).toBe("CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5");
+    expect(res.body.contractId).toBe("CDL7NSGKCSDYRYZDNT3LLE4CDVQKRIISID5MP7G2G5OHTFW4SQYKSG4O");
   });
 
   it("POST requires admin key when configured", async () => {

@@ -11,6 +11,7 @@ const GOAL_XLM = "10000";
 const DEADLINE_DAYS = 30;
 const TITLE = "Help build my rocket \u{1F680}";
 const DESCRIPTION = "Rocket science needs funding!";
+const NATIVE_TOKEN = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
 
 function fetch(url) {
   return new Promise((resolve, reject) => {
@@ -124,7 +125,8 @@ async function main() {
         goal,
         deadline,
         sdk.nativeToScVal(TITLE, { type: "string" }),
-        sdk.nativeToScVal(DESCRIPTION, { type: "string" })
+        sdk.nativeToScVal(DESCRIPTION, { type: "string" }),
+        sdk.nativeToScVal(NATIVE_TOKEN, { type: "address" })
       )
     )
     .setTimeout(30)

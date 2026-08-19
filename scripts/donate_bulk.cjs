@@ -4,7 +4,7 @@ const sdk = require("@stellar/stellar-sdk");
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const FRIENDBOT = "https://friendbot.stellar.org";
 const NET = sdk.Networks.TESTNET;
-const CONTRACT_ID = "CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5";
+const CONTRACT_ID = "CDL7NSGKCSDYRYZDNT3LLE4CDVQKRIISID5MP7G2G5OHTFW4SQYKSG4O";
 const CSV_PATH = "public/user-data.csv";
 const OUT_PATH = "scripts/donate_results.json";
 

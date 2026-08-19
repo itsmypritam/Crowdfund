@@ -423,11 +423,69 @@ The Soroban contract (`contract/src/lib.rs`, **v2**) supports:
 ### Contract Details
 
 - **Network**: Stellar Testnet
-- **Contract SDK**: `soroban-sdk = "27.0.0-rc.1"` (Protocol 27)
-- **Legacy Contract ID (v1)**: `CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5`
-- **Note**: v2 changed the `initialize` signature (added `token` param) and added proof/vote/refund functions — this is a **breaking change**. Redeploy the contract from `contract/`, set the new ID as `CONTRACT_ID` (backend env) / `contractId` (TipJar), and point new campaigns at it.
-- **Deployment Tx**: [`556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5`](https://stellar.expert/explorer/testnet/tx/556245a0fb002ced4821dc6c55be0fc57de7767a2f842a9bfcdfa5f8cc94cab5)
-- **WASM Upload Tx**: [`bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd`](https://stellar.expert/explorer/testnet/tx/bbea46c8f1fa1a3ea4ffbbf1ae59d9800fb2269e9f14b7f5c0809bdbd56049dd)
+- **Contract SDK**: `soroban-sdk = "27.0.2"` (Protocol 27)
+- **Contract ID (v2)**: `CDL7NSGKCSDYRYZDNT3LLE4CDVQKRIISID5MP7G2G5OHTFW4SQYKSG4O`
+- **Legacy Contract ID (v1 — broken, immutable)**: `CCP3FESW4PWZ6ZEQZI2B4GDBXY2KM3UESU4J4RZB53AUV4BUIFML72L5`
+- **Deployment Tx (WASM upload)**: [`44862b2b057b19e5cb9e3e15e45cb5a7423552bb94a6c7ab33b7c771e655eca1`](https://stellar.expert/explorer/testnet/tx/44862b2b057b19e5cb9e3e15e45cb5a7423552bb94a6c7ab33b7c771e655eca1)
+- **Contract Creation Tx**: [`44862b2b057b19e5cb9e3e15e45cb5a7423552bb94a6c7ab33b7c771e655eca1`](https://stellar.expert/explorer/testnet/tx/44862b2b057b19e5cb9e3e15e45cb5a7423552bb94a6c7ab33b7c771e655eca1)
+- **Initialize Tx**: [`21971a36ae94d15cf6d87410cd4786a392f7bd94f2b1f3add7550677d995d74d`](https://stellar.expert/explorer/testnet/tx/21971a36ae94d15cf6d87410cd4786a392f7bd94f2b1f3add7550677d995d74d)
+
+#### 50-User Bulk Donation Tx Hashes
+
+| # | Name | XLM | Tx Hash |
+|---|------|-----|---------|
+| 1 | Aarav Sharma | 5 | [`ada123b43082b2b757f5a3ea5884eae06428a2401478f679947d9686a326bb5a`](https://stellar.expert/explorer/testnet/tx/ada123b43082b2b757f5a3ea5884eae06428a2401478f679947d9686a326bb5a) |
+| 2 | Vivaan Patel | 5 | [`481698e20ece0a9d5ed36b3ce1590c9ba27d9476bb7ef31237fd6019705f84a5`](https://stellar.expert/explorer/testnet/tx/481698e20ece0a9d5ed36b3ce1590c9ba27d9476bb7ef31237fd6019705f84a5) |
+| 3 | Aditya Singh | 4 | [`a3ede996e01e20e1fcd2bfb87d7c66e51d45e2ecfc025a1156c6fa7d1d5c6e40`](https://stellar.expert/explorer/testnet/tx/a3ede996e01e20e1fcd2bfb87d7c66e51d45e2ecfc025a1156c6fa7d1d5c6e40) |
+| 4 | Arjun Verma | 5 | [`46bc46faee6b0c780041bbecd4a6a6cd15e65870358d027f5cbfdfa94ac60e1c`](https://stellar.expert/explorer/testnet/tx/46bc46faee6b0c780041bbecd4a6a6cd15e65870358d027f5cbfdfa94ac60e1c) |
+| 5 | Ananya Mehta | 5 | [`e54cdd09b9b459801bb7308109c4e9f560ba3f07d0959cb9251ec86c0e24da82`](https://stellar.expert/explorer/testnet/tx/e54cdd09b9b459801bb7308109c4e9f560ba3f07d0959cb9251ec86c0e24da82) |
+| 6 | Rohan Gupta | 4 | [`2903acebb18f5ae7151fd521a4fe7c33465ed0813675d1b4868d91df9f107b85`](https://stellar.expert/explorer/testnet/tx/2903acebb18f5ae7151fd521a4fe7c33465ed0813675d1b4868d91df9f107b85) |
+| 7 | Ishita Joshi | 3 | [`a96503dfd62836fadf9b228d1e8c3077a4d9ca53b683499820261cc4fd5cca25`](https://stellar.expert/explorer/testnet/tx/a96503dfd62836fadf9b228d1e8c3077a4d9ca53b683499820261cc4fd5cca25) |
+| 8 | Karan Malhotra | 5 | [`e99ed75eb51a350867c3017fafdbcb9fcec1731ae0fff29763c990fcfaff7d5c`](https://stellar.expert/explorer/testnet/tx/e99ed75eb51a350867c3017fafdbcb9fcec1731ae0fff29763c990fcfaff7d5c) |
+| 9 | Priya Kapoor | 4 | [`757fec479836a5fbbb952dbe604c8b3fcb182513136d77a68d46892899f72052`](https://stellar.expert/explorer/testnet/tx/757fec479836a5fbbb952dbe604c8b3fcb182513136d77a68d46892899f72052) |
+| 10 | Rajesh Kumar | 5 | [`403533269a71cac990265abea5243d9a7ce8e3de5a1e1c94c3e8fe0ca25615d1`](https://stellar.expert/explorer/testnet/tx/403533269a71cac990265abea5243d9a7ce8e3de5a1e1c94c3e8fe0ca25615d1) |
+| 11 | Suresh Iyer | 5 | [`2b0ecd0c2735da4c13f756628d012c911cd5d6e056361131bf1acece1b48c38f`](https://stellar.expert/explorer/testnet/tx/2b0ecd0c2735da4c13f756628d012c911cd5d6e056361131bf1acece1b48c38f) |
+| 12 | Aishwarya Saxena | 4 | [`ca4b998ce51aa1a4308faaf8e2b4394c6d0acab5a6ce327dd64b1c55b6925916`](https://stellar.expert/explorer/testnet/tx/ca4b998ce51aa1a4308faaf8e2b4394c6d0acab5a6ce327dd64b1c55b6925916) |
+| 13 | Deepak Chawla | 5 | [`a82086e61d36b42451256dc0a59bc0de85495d2bbf485b4c271bb9579e8967bd`](https://stellar.expert/explorer/testnet/tx/a82086e61d36b42451256dc0a59bc0de85495d2bbf485b4c271bb9579e8967bd) |
+| 14 | Manoj Tiwari | 3 | [`860573bd37a3473883ca6cda8ad9fac70df4a8778a1604c577279f1398296044`](https://stellar.expert/explorer/testnet/tx/860573bd37a3473883ca6cda8ad9fac70df4a8778a1604c577279f1398296044) |
+| 15 | Nikhil Deshmukh | 4 | [`dce6625e2904828cdec60b82632cad83e22ff7c221dda6ef7e02c5e36dcfed70`](https://stellar.expert/explorer/testnet/tx/dce6625e2904828cdec60b82632cad83e22ff7c221dda6ef7e02c5e36dcfed70) |
+| 16 | Priyanka Kulkarni | 5 | [`47547f43aab4452a23f9b77e4bfb798ec279300bfed2c1736a0006183ba97f32`](https://stellar.expert/explorer/testnet/tx/47547f43aab4452a23f9b77e4bfb798ec279300bfed2c1736a0006183ba97f32) |
+| 17 | Sanjay Bhat | 5 | [`4da988f4d0286ff09f6506efd3033e94c75e10e06ce517890804b9b46a87c4d8`](https://stellar.expert/explorer/testnet/tx/4da988f4d0286ff09f6506efd3033e94c75e10e06ce517890804b9b46a87c4d8) |
+| 18 | Sunil Reddy | 4 | [`cfc92c5088b9638993b79ed94cd7a99d9f485893a13de3b4aaf30af999daaf73`](https://stellar.expert/explorer/testnet/tx/cfc92c5088b9638993b79ed94cd7a99d9f485893a13de3b4aaf30af999daaf73) |
+| 19 | Divya Rao | 5 | [`9a290e5ab07888c4f70ec9e99fe2620689494ac820d233f89524f1cdd18b84ff`](https://stellar.expert/explorer/testnet/tx/9a290e5ab07888c4f70ec9e99fe2620689494ac820d233f89524f1cdd18b84ff) |
+| 20 | Ankit Agrawal | 5 | [`fb0088f2f33a3519b330b88a154d823f83aa35ee234a4897aac7f774cf00f04e`](https://stellar.expert/explorer/testnet/tx/fb0088f2f33a3519b330b88a154d823f83aa35ee234a4897aac7f774cf00f04e) |
+| 21 | Ravi Menon | 3 | [`2a518d3ba6926a9690eaf9f21fb6cfd967a7cff1793572d63de7269ffa4ae50a`](https://stellar.expert/explorer/testnet/tx/2a518d3ba6926a9690eaf9f21fb6cfd967a7cff1793572d63de7269ffa4ae50a) |
+| 22 | Ashok Pillai | 5 | [`6b0047f2f9a66f08fd39bd952d79be152b2fe8701032f1ce3675e69fe205af83`](https://stellar.expert/explorer/testnet/tx/6b0047f2f9a66f08fd39bd952d79be152b2fe8701032f1ce3675e69fe205af83) |
+| 23 | Kavya Bansal | 5 | [`ff6c2e70b0265a40cb41dba9656ec214284c910085f794d35688d3d289cef7fd`](https://stellar.expert/explorer/testnet/tx/ff6c2e70b0265a40cb41dba9656ec214284c910085f794d35688d3d289cef7fd) |
+| 24 | Nitin Goyal | 4 | [`92a3bcb5a87c2cbe2bc7e17d27dfc4709818e9f45afc56a521dd5084d29d6f0a`](https://stellar.expert/explorer/testnet/tx/92a3bcb5a87c2cbe2bc7e17d27dfc4709818e9f45afc56a521dd5084d29d6f0a) |
+| 25 | Pradeep Mishra | 5 | [`72d989146c13b0e48d1d7ff28a47b2c0410b15be40315beae62bd75e57c605f7`](https://stellar.expert/explorer/testnet/tx/72d989146c13b0e48d1d7ff28a47b2c0410b15be40315beae62bd75e57c605f7) |
+| 26 | Sneha Kale | 5 | [`e5654ccb4e650e0f173445ef5b8a2390d5a8d4650174d184e6e8b5507720be39`](https://stellar.expert/explorer/testnet/tx/e5654ccb4e650e0f173445ef5b8a2390d5a8d4650174d184e6e8b5507720be39) |
+| 27 | Gaurav Khanna | 3 | [`ef6890f6c1548a8821246e1719c18fb8f0a0a1dbb9394ef10b6d865dcfaa293d`](https://stellar.expert/explorer/testnet/tx/ef6890f6c1548a8821246e1719c18fb8f0a0a1dbb9394ef10b6d865dcfaa293d) |
+| 28 | Harsh Vardhan | 4 | [`48a2353c2ac9614002060009fd83ffbab8e180e885372306014b5f292b2209d7`](https://stellar.expert/explorer/testnet/tx/48a2353c2ac9614002060009fd83ffbab8e180e885372306014b5f292b2209d7) |
+| 29 | Ishaan Bose | 5 | [`5e9bf5034478fe8df7fe08b27af5faad0dea1106cfa9e7055917bc594da5b9ad`](https://stellar.expert/explorer/testnet/tx/5e9bf5034478fe8df7fe08b27af5faad0dea1106cfa9e7055917bc594da5b9ad) |
+| 30 | Kartik Shah | 4 | [`01c2ed4ab6d2f48c722e68312e06c5b194bfd3829a86fba3266a322f22000894`](https://stellar.expert/explorer/testnet/tx/01c2ed4ab6d2f48c722e68312e06c5b194bfd3829a86fba3266a322f22000894) |
+| 31 | Yash Choudhary | 5 | [`b5472149eeae6bf76859f8a6ad5c488748067cbe769e60b7c176058e6a1a1997`](https://stellar.expert/explorer/testnet/tx/b5472149eeae6bf76859f8a6ad5c488748067cbe769e60b7c176058e6a1a1997) |
+| 32 | Meera Pandey | 5 | [`dcd75f4ec6a205df4ccbc21b57c9fb380835b9abaf13c16f97158941fb62c180`](https://stellar.expert/explorer/testnet/tx/dcd75f4ec6a205df4ccbc21b57c9fb380835b9abaf13c16f97158941fb62c180) |
+| 33 | Chetan Patil | 4 | [`2500af1170d6204a31e47b8cab3d5e66d2820cb394ac9a1db51a12b90077d8e5`](https://stellar.expert/explorer/testnet/tx/2500af1170d6204a31e47b8cab3d5e66d2820cb394ac9a1db51a12b90077d8e5) |
+| 34 | Dhruv Kohli | 5 | [`e662493286d0b162aed5543b808e8714a5a6244ac5bcb03c6468936ff2eaff70`](https://stellar.expert/explorer/testnet/tx/e662493286d0b162aed5543b808e8714a5a6244ac5bcb03c6468936ff2eaff70) |
+| 35 | Farhan Khan | 2 | [`d133b89edd31a969a67d9f2b9355c1b55c638967f4bd070df92da42bd6bf8268`](https://stellar.expert/explorer/testnet/tx/d133b89edd31a969a67d9f2b9355c1b55c638967f4bd070df92da42bd6bf8268) |
+| 36 | Nisha Shetty | 4 | [`f82fbf01d3171089130672da909d6af139132f3237a0775fa0f9f07d81fe4615`](https://stellar.expert/explorer/testnet/tx/f82fbf01d3171089130672da909d6af139132f3237a0775fa0f9f07d81fe4615) |
+| 37 | Imran Qureshi | 5 | [`63f3bcc92a551fc92fd5793e8c9b59553f64bcd1e16a82c9b28d58251d3a2187`](https://stellar.expert/explorer/testnet/tx/63f3bcc92a551fc92fd5793e8c9b59553f64bcd1e16a82c9b28d58251d3a2187) |
+| 38 | Jatin Suri | 5 | [`6859b5668e81d2938fbc3e3df44a90ea3ee80539fe93a1730121750338eb0b6a`](https://stellar.expert/explorer/testnet/tx/6859b5668e81d2938fbc3e3df44a90ea3ee80539fe93a1730121750338eb0b6a) |
+| 39 | Kunal Dutta | 4 | [`4ed7c9ce3e558529c8278f5a7f301786fa8681ccf2f72359e6de7269e9b303ab`](https://stellar.expert/explorer/testnet/tx/4ed7c9ce3e558529c8278f5a7f301786fa8681ccf2f72359e6de7269e9b303ab) |
+| 40 | Lokesh Naidu | 5 | [`47ea8efd582cd0e1b86228bd88ef757f3adcdbf699034b4be8b2782b8af7fc03`](https://stellar.expert/explorer/testnet/tx/47ea8efd582cd0e1b86228bd88ef757f3adcdbf699034b4be8b2782b8af7fc03) |
+| 41 | Mayank Agarwal | 5 | [`c0f06207b97537fdc05b2cb1c8b1f450c96356092f333cc6fff206c09a922d5e`](https://stellar.expert/explorer/testnet/tx/c0f06207b97537fdc05b2cb1c8b1f450c96356092f333cc6fff206c09a922d5e) |
+| 42 | Naveen Krishnan | 3 | [`fd4f1d0c860cb44ead30f8f717ae2c16658ca4b05b05378c6f43d031897fbe69`](https://stellar.expert/explorer/testnet/tx/fd4f1d0c860cb44ead30f8f717ae2c16658ca4b05b05378c6f43d031897fbe69) |
+| 43 | Om Prakash | 5 | [`d8d0eb5ff253cf3b722a1096bf516b29566b821130a12e96156dbbb50c128041`](https://stellar.expert/explorer/testnet/tx/d8d0eb5ff253cf3b722a1096bf516b29566b821130a12e96156dbbb50c128041) |
+| 44 | Pankaj Rathore | 5 | [`9a180b424bb2f309542dc9bb1348af86f1c3d0292df8a619070132ea047ca05c`](https://stellar.expert/explorer/testnet/tx/9a180b424bb2f309542dc9bb1348af86f1c3d0292df8a619070132ea047ca05c) |
+| 45 | Ranbir Sethi | 4 | [`3428aafcbda1db12a7ad9fcb31e8ddded95d447eec65175e04b8e169609b74f7`](https://stellar.expert/explorer/testnet/tx/3428aafcbda1db12a7ad9fcb31e8ddded95d447eec65175e04b8e169609b74f7) |
+| 46 | Shreya Ghosh | 5 | [`07341cab3bfa32f401b5ec5a16171a4aac0fa126e75cfe8a99278f43f30e8a79`](https://stellar.expert/explorer/testnet/tx/07341cab3bfa32f401b5ec5a16171a4aac0fa126e75cfe8a99278f43f30e8a79) |
+| 47 | Tanmay Chatterjee | 5 | [`bc037d27d62e82206eea8ce1ec4adb4917b6b51f686d68869118dbf3ccce983b`](https://stellar.expert/explorer/testnet/tx/bc037d27d62e82206eea8ce1ec4adb4917b6b51f686d68869118dbf3ccce983b) |
+| 48 | Uday Shankar | 4 | [`f41514820935dad8f6bc080dc72b21c8e01dd99872e7712fdf722c98daf4f63b`](https://stellar.expert/explorer/testnet/tx/f41514820935dad8f6bc080dc72b21c8e01dd99872e7712fdf722c98daf4f63b) |
+| 49 | Yuvraj Tomar | 3 | [`0db26c19722021832d16e090897d38ab38d9eb8b4d9e156bd95cbebbb2d0ec73`](https://stellar.expert/explorer/testnet/tx/0db26c19722021832d16e090897d38ab38d9eb8b4d9e156bd95cbebbb2d0ec73) |
+| 50 | Zubin Khosla | 5 | [`bf6d681e8625906be27435bed37b3e0503251f1c75009570574e98bdadb31076`](https://stellar.expert/explorer/testnet/tx/bf6d681e8625906be27435bed37b3e0503251f1c75009570574e98bdadb31076) |
+
+**Total raised: 215 XLM from 50 donors**
 
 
 
