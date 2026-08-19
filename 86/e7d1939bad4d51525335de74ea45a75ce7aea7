@@ -1,0 +1,31 @@
+scripts/gen_readme_table2.cjs
+  s_cee612b63f2a7c::t_6df391888ae64c 1-28
+scripts/gen_readme_table.cjs
+  s_cee612b63f2a7c::t_a107d1d6c68902 1-30
+scripts/verify_donations.cjs
+  s_cee612b63f2a7c::t_80a3390eb0efef 1-86
+scripts/readme_table.md
+  s_cee612b63f2a7c::t_3b9ea020dd8e34 1-56
+scripts/readme_table2.md
+  s_cee612b63f2a7c::t_db4412775425c1 1-56
+.github/workflows/ci.yml
+  s_cee612b63f2a7c::t_cfe009c58afb23 45
+scripts/verify_readme.cjs
+  s_cee612b63f2a7c::t_6c43be0e69dabc 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "86e7d1939bad4d51525335de74ea45a75ce7aea7",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
