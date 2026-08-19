@@ -1,0 +1,25 @@
+scripts/check-wasm.mjs
+  s_cee612b63f2a7c::t_15a924728ce638 34
+scripts/update-wasm.mjs
+  s_cee612b63f2a7c::t_2526caf4a40e6e 33
+src/components/wasm_base64.ts
+  s_cee612b63f2a7c::t_c60e38ac8fadc1 5
+contract/Cargo.lock
+  s_cee612b63f2a7c::t_80d52a1b89129d 1350,1352,1362,1364,1381,1383,1391,1393,1428,1430,1443,1445,1457,1459,1481,1483,1501,1503,1514,1516
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dafd4794acb178a34343a4681e11b669cb2fc59a",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
