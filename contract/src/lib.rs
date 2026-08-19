@@ -87,6 +87,7 @@ impl CrowdEscrowContract {
         description: String,
         token: Address,
     ) {
+        owner.require_auth();
         assert!(
             !env.storage().instance().has(&DataKey::Campaign),
             "already initialized"
