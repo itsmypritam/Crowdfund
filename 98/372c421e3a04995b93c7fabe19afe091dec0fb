@@ -1,0 +1,21 @@
+scripts/check-wasm.mjs
+  s_cee612b63f2a7c::t_3ff4cb5111ff5d 59,64
+.github/workflows/ci.yml
+  s_cee612b63f2a7c::t_dbfd8a0e78780e 84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "98372c421e3a04995b93c7fabe19afe091dec0fb",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
