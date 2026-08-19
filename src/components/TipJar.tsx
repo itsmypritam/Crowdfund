@@ -192,7 +192,7 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
     (async () => {
       try {
         const allowed = await isConnected();
-        if (allowed.error || cancelled) return;
+        if (!allowed.isConnected || cancelled) return;
         const a = await getAddress();
         if (a.error || cancelled) return;
         if (!isValidAddress(a.address)) return;
@@ -530,7 +530,10 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
   const signWithWallet = async (xdr: string, opts: { networkPassphrase: string; address: string }) => {
     switch (walletType) {
       case "freighter": {
-        const signed = await signTransaction(xdr, { networkPassphrase: opts.networkPassphrase });
+        const signed = await signTransaction(xdr, {
+          networkPassphrase: opts.networkPassphrase,
+          account: opts.address,
+        });
         if (signed.error || !signed.signedTxXdr) throw new Error("Signing cancelled");
         return signed.signedTxXdr;
       }
@@ -541,12 +544,12 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
       }
       case "lobstr": {
         const l = (window as any).lobstr;
-        const res = await l.signTransaction(xdr);
+        const res = await l.signTransaction(xdr, opts.networkPassphrase);
         return res.signedTxXdr;
       }
       case "xbull": {
         const x = (window as any).xbull;
-        const res = await x.signTransaction(xdr);
+        const res = await x.signTransaction(xdr, opts.networkPassphrase);
         return res.signedTxXdr;
       }
       default:
@@ -907,7 +910,7 @@ export default function TipJar({ contractId: propContractId }: TipJarProps) {
     try {
       const amountStroop = BigInt(Math.floor(parseFloat(msAmount) * 1e7));
       const deadlineTs = BigInt(Math.floor(new Date(msDeadline).getTime() / 1000));
-      const reqApprovals = BigInt(parseInt(msApprovals) || 1);
+      const reqApprovals = parseInt(msApprovals) || 1;
       const server = new rpc.Server(RPC_URL);
       const contract = new Contract(contractId);
       const sourceAccount = await server.getAccount(address);

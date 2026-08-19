@@ -4,7 +4,7 @@ import { isValidAddress } from "./config";
 export async function getFreighterAddress(): Promise<string | null> {
   try {
     const allowed = await isConnected();
-    if (allowed.error) return null;
+    if (!allowed.isConnected) return null;
     const a = await getAddress();
     if (a.error || !isValidAddress(a.address)) return null;
     return a.address;
