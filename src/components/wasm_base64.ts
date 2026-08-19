@@ -2,6 +2,6 @@ export const WASM_B64 = "AGFzbQEAAAABnQEZYAF+AX5gA35+fgF+YAJ+fgF+YAABfmAEfn5+fgF
 
 export const WASM_SHA = "b75e499b80993e2a0fb1c28fed48ebc044b51a80b83a1fb0ec0c9a1fadff09cd";
 
-export const WASM_SOURCE_HASH = "7176be2e764a8e9acc26e1ef24f5e56b4b664abb47560ed53b55628e3e5686eb";
+export const WASM_SOURCE_HASH = "79241c919936487c605e8ecafd15f77717438f824ee0d8f2a68ccf46dc10063c";
 
 export const WASM_EXPORTS = "add_milestone,approve_milestone,donate,get_badges,get_campaign,get_donor_count,get_donor_total,get_donors,get_leaderboard,get_milestone,get_milestone_count,get_milestones,get_missed_vote_count,get_proofs,get_total_escrowed,has_refunded,has_voted,initialize,release_milestone,request_refund,submit_proof,vote_missed,withdraw";

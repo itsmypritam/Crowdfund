@@ -31,7 +31,7 @@ collectRust(join(ROOT, "contract", "src"));
 sourceFiles.push(join(ROOT, "contract", "Cargo.toml"));
 sourceFiles.sort();
 const sourceHash = sourceFiles.reduce(
-  (h, f) => createHash("sha256").update(h).update(readFileSync(f)).digest("hex"),
+  (h, f) => createHash("sha256").update(h).update(readFileSync(f, "utf8").replace(/\r\n/g, "\n")).digest("hex"),
   ""
 );
 
