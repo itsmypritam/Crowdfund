@@ -1,0 +1,28 @@
+README.md
+  s_e6e605cf9ee8e2::t_ad8498ccbf72e3 437-486
+  s_cee612b63f2a7c::t_02d24e3df79685 435-436
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b98d477564c0ad1341ab99d9661e4d6ace4e4f56",
+  "prompts": {},
+  "sessions": {
+    "s_cee612b63f2a7c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe694e993ffe21JJb6kc7iU0s8",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    },
+    "s_e6e605cf9ee8e2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe5efeadbffea8CbArJDnMcRtM",
+        "model": "unknown"
+      },
+      "human_author": "itsmypritam <pritamsdev2@gmail.com>"
+    }
+  }
+}
