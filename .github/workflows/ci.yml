@@ -81,3 +81,4 @@ jobs:
 
       - name: Verify embedded WASM is up to date
         run: node scripts/check-wasm.mjs
+        working-directory: .

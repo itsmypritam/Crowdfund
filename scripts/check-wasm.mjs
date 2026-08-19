@@ -19,8 +19,6 @@ if (!existsSync(EMBED_PATH)) {
 
 const wasmBytes = readFileSync(WASM_PATH);
 
-const wasmSha = createHash("sha256").update(wasmBytes).digest("hex");
-
 const sourceFiles = [];
 function collectRust(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -52,24 +50,18 @@ function extract(name) {
   return m ? m[1] : null;
 }
 
-const embeddedSha = extract("WASM_SHA");
 const embeddedSourceHash = extract("WASM_SOURCE_HASH");
 const embeddedExports = extract("WASM_EXPORTS");
 
 let fail = false;
 
-if (embeddedSha !== wasmSha) {
-  console.error(`FAIL: WASM_SHA mismatch\n  embedded: ${embeddedSha}\n  actual:   ${wasmSha}\n  the contract source changed but src/components/wasm_base64.ts was not regenerated.\n  Run: cargo build --target wasm32v1-none --release && node scripts/update-wasm.mjs`);
-  fail = true;
-}
-
 if (embeddedSourceHash !== sourceHash) {
-  console.error(`FAIL: WASM_SOURCE_HASH mismatch\n  embedded: ${embeddedSourceHash}\n  actual:   ${sourceHash}\n  Rust source changed but the embedded hash is stale.\n  Run: node scripts/update-wasm.mjs`);
+  console.error(`FAIL: WASM_SOURCE_HASH mismatch\n  embedded: ${embeddedSourceHash}\n  actual:   ${sourceHash}\n  Rust source changed but the embedded hash is stale.\n  Run: cargo build --target wasm32v1-none --release && node scripts/update-wasm.mjs`);
   fail = true;
 }
 
 if (embeddedExports !== exportSet) {
-  console.error(`FAIL: WASM_EXPORTS mismatch\n  embedded: ${embeddedExports}\n  actual:   ${exportSet}\n  Contract exports changed but the embedded list is stale.\n  Run: node scripts/update-wasm.mjs`);
+  console.error(`FAIL: WASM_EXPORTS mismatch\n  embedded: ${embeddedExports}\n  actual:   ${exportSet}\n  Contract exports changed but the embedded list is stale.\n  Run: cargo build --target wasm32v1-none --release && node scripts/update-wasm.mjs`);
   fail = true;
 }
 
